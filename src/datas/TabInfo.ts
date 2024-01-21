@@ -1,0 +1,1 @@
+export type TabInfo = { id: string, dateTime: number }

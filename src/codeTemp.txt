@@ -1,0 +1,59 @@
+・temp1
+  <Button onClick={() => {
+    console.log(TodoRepository.instance.RootTodos);
+  }}>test</Button>
+  <Button onClick={() => {
+    Notification.requestPermission();
+  }}>getpermission</Button>
+  <Button onClick={() => {
+    TodoRepository.instance.initialize();
+    updateTodos();
+  }}>initialize</Button>
+  <Button onClick={() => {
+    localStorage.clear();
+    TodoRepository.instance.saveToLocalStorage();
+    DoneThingRepository.instance.saveToLocalStorage();
+  }}>Save</Button>
+  <Button onClick={() => {
+    TodoRepository.instance.loadFromLocalStrage();
+    DoneThingRepository.instance.loadFromLocalStrage();
+    updateTodos();
+  }}>Load</Button>
+・flexGrow
+  sx={{ flexGrow: 1 }}
+・type check
+  typeof newValue === "string"
+・YYMMDD
+  const date1 = new Date()
+  const date3 = date1.getFullYear()  + 
+  ("00" + (date1.getMonth() + 1)).slice(-2)  + 
+  ("00" + (date1.getDate())).slice(-2); 
+・todosCollection
+      public async saveToFireStore(fUser: User) {
+          try {
+              for (const todo of this.TodosArray) {
+                  const todoRef = doc(fStore, 'users', fUser.uid, 'todos', todo.id)
+                  const tData: TodoProperties = todo;
+                  await setDoc(todoRef, { ...tData })
+              }
+          }
+          catch {
+              console.error("Todoデータの保存に失敗しました")
+          }
+      }
+      public async loadFromFireStore(fUser: User) {
+          this.clear();
+          try {
+              const querySnapshot = await getDocs(collection(fStore, "users", fUser.uid, "todos"));
+              querySnapshot.forEach((doc) => {
+                  console.log(doc.id)
+                  console.log(doc.data())
+                  this.todosMap.set(doc.id, new Todo(doc.data()));
+              });
+          }
+          catch {
+              console.error("Todoデータの読み込みに失敗しました")
+          }
+      }
+・replace before deploy
+  "(/[^>])

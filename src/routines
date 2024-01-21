@@ -1,0 +1,5 @@
+how to start dev :
+    npm start
+how to deploy :
+    1. npm run build
+    2. firebase deploy
