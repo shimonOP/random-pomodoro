@@ -468,7 +468,12 @@ export const AppCore = () => {
         const timerPaneWidth = appContentLayoutParams.timerPaneWidth
         const timerIntervalSliderMarks = sliderIntervalUnit === "Min" ? timerIntervalSliderMarks_min : timerIntervalSliderMarks_day
         const todoPane = (
-            <Card key="dt-todo-pane" variant="elevation" elevation={0} sx={{ paddingX: Card_PaddingX, paddingTop: Card_PaddingY * 2, paddingBottom: Card_PaddingY * 4 }}>
+            <Card key="dt-todo-pane" variant="elevation" elevation={0}
+                sx={{
+                    paddingX: Card_PaddingX, paddingTop: Card_PaddingY * 2, paddingBottom: Card_PaddingY * 4,
+                    borderWidth: 0.5,
+                    borderColor: "#BBB",
+                }}>
                 <Stack direction={"row"} justifyContent="center">
                     <Box width={todoPaneWidth}>{isArchiveFocused ? archivePane : renderTodoPane()}</Box>
                 </Stack>

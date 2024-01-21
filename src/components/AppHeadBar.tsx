@@ -9,6 +9,7 @@ import { Drawer_Width } from "../types/constants";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import AddIcon from '@mui/icons-material/Add';
 import MenuIcon from '@mui/icons-material/Menu';
+import HomeIMG from '../assets/images/homeIcon.webp';
 export interface AppBarProps extends MuiAppBarProps {
     open?: boolean;
 }
@@ -153,7 +154,16 @@ export function AppHeadBar(props: {
                     <MenuIcon />
                 </IconButton>
                 <Box flexGrow={1} textAlign={"left"}>
-                    <Stack direction={"row"}>
+                    <Stack direction={"row"} >
+                        <button style={{ marginRight: 6 }}
+                            onClick={() => {
+                                setFocusedTodo(undefined)
+                            }}
+                        ><img
+                                style={{
+                                    height: "20px"
+                                }}
+                                src={HomeIMG} alt="home image" /></button>
                         {favoriteTodoLinks}
                     </Stack>
                 </Box>

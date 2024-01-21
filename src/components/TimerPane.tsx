@@ -311,7 +311,13 @@ export function TimerPane(props: {
     )
   }
   return (
-    <Card key="dt-timer" variant="elevation" elevation={0} sx={{ margin: "0px !important", paddingX: Card_PaddingX, paddingTop: Card_PaddingY, paddingBottom: Card_PaddingY, height: "auto" }}>
+    <Card key="dt-timer" variant="elevation" elevation={0} sx={{
+      margin: "0px !important",
+      paddingX: Card_PaddingX, paddingTop: Card_PaddingY, paddingBottom: Card_PaddingY,
+      height: "auto",
+      borderWidth: 0.5,
+      borderColor: "#BBB",
+    }}>
       <Stack direction={'row'} justifyContent={'center'} >
         <Stack
           direction={'column'}
