@@ -37,6 +37,7 @@ const KeyBoardShortCutHelp = (props: KeyBoardShortCutHelpProps) => {
                         <Link marginTop={2} href='https://twitter.com/tododice1'><Typography variant='body2'>{tll.t("ContactUs")}</Typography></Link>
                         <Link marginTop={2} href='/privacy-policy/'><Typography variant='body2'>{tll.t("PrivacyPolicy")}</Typography></Link>
                         <Link marginTop={2} href='/terms-of-service/'><Typography variant='body2'>{tll.t("TermsOfService")}</Typography></Link>
+                        <Link marginTop={2} href='https://github.com/shimonOP/random-pomodoro'><Typography variant='body2'>GitHub</Typography></Link>
                     </Stack>
                 </DialogContent>
             </Dialog>
