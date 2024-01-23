@@ -152,7 +152,7 @@ export const useDiceTodoStates = () => {
     const setFocusedTodo_wrap = (newFTodo: Todo | undefined) => {
         setFocusedTodoID(newFTodo?.id);
     }
-    const setUserSettings = () => {
+    const setUserSettings = (userSettings: UserSettings) => {
         saveData({ userSettings });
     }
     const setUserInfo = (userInfo_n: UserInfo) => {

@@ -1,15 +1,15 @@
 import { HelpOutline } from "@mui/icons-material";
 import { Tooltip, Dialog, DialogTitle, DialogContent, Stack, Typography, Select, MenuItem, Slider, IconButton, Switch } from "@mui/material";
-import { Languages, languages } from "../types/Languages";
-import { UserSettings } from "../datas/UserSettings";
-import { useContext } from "react";
+import { Languages, lang2TranslateLanguage, languages } from "../types/Languages";
+import { UserSettings } from '../datas/UserSettings';
+import { useContext, useEffect } from "react";
 import { TLLContext } from "../App";
 import { CustomWeightEditor } from "./CustomWeightEditor";
 
 export function TimerSettingsDialog(
   props: {
     userSettings: UserSettings,
-    setUserSettings: () => void,
+    setUserSettings: (userSettings: UserSettings) => void,
     timerSettingsDialogOpen: boolean,
     handleTimerSettingsDialogClose: () => void
     onCustomWeightEditorButtonClick: (value: string) => void
@@ -25,16 +25,16 @@ export function TimerSettingsDialog(
           <Stack direction="row" spacing={8}>
             <Typography >{tll.t("NotifyBySpeech")}</Typography>
             <Switch checked={userSettings.needSpeechNotify} onChange={(e) => {
-              userSettings.needSpeechNotify = e.target.checked;
-              setUserSettings();
+              setUserSettings({ ...userSettings, needSpeechNotify: e.target.checked });
             }
             } />
           </Stack>
           <Stack direction="row" spacing={8}>
             <Typography >{tll.t("Language")}</Typography>
             <Select variant='standard' value={userSettings.language} onChange={(event) => {
-              userSettings.language = event.target.value as Languages;
-              setUserSettings();
+              const language = event.target.value as Languages;
+              setUserSettings({ ...userSettings, language });
+              tll.lang = lang2TranslateLanguage(language);
             }}>
               {languages.map(l => <MenuItem key={l} value={l}>{l}</MenuItem>)}
             </Select>
@@ -42,39 +42,34 @@ export function TimerSettingsDialog(
           <Stack direction="row" spacing={8}>
             <Typography >{tll.t("Volume")}</Typography>
             <Slider style={{ "width": "50%" }} value={userSettings.notifyVolume} min={0} max={1} step={0.1} onChange={(e, newValue) => {
-              userSettings.notifyVolume = newValue as number;
-              setUserSettings();
+              setUserSettings({ ...userSettings, notifyVolume: newValue as number });
             }}></Slider>
           </Stack>
           <Stack direction="row" spacing={8}>
             <Typography >{tll.t("AutoRoll")}</Typography>
             <Switch checked={userSettings.doAutoTimer} onChange={(e) => {
-              userSettings.doAutoTimer = e.target.checked;
-              setUserSettings();
+              setUserSettings({ ...userSettings, doAutoTimer: e.target.checked });
             }
             } />
           </Stack>
           <Stack direction="row" spacing={8}>
             <Typography>{tll.t("UseTags")}</Typography>
             <Switch checked={userSettings.doRestrictByTags} onChange={(e) => {
-              userSettings.doRestrictByTags = e.target.checked;
-              setUserSettings();
+              setUserSettings({ ...userSettings, doRestrictByTags: e.target.checked });
             }
             } />
           </Stack>
           <Stack direction="row" spacing={8}>
             <Typography fontSize={16}>{tll.t("EditRunTimeOnTimerPane")}</Typography>
             <Switch checked={userSettings.editRuntimeOnTimerPane} onChange={(e) => {
-              userSettings.editRuntimeOnTimerPane = e.target.checked;
-              setUserSettings();
+              setUserSettings({ ...userSettings, editRuntimeOnTimerPane: e.target.checked });
             }
             } />
           </Stack>
           <Stack direction="row" spacing={8}>
             <Typography>{tll.t("EditIntervalOnTimerPane")}</Typography>
             <Switch checked={userSettings.editIntervalOnTimerPane} onChange={(e) => {
-              userSettings.editIntervalOnTimerPane = e.target.checked;
-              setUserSettings();
+              setUserSettings({ ...userSettings, editIntervalOnTimerPane: e.target.checked });
             }
             } />
           </Stack>
@@ -111,16 +106,14 @@ export function TimerSettingsDialog(
               </Tooltip>
             </Stack>
             <Switch checked={userSettings.useCustomWeight} onChange={(e) => {
-              userSettings.useCustomWeight = e.target.checked;
-              setUserSettings()
+              setUserSettings({ ...userSettings, useCustomWeight: e.target.checked });
             }
             } />
           </Stack>
           <CustomWeightEditor
             text={userSettings.customWeightCode}
             onSetButtonClick={(value: string) => {
-              userSettings.customWeightCode = value
-              setUserSettings()
+              setUserSettings({ ...userSettings, customWeightCode: value })
             }}
             onRunButtonClick={
               onCustomWeightEditorButtonClick

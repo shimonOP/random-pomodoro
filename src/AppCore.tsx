@@ -367,15 +367,14 @@ export const AppCore = () => {
                 <TextField variant='standard' value={userSettings.name} inputProps={{ maxLength: 20 }} onChange={(event) => {
                     const str = event.target.value;
                     userSettings.name = str;
-                    setUserSettings();
+                    setUserSettings({ ...userSettings, name: str });
                 }}></TextField>
             </Stack>
         const languageUI =
             <Stack direction="row" spacing={8}>
                 <Typography >{tll.t("Language")}</Typography>
                 <Select variant='standard' value={userSettings.language} onChange={(event) => {
-                    userSettings.language = event.target.value as Languages;
-                    setUserSettings();
+                    setUserSettings({ ...userSettings, language: event.target.value as Languages });
                 }}>
                     {languages.map(l => <MenuItem key={l} value={l}>{l}</MenuItem>)}
                 </Select>

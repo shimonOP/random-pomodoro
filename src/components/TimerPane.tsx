@@ -45,7 +45,7 @@ export function TimerPane(props: {
   setTodoFutures: (todoFutures: TodoFuture[]) => void,
   tags: string[],
   userSettings: UserSettings,
-  setUserSettings: () => void,
+  setUserSettings: (userSettings: UserSettings) => void,
   settingsButton: JSX.Element,
   isSynchronizing: boolean,
   intervalString: string,
@@ -246,13 +246,11 @@ export function TimerPane(props: {
           labelWhenTagsEmpty='*all'
           placeHolder='Inclusion Tags'
           handleDelete={(tag: string) => {
-            userSettings.timerTags = userSettings.timerTags.filter((t) => t !== tag);
-            setUserSettings();
+            setUserSettings({ ...userSettings, timerTags: userSettings.timerTags.filter((t) => t !== tag) });
           }}
           onChange={(tag: string) => {
             if (!userSettings.timerTags.some(t => t === tag)) {
-              userSettings.timerTags.push(tag);
-              setUserSettings();
+              setUserSettings({ ...userSettings, timerTags: [...userSettings.timerTags, tag] });
             }
             return "";
           }}
@@ -264,13 +262,11 @@ export function TimerPane(props: {
           labelWhenTagsEmpty=''
           placeHolder='Exclusion Tags'
           handleDelete={(tag: string) => {
-            userSettings.timerExTags = userSettings.timerExTags.filter((t) => t !== tag);
-            setUserSettings();
+            setUserSettings({ ...userSettings, timerExTags: userSettings.timerExTags.filter((t) => t !== tag) });
           }}
           onChange={(tag: string) => {
             if (!userSettings.timerExTags.some(t => t === tag)) {
-              userSettings.timerExTags.push(tag);
-              setUserSettings();
+              setUserSettings({ ...userSettings, timerExTags: [...userSettings.timerExTags, tag] });
             }
             return "";
           }}
