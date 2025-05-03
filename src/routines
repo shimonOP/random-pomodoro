@@ -1,6 +1,7 @@
 how to start dev :
-    npm start
+  npm start
 how to deploy :
-    1. npm run build
-    2. firebase deploy
-    - publicではなくbuildフォルダーね
+  1. npm run build
+  2. firebase deploy
+    - 失敗した場合はfirebase logout -> firebase login
+      - 利用規約が変更されたときとかにそのままだと操作が許可されない
