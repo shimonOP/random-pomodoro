@@ -47,13 +47,11 @@ export function TimerPane(props: {
   userSettings: UserSettings,
   setUserSettings: (userSettings: UserSettings) => void,
   settingsButton: JSX.Element,
-  isSynchronizing: boolean,
   intervalString: string,
   rProbs: number[],
   timerIntervalSliderMarks: { value: number, label: string }[],
   timerPaneWidth: number,
   isDiceRolling: boolean,
-  rollDiceDisabled: boolean,
 }) {
   const {
     runningTodo,
@@ -81,13 +79,11 @@ export function TimerPane(props: {
     userSettings,
     setUserSettings,
     settingsButton,
-    isSynchronizing,
     intervalString,
     rProbs,
     timerIntervalSliderMarks,
     timerPaneWidth,
     isDiceRolling,
-    rollDiceDisabled,
   } = props;
   const tll = useContext(TLLContext);
   useEffect(() => {
@@ -157,7 +153,6 @@ export function TimerPane(props: {
             disableRipple={true}
             color="secondary"
             onClick={async () => {
-              if (rollDiceDisabled) return;
               rollDice();
             }}
             style={{}}
@@ -221,7 +216,7 @@ export function TimerPane(props: {
           done(elapsedTime)
         }}
         onElapsedTimeChanged={(displayTime: number) => {
-          if (runningTodo && !isSynchronizing) {
+          if (runningTodo) {
             document.title = timeToString(displayTime) + "  " + runningTodo.displayTitle;
           }
         }}

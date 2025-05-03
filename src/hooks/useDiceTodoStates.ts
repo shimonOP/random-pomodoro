@@ -13,7 +13,6 @@ export const todoWeightCalculator_sim = new TodoWeightCalculator(true)
 export const useDiceTodoStates = () => {
 
     const [focusedTodoID, setFocusedTodoID] = useState<undefined | string>();
-    const [isSynchronizing, setIsSynchronizing] = useState(false);
     const [checkCount, setCheckCount] = useState<undefined | number>(undefined);//一回で全部のデータを修復できない !== undefinedならもう一回
     const { todos, records, userSettings, userInfo, timerState, todoPlans: todoFutures, runningTodoID, getAllRecords } = useDTDexieStates()
     if (userSettings)
@@ -212,7 +211,7 @@ export const useDiceTodoStates = () => {
         userInfo, setUserInfo,
         timerState, setTimerState,
         todoFutures, setTodoFutures,
-        isSynchronizing, loadDataFromText, saveData,
+        loadDataFromText, saveData,
         addTodo, deleteTodo, archiveTodo, restoreFromArchiveTodo,
         stringifyAppData,
         setPCRelation,

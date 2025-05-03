@@ -21,11 +21,6 @@ export const addTodoToInboxButton_ID = "AddTodoToInboxButton_ID_315493"
 export const uniqueExecuter_autoDoTimer = new UniqueInTabsExecuter("RandomPomodoro_UniqueInTab_AutoDoTimer")
 export const uniqueExecuter_notify = new UniqueInTabsExecuter("RandomPomodoro_UniqueInTab_Notify")
 
-export let isRecording = false;
-export const setIsRecording = (b: boolean) => {
-  isRecording = b;
-}
-
 export const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
   open?: boolean;
 }>(({ theme, open }) => ({

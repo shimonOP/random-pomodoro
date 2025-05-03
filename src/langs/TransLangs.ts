@@ -13,6 +13,7 @@ export type howToUseSentenses =
 //SCK = short cut key
 export type transKeyBoardShortCutHelps =
     "RollDiceSCK" |
+    "DoneSCK" |
     "AddChildSCK" |
     "AddBrotherSCK" |
     "AddTodoInboxSCK" |
@@ -222,6 +223,8 @@ export class TLL {
                         return "キーボードショートカット一覧"
                     case "RollDiceSCK":
                         return "サイコロを振る"
+                    case "DoneSCK":
+                        return "タスクを行った"
                     case "AddChildSCK":
                         return "サブタスクを追加"
                     case "AddBrotherSCK":
@@ -428,6 +431,8 @@ export class TLL {
                         return "Keyboard short cuts"
                     case "RollDiceSCK":
                         return "Roll dice."
+                    case "DoneSCK":
+                        return "Finish the task."
                     case "AddChildSCK":
                         return "Add child todo."
                     case "AddBrotherSCK":

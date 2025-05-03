@@ -4,10 +4,11 @@ import { TLL, transKeyBoardShortCutHelps } from '../langs/TransLangs';
 import { KeyShortCutter } from '../types/KeyShortCutter';
 import { disableKeyBoardShortCut } from '../util';
 //@@short cut keys
-const shortCutKeys = ["r", "ctrl+Enter", "shift+Enter", "a", "shift+c", "c", "shift+/", "/"] as const;
+const shortCutKeys = ["r", "d", "ctrl+Enter", "shift+Enter", "a", "shift+c", "c", "shift+/", "/"] as const;
 export type ShortCutKey = typeof shortCutKeys[number];
 
 export const rollDiceSCK: ShortCutKey = "r";
+export const doneSCK: ShortCutKey = "d";
 export const addChildSCK: ShortCutKey = "ctrl+Enter";
 export const addBrotherSCK: ShortCutKey = "shift+Enter";
 export const addTodoInboxSCK: ShortCutKey = "a";
@@ -17,6 +18,7 @@ export const showKeyBoardShortCutKeyHelpSCK: ShortCutKey = "shift+/"
 export const showSearchTodoDialogSCK: ShortCutKey = "/"
 export const shortCutKeyAndTransNames: { key: ShortCutKey, transName: transKeyBoardShortCutHelps }[] = [
     { key: rollDiceSCK, transName: "RollDiceSCK" },
+    { key: doneSCK, transName: "DoneSCK" },
     { key: addChildSCK, transName: "AddChildSCK" },
     { key: addBrotherSCK, transName: "AddBrotherSCK" },
     { key: addTodoInboxSCK, transName: "AddTodoInboxSCK" },
@@ -31,6 +33,7 @@ export const useShortCutKeys = (tll: TLL) => {
     const [shortCutKey, setShortCutKey] = useState<ShortCutKey | undefined>(undefined);
 
     useHotkeys(rollDiceSCK, () => { pSetCommand(rollDiceSCK) });
+    useHotkeys(doneSCK, () => { pSetCommand(doneSCK) });
     useHotkeys(addBrotherSCK, () => { pSetCommand(addBrotherSCK) });
     useHotkeys(addChildSCK, () => { pSetCommand(addChildSCK) });
     useHotkeys(addTodoInboxSCK, () => { pSetCommand(addTodoInboxSCK) });

@@ -7,22 +7,23 @@ import { getWindowDimensions, withoutDuplicate, intervalToString } from './util'
 import { Settings } from '@mui/icons-material';
 import { Languages, languages, lang2TranslateLanguage } from './types/Languages';
 import TodoPane from './components/TodoPane';
-import { Document_Title, DocumentTitle_WhileSync, Font_Size, Card_PaddingX, Card_PaddingY, timerIntervalSliderMarks_day, timerIntervalSliderMarks_min } from './types/constants';
+import { Document_Title, Font_Size, Card_PaddingX, Card_PaddingY, timerIntervalSliderMarks_day, timerIntervalSliderMarks_min } from './types/constants';
 import ArchivePane from './components/ArchivePane';
 import { TLLContext } from './App';
 import KeyBoardShortCutHelp from './components/KeyBoardShortCutHelp';
 import { todoWeightCalculator_view, useDiceTodoStates } from './hooks/useDiceTodoStates';
-import { addBrotherSCK, addChildSCK, addTodoInboxSCK, changeFCompleteSCK, changeRCompleteSCK, rollDiceSCK, shortCutKeyToFunc, showKeyBoardShortCutKeyHelpSCK, showSearchTodoDialogSCK, useShortCutKeys } from './hooks/useShortCutKeys';
+import { addBrotherSCK, addChildSCK, addTodoInboxSCK, changeFCompleteSCK, changeRCompleteSCK, doneSCK, rollDiceSCK, shortCutKeyToFunc, showKeyBoardShortCutKeyHelpSCK, showSearchTodoDialogSCK, useShortCutKeys } from './hooks/useShortCutKeys';
 import { FileUploader } from 'react-drag-drop-files';
 import { updateTodo } from './db';
 import { SearchTodoDialog } from './components/SearchTodoDialog';
 import DateTimeNow from './components/DateTimeNow';
-import { Main, addTodoToInboxButton_ID, calcAppContentLayout, done_, isRecording, rollDice_, setIsRecording } from './AppCore_';
+import { Main, addTodoToInboxButton_ID, calcAppContentLayout, done_, rollDice_ } from './AppCore_';
 import { TimerSettingsDialog } from './components/TimerSettingsDialog';
 import { TimerPane } from './components/TimerPane';
 import { HomePane } from './components/HomePane';
 import { AppHeadBar } from './components/AppHeadBar';
 import { TodoTreeView } from './components/TodoTreeView';
+import { TimerState } from './datas/TimerState';
 
 export const AppCore = () => {
     //@@usestate
@@ -35,7 +36,7 @@ export const AppCore = () => {
         todoFutures, setTodoFutures,
         userInfo,
         timerState, setTimerState,
-        isSynchronizing, loadDataFromText,
+        loadDataFromText,
         deleteTodo, addTodo, restoreFromArchiveTodo, archiveTodo,
         stringifyAppData, setPCRelation,
     } = useDiceTodoStates()
@@ -127,6 +128,13 @@ export const AppCore = () => {
     //useHotKeysで直接実行するとtodosなどが空なので苦肉の策
     useEffect(function setShortCutKey() {
         shortCutKeyToFunc.set(rollDiceSCK, async () => { rollDice() })
+        shortCutKeyToFunc.set(
+            doneSCK, async () => {
+                if(isDiceRolling){
+                    return
+                }
+                done(calcElapsedTime(timerState))
+            })
         shortCutKeyToFunc.set(addChildSCK, async () => {
             addChildOfFocusedTodo();
         })
@@ -161,10 +169,9 @@ export const AppCore = () => {
     // ブラウザタグの文字列を変更する処理
     useEffect(function updateTitle() {
         document.title =
-            isSynchronizing ? DocumentTitle_WhileSync :
                 !runningTodo ? Document_Title :
                     document.title
-    }, [isSynchronizing, runningTodo])
+    }, [runningTodo])
     useEffect(() => {
         if (willExpandTreeLateId) {
             expandTreeView(willExpandTreeLateId, true, true);
@@ -184,10 +191,6 @@ export const AppCore = () => {
             setWillTreeViewScroll(false)
         }, 500)
     }, [willTreeViewScroll])
-    useEffect(() => {
-        if (!isRecording) return
-        setIsRecording(false)
-    }, [records])
     if (!userSettings || !userInfo) return <></>
     const tags: string[] = withoutDuplicate(getTodosArray(todos).flatMap(todo => todo.tags))
     //--------------------------@@processes-------------------------------------
@@ -277,7 +280,7 @@ export const AppCore = () => {
         }
     }
     function done(elapsedTime: number) {
-        setIsRecording(true)
+        if(isDiceRolling) return;
         done_(
             elapsedTime,
             runningTodo, sliderInterval, sliderIntervalCoeff, todos,
@@ -507,11 +510,9 @@ export const AppCore = () => {
                 tags={tags}
                 setUserSettings={setUserSettings}
                 settingsButton={settingsButton}
-                isSynchronizing={isSynchronizing}
                 intervalString={intervalString}
                 timerPaneWidth={timerPaneWidth}
                 isDiceRolling={isDiceRolling}
-                rollDiceDisabled={isRecording}
             />
 
         )
@@ -641,4 +642,9 @@ export const AppCore = () => {
             ></KeyBoardShortCutHelp>
         </Box >
     );
+}
+
+const calcElapsedTime = (timerState: TimerState) => {
+    if (timerState.timeAtStarted === null) return 0
+    return (Date.now() - timerState.timeAtStarted) + timerState.elapsedTimeUntilLastPaused
 }
