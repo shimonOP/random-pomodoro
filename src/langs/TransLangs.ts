@@ -110,6 +110,7 @@ export type transDescriptions =
     "InterruptTodo" |
     "AppendTodo" |
     "IsFavorite" |
+    "IsForcedLeaf" |
     "PickFromSubTodos" |
     "UpdateIntervalBySliderInterval"
     ;//@@Keys
@@ -318,6 +319,8 @@ export class TLL {
                         return "追加"
                     case "IsFavorite":
                         return "お気に入り"
+                    case "IsForcedLeaf":
+                        return "サブタスクを選出しない"
                     case "PickFromSubTodos":
                         return "子を選出"
                     case "UpdateIntervalBySliderInterval":
@@ -523,6 +526,8 @@ export class TLL {
                         return "Append"
                     case "IsFavorite":
                         return "Favorite"
+                    case "IsForcedLeaf":
+                        return "Sub tasks are unselectable."
                     case "PickFromSubTodos":
                         return "PickAChild"
                     case "UpdateIntervalBySliderInterval":

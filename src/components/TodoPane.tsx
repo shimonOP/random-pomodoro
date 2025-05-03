@@ -97,7 +97,7 @@ const TodoPane = (props: TodoPaneProps) => {
     const timerTags = userSettings.timerTags;
     const timerExTags = userSettings.timerExTags;
     const [movetoOptions, setMoveToOptions] = useState<(Todo | string)[]>([]);
-    const [editNotUntilAnchor, setEditNotUntilAnchor] = useState<null | HTMLElement>(null);
+    const [editNotUntilAnchor, setEditNotUntilAnchor] = useState<null | Element>(null);
     useEffect(() => {
         setMoveToOptions(getTodoOptions(todos, ""))
     }, [todos])
@@ -114,7 +114,7 @@ const TodoPane = (props: TodoPaneProps) => {
             setPrevTodo(todo);
         }
     } else {
-        return <></>
+        return (<></>)
     }
     const renderAddButtons = () => {
         const abButton =
@@ -377,9 +377,10 @@ const TodoPane = (props: TodoPaneProps) => {
         notUntilStr = "NotUntil : " + (isInInterval(todo, now) ? calcDateOfOutBreak(todo).toLocaleString() : "null");
         return (
             <Stack direction={"row"} position={"relative"}>
-                <Link component={"button"} color={isInInterval(todo, now) ? GreenColorCode : "inherit"} underline='none' onClick={(event) => {
-                    setEditNotUntilAnchor(event.currentTarget);
-                }}>{notUntilStr}</Link>
+                <Link component={"button"} color={isInInterval(todo, now) ? GreenColorCode : "inherit"} underline='none'
+                    onClick={(event:React.MouseEvent) => {
+                        setEditNotUntilAnchor(event.currentTarget);
+                    }}>{notUntilStr}</Link>
                 <div style={{ position: "absolute", right: 0 }}>{lastRunStr}</div>
                 <br></br>
                 <Popover
@@ -433,6 +434,14 @@ const TodoPane = (props: TodoPaneProps) => {
                 setTodoParameter(todo.id, { isFavorite: !todo.isFavorite })
             }
         }} />} label={tll.t("IsFavorite")} />
+    }
+    const renderForcedLeafSwitch = () => {
+        if (todo === undefined) return <></>
+        return <FormControlLabel control={<Switch checked={todo.isForcedLeaf} onChange={(e) => {
+            if (todo) {
+                setTodoParameter(todo.id, { isForcedLeaf: !todo.isForcedLeaf })
+            }
+        }} />} label={tll.t("IsForcedLeaf")} />
     }
     //ACD = All Children Disable
     const renderDisableIfACDSwitch = () => {
@@ -511,6 +520,12 @@ const TodoPane = (props: TodoPaneProps) => {
                     disableRipple
                 >
                     <>{renderDisableIfACDSwitch()}</>
+                </MenuItem>
+                <MenuItem
+                    key={"todoMenuItem1.1"}
+                    disableRipple
+                >
+                    <>{renderForcedLeafSwitch()}</>
                 </MenuItem>
                 <MenuItem
                     key={"todoMenuItem2"}

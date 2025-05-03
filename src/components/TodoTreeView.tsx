@@ -1,5 +1,5 @@
 import { Button, Drawer, IconButton, Stack, Typography } from '@mui/material';
-import { Todo, countTodos, getChildren, getTodo, hasCompletedAncestor, isInInterval, isInTags, isRoot } from "../datas/Todo";
+import { Todo, countTodos, getChildren, getTodo, hasCompletedAncestor, hasForcedLeafAncestor, isInInterval, isInTags, isRoot } from "../datas/Todo";
 import { UserSettings } from "../datas/UserSettings";
 import { todoWeightCalculator_view } from "../hooks/useDiceTodoStates";
 import { LightGreyColorCode, GreenColorCode, IndigoColorCode, Drawer_Width, TreeView_MaxWidth, AboveAppContentArea_MinHeight } from "../types/constants";
@@ -60,15 +60,19 @@ export function TodoTreeView(props: {
 
       const now = new Date()
       const children = getChildren(todo, todos).filter(t => !t.isArchived).sort((a, b) => a.title.localeCompare(b.title));
+      const hflAncestor = hasForcedLeafAncestor(todo, todos);
       const hcAncestor = hasCompletedAncestor(todo, todos);
       const label_isCustomed = userSettings.useCustomWeight && todoWeightCalculator_view.isCustomed(todo.id) ?
-        "   🛠️" : ""
-      const label = todo.displayTitle + label_isCustomed
+        "🛠️" : ""
+      const lable_isForcedLeaf = todo.isForcedLeaf ?
+        "🥬" : ""
+      const titlelabelspace = (label_isCustomed || lable_isForcedLeaf) ? "   " : ""
+      const label = todo.displayTitle + titlelabelspace + label_isCustomed + lable_isForcedLeaf
       return tree();
 
       function tree() {
         const labelColor =
-          hcAncestor ? LightGreyColorCode :
+          (hcAncestor || hflAncestor) ? LightGreyColorCode :
             isInInterval(todo, now) ? GreenColorCode :
               !calcWeight_view(todo) ? LightGreyColorCode :
                 userSettings.doRestrictByTags && isInTags(todo, todos, userSettings.timerTags, userSettings.timerExTags) ? IndigoColorCode :

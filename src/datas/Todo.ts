@@ -21,6 +21,7 @@ export type TodoRawValues = {
     disableIfAllChildrenDisable: boolean
     doForceSpeech: boolean
     isFavorite: boolean
+    isForcedLeaf: boolean
 }
 const keysOfTodoValues = stringUnionToArray<keyof TodoValues>()(
     "title",
@@ -40,6 +41,7 @@ const keysOfTodoValues = stringUnionToArray<keyof TodoValues>()(
     "disableIfAllChildrenDisable",
     "doForceSpeech",
     "isFavorite",
+    "isForcedLeaf",
 )
 type WithUpdatedAt<T> = {
     value: T
@@ -81,6 +83,7 @@ const createDefaultTodo = () => {
         disableIfAllChildrenDisable: dataWithDafaultUpdate(false),
         doForceSpeech: dataWithDafaultUpdate(false),
         isFavorite: dataWithDafaultUpdate(false),
+        isForcedLeaf: dataWithDafaultUpdate(false),
     }
     return data;
 }
@@ -113,7 +116,8 @@ export class Todo {
     get disableIfAllChildrenDisable() { return this.data.disableIfAllChildrenDisable.value }
     get doForceSpeech() { return this.data.doForceSpeech.value }
     get isFavorite() { return this.data.isFavorite.value }
-    //If you add new Fieald , you must modify copyTodo()
+    get isForcedLeaf() { return this.data.isForcedLeaf.value }
+    //If you add new Fieald , you must modify update()
 
     constructor(data?: any) {
         if (data) this.update(data)
@@ -173,6 +177,7 @@ export class Todo {
         if ('disableIfAllChildrenDisable' in property) { this.data.disableIfAllChildrenDisable = { value: property.disableIfAllChildrenDisable!, updatedAt: Date.now() } }
         if ('doForceSpeech' in property) { this.data.doForceSpeech = { value: property.doForceSpeech!, updatedAt: Date.now() } }
         if ('isFavorite' in property) { this.data.isFavorite = { value: property.isFavorite!, updatedAt: Date.now() } }
+        if ('isForcedLeaf' in property) { this.data.isForcedLeaf = { value: property.isForcedLeaf!, updatedAt: Date.now() } }
     }
     public inheritAttributes(parent: Todo) {
         this.update({ runTime: parent.runTime, defaultInterval: parent.defaultInterval })
@@ -218,7 +223,7 @@ export const isEnable = (todo: Todo) => {
     return true
 }
 export const isLeaf = (todo: Todo): boolean => {
-    return todo.childrenIds.length === 0;
+    return todo.childrenIds.length === 0 || todo.isForcedLeaf;
 }
 export const defaultTodo: Todo = new Todo()
 
@@ -304,6 +309,9 @@ export function getTitles(todo: Todo, todosMap: Map<String, Todo>): string[] {
         res.push(todo.displayTitle);
         return res;
     }
+}
+export function hasForcedLeafAncestor(todo: Todo, todosMap: Map<String, Todo>) {
+    return getAncestors(todo, todosMap).some((t) => (t.id !== todo.id) && t.isForcedLeaf);
 }
 export function hasCompletedAncestor(todo: Todo, todosMap: Map<String, Todo>) {
     return getAncestors(todo, todosMap).some((t) => t.isCompleted);

@@ -32,7 +32,7 @@ export class TodoWeightCalculator {
             }
             return true;
         }
-        const updateCustom2Weights = () => {
+        const updateTodo2CustomWeights = () => {
             try {
                 // eslint-disable-next-line no-new-func
                 const func = new Function('todos', 'records', 'date', userSettings.customWeightCode)
@@ -52,7 +52,7 @@ export class TodoWeightCalculator {
             return todo.weight
         }
         const todo2Weight = new Map<string, number>()
-        updateCustom2Weights()
+        updateTodo2CustomWeights()
         const todos_array = mapToValueArray(todos)
         for (const todo of todos_array) {
             todo2Weight.set(todo.id,
