@@ -25,6 +25,11 @@ export default class Notifier {
     }
 
     private showBrowserNotification(title: string, body: string) {
+        // ページがアクティブな場合は通知を表示しない
+        if (document.visibilityState === 'visible') {
+            return;
+        }
+
         if ('Notification' in window && this.notificationPermission === 'granted') {
             const notification = new Notification(title, {
                 body: body,
