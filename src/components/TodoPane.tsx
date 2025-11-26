@@ -98,12 +98,23 @@ const TodoPane = (props: TodoPaneProps) => {
     const timerExTags = userSettings.timerExTags;
     const [movetoOptions, setMoveToOptions] = useState<(Todo | string)[]>([]);
     const [editNotUntilAnchor, setEditNotUntilAnchor] = useState<null | Element>(null);
+    const titleDebounceTimer = React.useRef<NodeJS.Timeout | null>(null);
+
     useEffect(() => {
         setMoveToOptions(getTodoOptions(todos, ""))
     }, [todos])
     useEffect(() => {
         setTitle(todo.title)
     }, [todo.id])
+
+    // タイマーのクリーンアップ
+    useEffect(() => {
+        return () => {
+            if (titleDebounceTimer.current) {
+                clearTimeout(titleDebounceTimer.current);
+            }
+        };
+    }, [])
     const tll = useContext(TLLContext)
     if (todo) {
         if ((prevTodo && todo.id !== prevTodo.id) || (!prevTodo && todo)) {
@@ -584,14 +595,27 @@ const TodoPane = (props: TodoPaneProps) => {
                         placeholder='Title'
                         value={title}
                         maxRows={1}
-                        onBlur={() => {
-                            setTodoParameter(todo.id, { title })
-                        }}
                         onChange={
                             (event) => {
-                                setTitle(event.target.value)
+                                const newTitle = event.target.value;
+                                setTitle(newTitle);
+
+                                // デバウンス: 500ms後に保存
+                                if (titleDebounceTimer.current) {
+                                    clearTimeout(titleDebounceTimer.current);
+                                }
+                                titleDebounceTimer.current = setTimeout(() => {
+                                    setTodoParameter(todo.id, { title: newTitle });
+                                }, 300);
                             }
                         }
+                        onBlur={() => {
+                            // フォーカスが外れたら即座に保存
+                            if (titleDebounceTimer.current) {
+                                clearTimeout(titleDebounceTimer.current);
+                            }
+                            setTodoParameter(todo.id, { title });
+                        }}
                         onKeyDown={(e) => {
                             if (e.ctrlKey) {
                                 if (e.key === "Enter") {
@@ -599,8 +623,6 @@ const TodoPane = (props: TodoPaneProps) => {
                                 }
                             } else if (e.shiftKey) {
                                 if (e.key === "Enter") addBrotherProcess();
-                            } else if (e.key === "Enter") {
-                                setTodoParameter(todo.id, { title })
                             }
                         }}
                     ></TextField>
