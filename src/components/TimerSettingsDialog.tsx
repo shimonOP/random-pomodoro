@@ -23,9 +23,16 @@ export function TimerSettingsDialog(
       <DialogContent dividers>
         <Stack direction="column" spacing={2} sx={{ width: 500, height: 700 }}>
           <Stack direction="row" spacing={8}>
-            <Typography >{tll.t("NotifyBySpeech")}</Typography>
-            <Switch checked={userSettings.needSpeechNotify} onChange={(e) => {
-              setUserSettings({ ...userSettings, needSpeechNotify: e.target.checked });
+            <Typography >{tll.t("NotifyBySpeechOnStart")}</Typography>
+            <Switch checked={userSettings.needSpeechNotifyOnStart} onChange={(e) => {
+              setUserSettings({ ...userSettings, needSpeechNotifyOnStart: e.target.checked });
+            }
+            } />
+          </Stack>
+          <Stack direction="row" spacing={8}>
+            <Typography >{tll.t("NotifyBySpeechOnEnd")}</Typography>
+            <Switch checked={userSettings.needSpeechNotifyOnEnd} onChange={(e) => {
+              setUserSettings({ ...userSettings, needSpeechNotifyOnEnd: e.target.checked });
             }
             } />
           </Stack>

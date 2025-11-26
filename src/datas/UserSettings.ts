@@ -4,7 +4,9 @@ export type UserSettings = {
     name: string,
     language: Languages,
     doAutoTimer: boolean,
-    needSpeechNotify: boolean,
+    needSpeechNotify: boolean, // 後方互換性のため残す
+    needSpeechNotifyOnStart: boolean,
+    needSpeechNotifyOnEnd: boolean,
     doRestrictByTags: boolean,
     timerTags: string[],
     timerExTags: string[],
@@ -21,7 +23,9 @@ export const createUserSettings = (data?: any) => {
         name: "",
         language: "english",
         doAutoTimer: false,
-        needSpeechNotify: true,
+        needSpeechNotify: true, // 後方互換性
+        needSpeechNotifyOnStart: true,
+        needSpeechNotifyOnEnd: true,
         doRestrictByTags: false,
         timerTags: [],
         timerExTags: [],
@@ -34,6 +38,13 @@ export const createUserSettings = (data?: any) => {
     }
     if (data) {
         Object.assign(userSettings, data);
+        // 古いデータからのマイグレーション
+        if (data.needSpeechNotifyOnStart === undefined) {
+            userSettings.needSpeechNotifyOnStart = data.needSpeechNotify ?? true;
+        }
+        if (data.needSpeechNotifyOnEnd === undefined) {
+            userSettings.needSpeechNotifyOnEnd = data.needSpeechNotify ?? true;
+        }
     }
     return userSettings
 }

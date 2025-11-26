@@ -63,6 +63,8 @@ export type transDescriptions =
     "Archive" |
     "TimerSettings" |
     "NotifyBySpeech" |
+    "NotifyBySpeechOnStart" |
+    "NotifyBySpeechOnEnd" |
     "SpeechLanguage" |
     "NotifyToDeskTop" |
     "Volume" |
@@ -205,6 +207,10 @@ export class TLL {
                         return "設定"
                     case "NotifyBySpeech":
                         return "音声による通知"
+                    case "NotifyBySpeechOnStart":
+                        return "開始時に音声で通知"
+                    case "NotifyBySpeechOnEnd":
+                        return "終了時に音声で通知"
                     case "SpeechLanguage":
                         return "音声の言語"
                     case "NotifyToDeskTop":
@@ -413,6 +419,10 @@ export class TLL {
                         return "Settings"
                     case "NotifyBySpeech":
                         return "Notify by speech"
+                    case "NotifyBySpeechOnStart":
+                        return "Notify by speech on start"
+                    case "NotifyBySpeechOnEnd":
+                        return "Notify by speech on end"
                     case "SpeechLanguage":
                         return "Language of speech"
                     case "NotifyToDeskTop":

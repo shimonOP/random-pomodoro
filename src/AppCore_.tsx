@@ -103,7 +103,7 @@ export const rollDice_ = (
         elapsedTimeUntilLastPaused: timerState.elapsedTimeUntilLastPaused,
         remainTime: todo ? todo.runTime : 0,
       })
-      if (userSettings.needSpeechNotify) {
+      if (userSettings.needSpeechNotifyOnStart) {
         if (todo) {
           const speechText = getTitlesReadByVoice(todo, todos).join(",");
           Notifier.instance.notifyStart(speechText, userSettings.language, userSettings.notifyVolume, true);

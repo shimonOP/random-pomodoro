@@ -209,9 +209,11 @@ export function TimerPane(props: {
                 })
               }
               // 2回目以降は音声通知のみ（20秒間隔）
-              uniqueExecuter_notify.run(() => {
-                Notifier.instance.notifyEnd(runningTodo.displayTitle, userSettings.language, userSettings.notifyVolume);
-              })
+              if (userSettings.needSpeechNotifyOnEnd) {
+                uniqueExecuter_notify.run(() => {
+                  Notifier.instance.notifyEnd(runningTodo.displayTitle, userSettings.language, userSettings.notifyVolume);
+                })
+              }
             }
             if (userSettings.doAutoTimer && (doingAutoTimerStatus === "stable") && false) {//まだ不具合多数
               doingAutoTimerStatus = "doingAutoTimer"
