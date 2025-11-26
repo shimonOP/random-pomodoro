@@ -7,6 +7,7 @@ import { saveData, updateTodo, useDTDexieStates, updateTodos, } from '../db';
 import { TimerState, createTimerState } from "../datas/TimerState";
 import { TodoFuture } from "../datas/TodoPlan";
 import { TodoWeightCalculator } from "../types/calcTodoWeight";
+import { TLL } from "../langs/TransLangs";
 
 export const todoWeightCalculator_view = new TodoWeightCalculator(false)
 export const todoWeightCalculator_sim = new TodoWeightCalculator(true)
@@ -120,6 +121,59 @@ export const useDiceTodoStates = () => {
             }
         }
     }, [checkCount])
+
+    // 初回アクセス時にサンプルTODOを作成
+    useEffect(() => {
+        if (userInfo && !userInfo.hasCreatedDefaultTodos && todos.size === 0) {
+            createInitialTodos();
+            setUserInfo({ ...userInfo, hasCreatedDefaultTodos: true });
+        }
+    }, [todos, userInfo])
+
+    function createInitialTodos() {
+        const browserLang = navigator.language || 'en';
+        const tll = new TLL(browserLang.startsWith('ja') ? 'ja' : 'en');
+
+        // 親TODO: 作業/Work
+        const workTodo = new Todo();
+        workTodo.update({
+            title: tll.t('InitialTodoWork'),
+            runTime: 600, // 10分
+            weight: 10,
+        });
+
+        // 子TODO: 勉強/Study
+        const studyTodo = new Todo();
+        studyTodo.update({
+            title: tll.t('InitialTodoStudy'),
+            runTime: 600, // 10分
+            weight: 10,
+        });
+
+
+        // 親TODO: 休憩/Break
+        const breakTodo = new Todo();
+        breakTodo.update({
+            title: tll.t('InitialTodoBreak'),
+            runTime: 240, // 4分
+            weight: 10,
+            interval: 1200, 
+            defaultInterval: 480,
+        });
+
+        // 親TODO: 娯楽/Entertainment
+        const entertainmentTodo = new Todo();
+        entertainmentTodo.update({
+            title: tll.t('InitialTodoEntertainment'),
+            runTime: 600, // 10分
+            weight: 10,
+        });
+
+        addTodo(workTodo);
+        addTodo(studyTodo);
+        addTodo(breakTodo);
+        addTodo(entertainmentTodo);
+    }
     const setTodoParameter = updateTodo
     const restoreData = (todos: Map<string, Todo>) => {
         let res = true
@@ -155,7 +209,7 @@ export const useDiceTodoStates = () => {
         saveData({ userSettings });
     }
     const setUserInfo = (userInfo_n: UserInfo) => {
-        saveData({ userInfo });
+        saveData({ userInfo: userInfo_n });
     }
     const setTodoFutures = (todoFutures_new: TodoFuture[]) => {
         saveData({ todoFutures: todoFutures_new })

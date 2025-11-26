@@ -2,7 +2,7 @@
 //対応言語
 export type TranslationLanguages = "en" | "ja"
 const defaultLang = "en";
-const getBrowserLanguage = (): TranslationLanguages => {
+export const getBrowserLanguage = (): TranslationLanguages => {
     const l = (window.navigator.languages && window.navigator.languages[0]) ||
         window.navigator.language;
     if (l === "ja") return "ja";
@@ -102,6 +102,11 @@ export type transDescriptions =
     "EditRunTimeOnTimerPane" |
     "OffTime" |
     "NumOfTodosFuture" |
+    "InitialTodoWork" |
+    "InitialTodoStudy" |
+    "InitialTodoCleaning" |
+    "InitialTodoBreak" |
+    "InitialTodoEntertainment" |
     "UseCustomWeight" |
     "CustomWeightTips1" |
     "CustomWeightTips2" |
@@ -304,6 +309,16 @@ export class TLL {
                         return "休止時間"
                     case "NumOfTodosFuture":
                         return "サイコロを振った時に決まるToDoの数（1推奨）"
+                    case "InitialTodoWork":
+                        return "作業"
+                    case "InitialTodoStudy":
+                        return "勉強"
+                    case "InitialTodoCleaning":
+                        return "掃除"
+                    case "InitialTodoBreak":
+                        return "休憩"
+                    case "InitialTodoEntertainment":
+                        return "娯楽"
                     case "UseCustomWeight":
                         return "カスタムweightを有効化する"
                     case "CustomWeightTips1":
@@ -518,6 +533,16 @@ export class TLL {
                         return "Off time"
                     case "NumOfTodosFuture":
                         return "The number of todos determined when rolling a dice (1 is recommended)."
+                    case "InitialTodoWork":
+                        return "Work"
+                    case "InitialTodoStudy":
+                        return "Study"
+                    case "InitialTodoCleaning":
+                        return "Cleaning"
+                    case "InitialTodoBreak":
+                        return "Break"
+                    case "InitialTodoEntertainment":
+                        return "Entertainment"
                     case "UseCustomWeight":
                         return "Enable custom weight."
                     case "CustomWeightTips1":

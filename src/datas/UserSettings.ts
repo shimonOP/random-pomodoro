@@ -1,3 +1,4 @@
+import { getBrowserLanguage } from "../langs/TransLangs"
 import { Languages } from "../types/Languages"
 
 export type UserSettings = {
@@ -22,10 +23,10 @@ export type SubscriptionPlan = "free" | "standard" | "pro" | "business" | "educa
 export const createUserSettings = (data?: any) => {
     const userSettings: UserSettings = {
         name: "",
-        language: "english",
+        language: getBrowserLanguage() === "ja" ? "japanese" : "english",
         doAutoTimer: false,
         needSpeechNotify: true, // 後方互換性
-        needSpeechNotifyOnStart: true,
+        needSpeechNotifyOnStart: false,
         needSpeechNotifyOnEnd: true,
         doRestrictByTags: false,
         timerTags: [],
@@ -36,7 +37,7 @@ export const createUserSettings = (data?: any) => {
         todosFutureNum: 1,
         customWeightCode: "",
         useCustomWeight: false,
-        diceRollDuration: 1000, // デフォルト1秒
+        diceRollDuration: 500, // ms デフォルト1秒
     }
     if (data) {
         Object.assign(userSettings, data);
