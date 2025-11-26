@@ -6,3 +6,4 @@ how to deploy :
     - 失敗した場合はfirebase logout -> firebase login
       - 利用規約が変更されたときとかにそのままだと操作が許可されない
       - npm install -g firebase-tools
+      - Configure as a single-page app (rewrite all urls to /index.html)? Yes
