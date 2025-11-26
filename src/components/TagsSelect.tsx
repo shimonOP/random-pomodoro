@@ -1,4 +1,3 @@
-import { EmotionJSX } from "@emotion/react/types/jsx-namespace";
 import { Autocomplete, Box, Chip, IconButton, Popover, Stack, TextField } from "@mui/material";
 import React from "react";
 import { useState } from "react";
@@ -11,7 +10,7 @@ type TagsSelectProps = {
     handleDelete: (name: string) => void
     onChange: (text: string) => string
     placeHolder: string
-    icon: EmotionJSX.Element
+    icon: React.ReactElement
 }
 const Tag = (name: string, handleDelete: (name: string) => void) => {
     return (

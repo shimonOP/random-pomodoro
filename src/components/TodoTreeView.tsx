@@ -6,13 +6,13 @@ import { LightGreyColorCode, GreenColorCode, IndigoColorCode, Drawer_Width, Tree
 import { downloadString, getYYYYMMDD, mapToValueArray } from "../util";
 import StyledTreeItem from "./StyledTreeItem";
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { TreeView } from '@mui/lab';
 import { DrawerHeader, Todo_Archive_NodeID } from '../AppCore_';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useContext } from 'react';
 import { TLLContext } from '../App';
+import { SimpleTreeView } from '@mui/x-tree-view';
 
 export function TodoTreeView(props: {
   todos: Map<string, Todo>,
@@ -86,8 +86,8 @@ export function TodoTreeView(props: {
             onClickedLabel={() => {
               expandTreeView(todo.id, false, false);
             }}
-            onClick={(e) => {
-            }} className={'treeItem-' + todo.id} key={todo.id} nodeId={todo.id} labelText={label} style={{ color: labelColor }} makeTextLined={todo.isCompleted} >
+            onClick={() => {
+            }} className={'treeItem-' + todo.id} key={todo.id} itemId={todo.id} labelText={label} style={{ color: labelColor }} makeTextLined={todo.isCompleted} >
             {constructRecursionTree(children, type, userSettings)}
           </StyledTreeItem>
         );
@@ -101,12 +101,12 @@ export function TodoTreeView(props: {
     const todoTree = constructRecursionTree(rootTodosArray, "todo", userSettings);
     return todoTree;
   };
-  const treeViewOnFocused = (event: React.SyntheticEvent, id: string) => {
-    if (id === Todo_Archive_NodeID) {
+  const treeViewOnFocused = (_:React.SyntheticEvent | null, itemId: string) => {
+    if (itemId === Todo_Archive_NodeID) {
       return;
     }
 
-    const focused = getTodo(id, todos);
+    const focused = getTodo(itemId, todos);
 
     setFocusedTodo(focused)
   }
@@ -128,14 +128,13 @@ export function TodoTreeView(props: {
         {drawerOpen ? <ChevronLeftIcon /> : <ChevronRightIcon />}
       </IconButton>
     </DrawerHeader>
-    <TreeView
-      selected={focusedTodoID}
-      expanded={expandedTodos}
-      defaultExpanded={['root']}
-      defaultExpandIcon={null}
-      defaultCollapseIcon={null}
-      onNodeFocus={treeViewOnFocused}
-      onKeyUp={(e) => {
+    <SimpleTreeView
+      selectedItems={focusedTodoID}
+      expandedItems={expandedTodos}
+      defaultExpandedItems={['root']}
+      onItemFocus={treeViewOnFocused}
+      slots={{expandIcon: EmptyIcon, collapseIcon: EmptyIcon}}
+      onKeyUp={(e: React.KeyboardEvent) => {
         if (e.key === "ArrowRight") {
           expandTreeView(focusedTodoID, true, true);
         } else if (e.key === "ArrowLeft") {
@@ -145,7 +144,7 @@ export function TodoTreeView(props: {
       sx={{ flexGrow: 1, maxWidth: TreeView_MaxWidth, overflowY: 'auto' }}
     >
       {renderTree(todos, userSettings)}
-    </TreeView>
+    </SimpleTreeView>
     {todoCountsUI}
     <Stack paddingLeft={"5%"} direction={"row"} justifyContent={"left"}>
       <Button color='inherit' onClick={() => {
@@ -185,3 +184,4 @@ export function TodoTreeView(props: {
     </Stack>
   </Drawer>)
 }
+const EmptyIcon = () => <span />;

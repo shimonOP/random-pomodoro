@@ -30,3 +30,6 @@ src/firebase.ts
 test.html
 .firebaserc
 firebase.json
+
+#claude
+CLAUDE.md

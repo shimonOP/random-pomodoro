@@ -1,8 +1,7 @@
 import { Button, Stack } from '@mui/material';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { timeToString } from '../util';
 import { ElapsedTime_FontSize, GreenColorCode, ReminningTime_FontSize, RoyalBlueColorCode } from '../types/constants';
-import { EmotionJSX } from '@emotion/react/types/jsx-namespace';
 import { TimerState } from '../datas/TimerState';
 
 
@@ -104,7 +103,7 @@ export default function Timer(props: TimerProps) {
         >
             Done
         </Button>
-    const doneButton_tip = (button: EmotionJSX.Element) => button
+    const doneButton_tip = (button: React.ReactElement) => button
 
     const doneButton = timerEnable ? doneButton_tip(doneButton_core) : doneButton_core
     return (

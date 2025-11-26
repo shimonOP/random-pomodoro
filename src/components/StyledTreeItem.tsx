@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-import TreeItem, { TreeItemProps, treeItemClasses } from '@mui/lab/TreeItem';
+import { TreeItem, treeItemClasses } from '@mui/x-tree-view/TreeItem';
+import type { TreeItemProps } from '@mui/x-tree-view/TreeItem';
 import Typography from '@mui/material/Typography';
 import { Button } from '@mui/material';
 
@@ -41,7 +42,7 @@ const StyledTreeItemRoot = styled(TreeItem)(({ theme }) => ({
             fontWeight: 'inherit',
         },
     },
-    [`& .${treeItemClasses.group}`]: {
+    [`& .${treeItemClasses.groupTransition}`]: {
         [`& .${treeItemClasses.content}`]: {
         },
     },
