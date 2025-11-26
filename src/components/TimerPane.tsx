@@ -18,6 +18,7 @@ import Timer from "./Timer"
 import CasinoIcon from '@mui/icons-material/Casino';
 
 let lastNotifyTime: number = 0
+let hasNotifiedBrowser: boolean = false // ブラウザ通知を1回だけ表示するためのフラグ
 let doingAutoTimerStatus: "stable" | "doingAutoTimer" = "stable" // doAutoTimerを一回しか発生しないようにするためのもの。
 
 export function TimerPane(props: {
@@ -88,6 +89,7 @@ export function TimerPane(props: {
   const tll = useContext(TLLContext);
   useEffect(() => {
     doingAutoTimerStatus = "stable"
+    hasNotifiedBrowser = false // 新しいTODOが開始されたらフラグをリセット
   }, [runningTodo])
   const renderTitle = () => {
     let title: string;
@@ -198,9 +200,17 @@ export function TimerPane(props: {
           const now = Date.now()
           if (runningTodo !== undefined) {
             if (now - lastNotifyTime > 20 * 1000) {
+              // ブラウザ通知は最初の1回だけ
+              lastNotifyTime = now
+              if (!hasNotifiedBrowser) {
+                hasNotifiedBrowser = true
+                uniqueExecuter_notify.run(() => {
+                  Notifier.instance.notifyEndWithBrowser(runningTodo.displayTitle, userSettings.language, userSettings.notifyVolume);
+                })
+              }
+              // 2回目以降は音声通知のみ（20秒間隔）
               uniqueExecuter_notify.run(() => {
                 Notifier.instance.notifyEnd(runningTodo.displayTitle, userSettings.language, userSettings.notifyVolume);
-                lastNotifyTime = now
               })
             }
             if (userSettings.doAutoTimer && (doingAutoTimerStatus === "stable") && false) {//まだ不具合多数

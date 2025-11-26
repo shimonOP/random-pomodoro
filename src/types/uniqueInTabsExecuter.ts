@@ -7,7 +7,6 @@ export class UniqueInTabsExecuter {
         this.channelName = channelName
         this.channel = new BroadcastChannel(channelName)
         this.channel.onmessage = (msg) => {
-            console.log(msg)
             if (this.whose === "me")
                 return
             if (msg.data === "mine") {
