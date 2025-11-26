@@ -3,7 +3,7 @@ import { TodoRecord, } from "../datas/TodoRecord";
 import { Todo, TodoObject, isRoot, getOffSprings, getTodosArray, TodoRawValues } from '../datas/Todo';
 import { UserInfo } from "../datas/UserInfo";
 import { UserSettings } from '../datas/UserSettings';
-import { saveData, updateTodo, useDTDexieStates, updateTodos, } from '../db';
+import { saveData, updateTodo, useDTDexieStates, updateTodos, deleteTodoFromDB, } from '../db';
 import { TimerState, createTimerState } from "../datas/TimerState";
 import { TodoFuture } from "../datas/TodoPlan";
 import { TodoWeightCalculator } from "../types/calcTodoWeight";
@@ -105,7 +105,7 @@ export const useDiceTodoStates = () => {
         if (parent !== undefined) {
             breakPCRelation(parent, todo);
         }
-        todo.needDelete = true;
+        deleteTodoFromDB(todo.id);
     }
     useEffect(() => {
         if (checkCount !== undefined) {

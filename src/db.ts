@@ -72,8 +72,9 @@ export async function saveData(
         await db.todos.bulkPut(
             todoDatas
         );
+        const deletedIds = todos.filter(t => t.needDelete).map(t => t.id)
         await db.todos.bulkDelete(
-            todos.filter(t => t.needDelete).map(t => t.id)
+            deletedIds
         )
     }
     if (records !== undefined) {
@@ -106,6 +107,9 @@ export async function saveData(
             runningTodoID, "singleton"
         );
     }
+}
+export async function deleteTodoFromDB(id: string) {
+    await db.todos.delete(id)
 }
 export const updateTodos = async (updates: { id: string, property: Partial<TodoRawValues> }[]) => {
     const newTodos: Todo[] = []
