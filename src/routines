@@ -5,3 +5,4 @@ how to deploy :
   2. firebase deploy
     - 失敗した場合はfirebase logout -> firebase login
       - 利用規約が変更されたときとかにそのままだと操作が許可されない
+      - npm install -g firebase-tools
