@@ -16,6 +16,7 @@ export type UserSettings = {
     todosFutureNum: number
     customWeightCode: string,
     useCustomWeight: boolean,
+    diceRollDuration: number, // サイコロが回る秒数（ミリ秒単位）
 }
 export type SubscriptionPlan = "free" | "standard" | "pro" | "business" | "education"
 export const createUserSettings = (data?: any) => {
@@ -35,6 +36,7 @@ export const createUserSettings = (data?: any) => {
         todosFutureNum: 1,
         customWeightCode: "",
         useCustomWeight: false,
+        diceRollDuration: 1000, // デフォルト1秒
     }
     if (data) {
         Object.assign(userSettings, data);

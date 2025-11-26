@@ -68,6 +68,7 @@ export type transDescriptions =
     "SpeechLanguage" |
     "NotifyToDeskTop" |
     "Volume" |
+    "DiceRollDuration" |
     "AutoRoll" |
     "UseTags" |
     "Continue" |
@@ -215,10 +216,12 @@ export class TLL {
                         return "音声の言語"
                     case "NotifyToDeskTop":
                         return "デスクトップに通知する"
-                    case "AutoRoll":
-                        return "自動でサイコロを回す"
                     case "Volume":
                         return "ボリューム"
+                    case "DiceRollDuration":
+                        return "サイコロが回る秒数"
+                    case "AutoRoll":
+                        return "自動でサイコロを回す"
                     case "UseTags":
                         return "タグを使う"
                     case "SignOut":
@@ -427,10 +430,12 @@ export class TLL {
                         return "Language of speech"
                     case "NotifyToDeskTop":
                         return "Notify to desktop"
-                    case "AutoRoll":
-                        return "Auto Roll"
                     case "Volume":
                         return "Volume"
+                    case "DiceRollDuration":
+                        return "Dice roll duration"
+                    case "AutoRoll":
+                        return "Auto Roll"
                     case "UseTags":
                         return "Use tags"
                     case "SignOut":

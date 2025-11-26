@@ -53,6 +53,12 @@ export function TimerSettingsDialog(
             }}></Slider>
           </Stack>
           <Stack direction="row" spacing={8}>
+            <Typography >{tll.t("DiceRollDuration")}</Typography>
+            <Slider style={{ "width": "50%" }} value={userSettings.diceRollDuration} min={0} max={3000} step={100} onChange={(e, newValue) => {
+              setUserSettings({ ...userSettings, diceRollDuration: newValue as number });
+            }} valueLabelDisplay="auto" valueLabelFormat={(value) => `${value / 1000}s`}></Slider>
+          </Stack>
+          <Stack direction="row" spacing={8}>
             <Typography >{tll.t("AutoRoll")}</Typography>
             <Switch checked={userSettings.doAutoTimer} onChange={(e) => {
               setUserSettings({ ...userSettings, doAutoTimer: e.target.checked });

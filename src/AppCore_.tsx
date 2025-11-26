@@ -109,7 +109,7 @@ export const rollDice_ = (
           Notifier.instance.notifyStart(speechText, userSettings.language, userSettings.notifyVolume, true);
         }
       }
-    }, 1000)
+    }, userSettings.diceRollDuration)
   } else {
     setAddTodoHelpOpen(true);
     setTimeout(() => { setAddTodoHelpOpen(false) }, 2000)
