@@ -26,13 +26,19 @@ export default class Notifier {
 
     private showBrowserNotification(title: string, body: string) {
         if ('Notification' in window && this.notificationPermission === 'granted') {
-            new Notification(title, {
+            const notification = new Notification(title, {
                 body: body,
                 icon: '/favicon.ico',
                 badge: '/favicon.ico',
                 requireInteraction: false,
                 silent: true,
             });
+
+            // 通知をクリックしたときにタブにフォーカス
+            notification.onclick = () => {
+                window.focus();
+                notification.close();
+            };
         }
     }
 
