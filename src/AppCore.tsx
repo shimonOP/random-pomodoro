@@ -7,7 +7,7 @@ import { getWindowDimensions, withoutDuplicate, intervalToString } from './util'
 import { Settings } from '@mui/icons-material';
 import { Languages, languages, lang2TranslateLanguage } from './types/Languages';
 import TodoPane from './components/TodoPane';
-import { Document_Title, Font_Size, Card_PaddingX, Card_PaddingY, timerIntervalSliderMarks_day, timerIntervalSliderMarks_min } from './types/constants';
+import { Document_Title, Font_Size, Card_PaddingX, Card_PaddingY, timerIntervalSliderMarks_day, timerIntervalSliderMarks_min, Mobile_BreakPoint } from './types/constants';
 import ArchivePane from './components/ArchivePane';
 import { TLLContext } from './App';
 import KeyBoardShortCutHelp from './components/KeyBoardShortCutHelp';
@@ -42,7 +42,11 @@ export const AppCore = () => {
     } = useDiceTodoStates()
     const focusedTodoID = focusedTodo ? focusedTodo.id : "";
     const thisRef = React.useRef<HTMLDivElement>(null);
-    const [drawerOpen, setDrawerOpen] = React.useState(true);
+    // モバイルデバイスではSidebarを初期状態で非表示にする
+    const [drawerOpen, setDrawerOpen] = React.useState(() => {
+        const { width } = getWindowDimensions();
+        return width > Mobile_BreakPoint;
+    });
     const [addMenuAnchorEl, setAddMenuAnchorEl] = React.useState<null | HTMLElement>(null);
     const [addTodoHelpOpen, setAddTodoHelpOpen] = React.useState(false);
     const focusedTodoTitleRef = React.useRef<HTMLDivElement>(null);
