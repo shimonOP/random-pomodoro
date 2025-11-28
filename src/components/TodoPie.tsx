@@ -1,6 +1,9 @@
 import {Todo} from '../datas/Todo';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Max_Pie_Todos } from '../types/constants';
+import { PieChart } from '@mui/icons-material';
+import { MyPieChart } from './MyPieChart';
+
 
 interface TodoPieProps {
     todos: Todo[]
@@ -50,6 +53,7 @@ export default function TodoPie(props: TodoPieProps) {
     };
     return (
         // <Pie data={data} options={options}></Pie>
-        <></>
+        <MyPieChart labels={labels} values={weights} />
+        // <></>
     );
 }

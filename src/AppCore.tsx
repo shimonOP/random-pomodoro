@@ -407,21 +407,36 @@ export const AppCore = () => {
         setFileImportDialogOpen(false);
     }
     const renderFileImportModal = () => {
-        const fileTypes = ["json"];
-        const handleChange = async (file: File) => {
-            const text = await file.text()
-            loadDataFromText(text);
-        };
-        return (
-            <Dialog onClose={handleFileImportDialogClose} open={fileImportDialogOpen} >
-                <DialogContent dividers>
-                    <Stack direction="column" spacing={2} sx={{ width: 400, height: 500 }}>
-                        {/* <FileUploader handleChange={handleChange} name="file" types={fileTypes} /> */}
-                    </Stack>
-                </DialogContent>
-            </Dialog>
-        );
-    }
+    const fileTypes = ["json"];
+
+    const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const text = await file.text();
+        loadDataFromText(text);  // ← 元の処理そのまま
+    };
+
+    return (
+        <Dialog onClose={handleFileImportDialogClose} open={fileImportDialogOpen}>
+            <DialogContent dividers>
+                <Stack direction="column" spacing={2} sx={{ width: 400, height: 500 }}>
+
+                    <Button variant="contained" component="label">
+                        ファイルを選択
+                        <input
+                            type="file"
+                            accept="application/json"
+                            hidden
+                            onChange={handleChange}
+                        />
+                    </Button>
+
+                </Stack>
+            </DialogContent>
+        </Dialog>
+    );
+}
     const archivePane =
         <ArchivePane
             todos={todos}
