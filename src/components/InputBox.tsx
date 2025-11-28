@@ -1,9 +1,11 @@
-import { TextField } from "@mui/material";
 const InputBox = () => {
     return (
-        <>
-            <TextField id="outlined-basic" label="Command" variant="outlined" />
-        </>
+        <input
+            id="outlined-basic"
+            type="text"
+            placeholder="Command"
+            className="input input-bordered w-full"
+        />
     );
 }
 export default InputBox;

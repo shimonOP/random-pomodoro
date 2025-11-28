@@ -1,5 +1,4 @@
 import { Add, Download, Remove, Start } from "@mui/icons-material"
-import { Link, Tooltip, Card, Stack, Typography, Slider, Box, Button, SxProps, Theme } from "@mui/material"
 import { Card_PaddingX, Card_PaddingY, GreenColorCode, IntervalInTimer_Height, TimerTitle_FontSize, TodayTotalTimeR_FontSize, TodayTotalTime_FontSize, timerRuntimeSliderMarks } from "../types/constants"
 import { extractTime, probsToString, timeToString } from "../util"
 import { todaysTotal, uniqueExecuter_notify, uniqueExecuter_autoDoTimer } from "../AppCore_"
@@ -108,63 +107,59 @@ export function TimerPane(props: {
     const fsize = TimerTitle_FontSize(title);
 
     return (
-      <Stack minHeight={50} maxHeight={50} justifyContent="center">
-        <button className="btn btn-primary" onClick={() => {
-          setFocusedTodo(runningTodo)
-          if (runningTodo) expandTreeView(runningTodo.id, true, true);
-        }} disabled={!Boolean(runningTodo)}>
-          <Typography sx={sx} color={"inherit"} fontSize={fsize} >{title}</Typography>
+      <div style={{ minHeight: 50, maxHeight: 50, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <button
+          className="btn btn-primary"
+          onClick={() => {
+            setFocusedTodo(runningTodo)
+            if (runningTodo) expandTreeView(runningTodo.id, true, true);
+          }}
+          disabled={!Boolean(runningTodo)}
+          style={sx}
+        >
+          <span style={{ fontSize: fsize }}>{title}</span>
         </button>
-      </Stack>
+      </div>
     )
 
   }
   const renderInfo_r = () => {
     const container = (contain: JSX.Element) => (
-      <Box
-        minHeight={15}
-        maxHeight={15}
-      >{contain}</Box>)
+      <div
+        style={{ minHeight: 15, maxHeight: 15 }}
+      >{contain}</div>)
     if (runningTodo) {
       return container(
-        <Box
-          sx={{
+        <div
+          style={{
             textAlign: "left",
             color: "#00000099",
             fontSize: TodayTotalTimeR_FontSize
           }}>
           {todaysTotal(runningTodo, records) + ", " + probsToString(rProbs)}
-        </Box>
+        </div>
       )
     }
     return container(<></>)
   }
   const notUntilUI =
-    <Box minHeight={IntervalInTimer_Height} maxHeight={IntervalInTimer_Height}>
-      <Typography sx={{ m: 2 }} color={GreenColorCode}>{intervalString}</Typography>
-    </Box>;
+    <div style={{ minHeight: IntervalInTimer_Height, maxHeight: IntervalInTimer_Height }}>
+      <div style={{ margin: '0.5rem', color: GreenColorCode }}>{intervalString}</div>
+    </div>;
   const renderRollDiceButton = () => {
     return (
-      <Tooltip title={
-        <Stack spacing={0.3} direction={"column"} justifyContent={"center"}>
-          <Link textAlign={"center"} style={{ color: "white" }} component={"button"} onClick={() => { rollDice() }}>{tll.t("RollDice")}</Link>
-        </Stack>}>
-        <Box >
-          <Button
-            fullWidth
-            disableRipple={true}
-            color="secondary"
-            onClick={async () => {
-              rollDice();
-            }}
-            style={{}}
-          >
-            <RollDiceIcon
-              isRolling={isDiceRolling}
-            ></RollDiceIcon>
-          </Button>
-        </Box>
-      </Tooltip>
+      <div className="tooltip" data-tip={tll.t("RollDice")}>
+        <button
+          className="btn btn-secondary w-full"
+          onClick={async () => {
+            rollDice();
+          }}
+        >
+          <RollDiceIcon
+            isRolling={isDiceRolling}
+          ></RollDiceIcon>
+        </button>
+      </div>
     )
   }
   const renderTimer = () => {
@@ -242,13 +237,13 @@ export function TimerPane(props: {
     const hour = extractTime(sumMin, "minutes", "hours");
     const min = extractTime(sumMin, "minutes", "minutes");
     const displayStr = "Today: " + hour + "h" + min + "m"
-    return (<Typography fontSize={TodayTotalTime_FontSize}>
+    return (<div style={{ fontSize: TodayTotalTime_FontSize }}>
       {displayStr}
-    </Typography>)
+    </div>)
   }
   const tagsSelect = (
     userSettings.doRestrictByTags ?
-      <Stack >
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
         <TagsSelect
           labelWhenTagsEmpty='*all'
           placeHolder='Inclusion Tags'
@@ -281,16 +276,14 @@ export function TimerPane(props: {
           allTags={tags}
           icon={<Remove></Remove>}
         ></TagsSelect>
-      </Stack> :
+      </div> :
       <></>
   )
   const renderBreadCrumbs = () => {
     const container = (contain: JSX.Element) => (
-      <Box
-        marginTop={2}
-        minHeight={20}
-        maxHeight={20}
-      >{contain}</Box>)
+      <div
+        style={{ marginTop: '0.5rem', minHeight: 20, maxHeight: 20 }}
+      >{contain}</div>)
     const breads = <TodoBreadCrumbs
       todo={runningTodo}
       todos={todos}
@@ -305,27 +298,31 @@ export function TimerPane(props: {
     return (
       container(
         runningTodo ? breads :
-          <Stack direction="row" spacing={1} justifyContent={"center"}>
+          <div style={{ display: 'flex', flexDirection: 'row', gap: '0.25rem', justifyContent: 'center', alignItems: 'center' }}>
             {breads}
-            {<Box sx={{ textAlign: "center" }}>click <CasinoIcon color="secondary"></CasinoIcon> to start</Box>}
+            <div style={{ textAlign: "center" }}>click <CasinoIcon color="secondary"></CasinoIcon> to start</div>
             {breads}
-          </Stack>
+          </div>
       )
     )
   }
   return (
-    <Card key="dt-timer" variant="elevation" elevation={0} sx={{
+    <div key="dt-timer" className="card bg-base-100 border border-base-300" style={{
       margin: "0px !important",
-      paddingX: Card_PaddingX, paddingTop: Card_PaddingY, paddingBottom: Card_PaddingY,
+      paddingLeft: Card_PaddingX,
+      paddingRight: Card_PaddingX,
+      paddingTop: Card_PaddingY,
+      paddingBottom: Card_PaddingY,
       height: "auto",
-      borderWidth: 0.5,
-      borderColor: "#BBB",
     }}>
-      <Stack direction={'row'} justifyContent={'center'} >
-        <Stack
-          direction={'column'}
-          sx={{ textAlign: "center" }}
-          width={timerPaneWidth}
+      <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            textAlign: "center",
+            width: timerPaneWidth
+          }}
         >
           {renderBreadCrumbs()}
           {renderTitle()}
@@ -337,89 +334,81 @@ export function TimerPane(props: {
           {tagsSelect}
           {
             userSettings.editRuntimeOnTimerPane ?
-              <Stack>
-                {<Typography textAlign={"center"}> {tll.t("RunTime")} </Typography>}
-                {
-                  <Slider
-                    disabled={!runningTodo}
-                    max={60}
-                    min={- 1
+              <div>
+                <div style={{ textAlign: "center" }}> {tll.t("RunTime")} </div>
+                <input
+                  type="range"
+                  disabled={!runningTodo}
+                  max={60}
+                  min={-1}
+                  step={1}
+                  value={runningTodo ? sliderRunTime : -1}
+                  className="range range-sm"
+                  onChange={(event) => {
+                    if (!runningTodo) {
+                      return
                     }
-                    step={1}
-                    marks={timerRuntimeSliderMarks}
-                    value={runningTodo ? sliderRunTime : -1}
-                    valueLabelDisplay='auto'
-                    valueLabelFormat={(num) => num < 0 ? "default" : num.toString()
-                    }
-                    onChange={(event, value) => {
-                      if (!runningTodo) {
-                        return
-                      }
-                      if (typeof (value) === "number") {
-                        setSliderRunTime(value)
-                        const runTime_sec = value < 0 ? runningTodo.runTime : value * 60
-                        setTimerState({ ...timerState, remainTime: runTime_sec })
-                      }
-                    }}> </Slider>
-                }
-              </Stack>
+                    const value = Number(event.target.value)
+                    setSliderRunTime(value)
+                    const runTime_sec = value < 0 ? runningTodo.runTime : value * 60
+                    setTimerState({ ...timerState, remainTime: runTime_sec })
+                  }}
+                />
+              </div>
               : null
           }
-          <Box height={20}> </Box>
+          <div style={{ height: 20 }}> </div>
           {
             userSettings.editIntervalOnTimerPane ?
-              <Stack>
-                <Stack direction={"row"} justifyContent={"center"} >
-                  <Tooltip title={
-                    <Stack>
-                      {< Link color={"inherit"} underline='none' component={"button"} onClick={() => {
+              <div>
+                <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}>
+                  <div className="tooltip" data-tip={tll.t("UpdateIntervalBySliderInterval")}>
+                    <button
+                      className="btn btn-ghost btn-xs"
+                      onClick={() => {
                         if (runningTodo) {
                           const rInterval = sliderInterval < 0 ?
                             runningTodo.defaultInterval :
                             sliderInterval * sliderIntervalCoeff
                           setTodoParameter(runningTodo?.id, { interval: (Date.now() - runningTodo.lastRunDateTime) / 1000 + rInterval })
                         }
-                      }
-                      }> {tll.t("UpdateIntervalBySliderInterval")} </Link>}
-                    </Stack>}>
-                    {
-                      <Typography textAlign={"center"}> {tll.t("Interval")} </Typography>}
-                  </Tooltip>
-                  {
-                    <Link color={"inherit"} underline='none' component={"button"} onClick={() => {
+                      }}
+                    >
+                      {tll.t("Interval")}
+                    </button>
+                  </div>
+                  <button
+                    className="btn btn-ghost btn-xs"
+                    onClick={() => {
                       setSliderInterval(-1)
                       setSliderIntervalUnit(sliderIntervalUnit === "Min" ? "Day" : "Min")
-                    }
-                    }> {" " + tll.t("(") + tll.t(sliderIntervalUnit) + tll.t(")")} </Link>}
-                </Stack>
-                {
-                  <Slider
-                    max={sliderIntervalMax}
-                    min={- 1
-                    }
-                    disabled={!runningTodo
-                    }
-                    step={1}
-                    marks={timerIntervalSliderMarks}
-                    value={runningTodo ? sliderInterval : -1}
-                    valueLabelFormat={(num) => num < 0 ? "default" : num.toString()
-                    }
-                    valueLabelDisplay='auto'
-                    onChange={(event, value) => {
-                      if (!runningTodo) return
-                      if (typeof (value) === "number") {
-                        setSliderInterval(value)
-                      }
-                    }}> </Slider>
-                }
-              </Stack>
+                    }}
+                  >
+                    {" " + tll.t("(") + tll.t(sliderIntervalUnit) + tll.t(")")}
+                  </button>
+                </div>
+                <input
+                  type="range"
+                  max={sliderIntervalMax}
+                  min={-1}
+                  disabled={!runningTodo}
+                  step={1}
+                  value={runningTodo ? sliderInterval : -1}
+                  className="range range-sm"
+                  onChange={(event) => {
+                    if (!runningTodo) return
+                    const value = Number(event.target.value)
+                    setSliderInterval(value)
+                  }}
+                />
+              </div>
               : null
           }
-          <Stack marginTop={3} direction={"row"} >
+          <div style={{ marginTop: '0.75rem', display: 'flex', flexDirection: 'row', gap: '0.5rem' }}>
             {settingsButton}
             {
               runningTodo &&
-              <Button style={{ color: "grey", paddingBottom: 3 }} onClick={() => {//paddingBottom: 3 is for settingicon 
+              <button className="btn btn-ghost" style={{ color: "grey", paddingBottom: 3 }} onClick={() => {//paddingBottom: 3 is for settingicon
                 const todoFutures_new = [...todoFutures]
                 const elapsedTime = (timerState.timeAtStarted ? Date.now() - timerState.timeAtStarted : 0) + timerState.elapsedTimeUntilLastPaused
                 todoFutures_new.unshift({ idOfTodo: runningTodo.id, probs: [], elapsedTime })
@@ -427,34 +416,34 @@ export function TimerPane(props: {
                 setTimerState({ elapsedTimeUntilLastPaused: 0, timeAtStarted: null, remainTime: 0 })
                 setRunningTodo_withProc(undefined, true, false);
               }
-              }> <Download /></Button >}
-          </Stack>
-          < Stack style={{ "marginTop": "16px" }}>
-            {userSettings.todosFutureNum > 1 ? <Typography variant="subtitle1"> Next TodoList</ Typography > : null}
+              }> <Download /></button>}
+          </div>
+          <div style={{ marginTop: "1rem" }}>
+            {userSettings.todosFutureNum > 1 ? <div className="text-lg font-semibold"> Next TodoList</div> : null}
             {
               todoFutures.flatMap((tf, idx) => {
                 const t = todos.get(tf.idOfTodo)
                 return t ? [
-                  <Stack key={"todo-future-stack-" + idx} direction={"row"} justifyContent={"stretch"} >
-                    <Button onClick={(event) => {
+                  <div key={"todo-future-stack-" + idx} style={{ display: 'flex', flexDirection: 'row', justifyContent: 'stretch', gap: '0.5rem', alignItems: 'center' }}>
+                    <button className="btn btn-ghost flex-1" onClick={(event) => {
                       setFocusedTodo(t)
                       expandTreeView(t.id, true, true);
-                    }}> {t.displayTitle} </Button>
-                    < Stack justifyContent={"center"} > {timeToString(tf.elapsedTime)} </Stack>
-                    < Button onClick={(event) => {
+                    }}> {t.displayTitle} </button>
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}> {timeToString(tf.elapsedTime)} </div>
+                    <button className="btn btn-ghost" onClick={(event) => {
                       const todoFutures_new = todoFutures.filter((_, i) => i !== idx)
                       setTodoFutures(todoFutures_new)
                       setRunningTodo_withProc(t, true, false);
                       setTimerState({ elapsedTimeUntilLastPaused: tf.elapsedTime, timeAtStarted: Date.now(), remainTime: t.runTime })
                     }
-                    }> <Start></Start></Button >
-                  </Stack>
+                    }> <Start></Start></button>
+                  </div>
                 ] : []
               })
             }
-          </Stack>
-        </Stack >
-      </Stack>
-    </Card>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
