@@ -132,7 +132,7 @@ export const AppCore = () => {
         shortCutKeyToFunc.set(rollDiceSCK, async () => { rollDice() })
         shortCutKeyToFunc.set(
             doneSCK, async () => {
-                if (isDiceRolling) {
+                if(isDiceRolling){
                     return
                 }
                 done(calcElapsedTime(timerState))
@@ -171,8 +171,8 @@ export const AppCore = () => {
     // ブラウザタグの文字列を変更する処理
     useEffect(function updateTitle() {
         document.title =
-            !runningTodo ? Document_Title :
-                document.title
+                !runningTodo ? Document_Title :
+                    document.title
     }, [runningTodo])
     useEffect(() => {
         if (willExpandTreeLateId) {
@@ -282,7 +282,7 @@ export const AppCore = () => {
         }
     }
     function done(elapsedTime: number) {
-        if (isDiceRolling) return;
+        if(isDiceRolling) return;
         done_(
             elapsedTime,
             runningTodo, sliderInterval, sliderIntervalCoeff, todos,
@@ -407,36 +407,36 @@ export const AppCore = () => {
         setFileImportDialogOpen(false);
     }
     const renderFileImportModal = () => {
-        const fileTypes = ["json"];
+    const fileTypes = ["json"];
 
-        const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-            const file = e.target.files?.[0];
-            if (!file) return;
+    const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
 
-            const text = await file.text();
-            loadDataFromText(text);  // ← 元の処理そのまま
-        };
+        const text = await file.text();
+        loadDataFromText(text);  // ← 元の処理そのまま
+    };
 
-        return (
-            <Dialog onClose={handleFileImportDialogClose} open={fileImportDialogOpen}>
-                <DialogContent dividers>
-                    <Stack direction="column" spacing={2} sx={{ width: 400, height: 500 }}>
+    return (
+        <Dialog onClose={handleFileImportDialogClose} open={fileImportDialogOpen}>
+            <DialogContent dividers>
+                <Stack direction="column" spacing={2} sx={{ width: 400, height: 500 }}>
 
-                        <Button variant="contained" component="label">
-                            ファイルを選択
-                            <input
-                                type="file"
-                                accept="application/json"
-                                hidden
-                                onChange={handleChange}
-                            />
-                        </Button>
+                    <Button variant="contained" component="label">
+                        ファイルを選択
+                        <input
+                            type="file"
+                            accept="application/json"
+                            hidden
+                            onChange={handleChange}
+                        />
+                    </Button>
 
-                    </Stack>
-                </DialogContent>
-            </Dialog>
-        );
-    }
+                </Stack>
+            </DialogContent>
+        </Dialog>
+    );
+}
     const archivePane =
         <ArchivePane
             todos={todos}

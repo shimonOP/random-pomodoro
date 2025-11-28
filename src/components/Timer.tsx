@@ -111,12 +111,15 @@ export default function Timer(props: TimerProps) {
             <Stack direction={"column"} sx={{ flexGrow: 1 }}>
                 {renderTime()}
                 <Stack marginTop={1} direction={"row"} justifyContent={"space-evenly"}>
-                    <button
-                        className="btn btn-outline"
+                    <Button
+                        size='small'
                         disabled={!timerEnable}
+                        variant='outlined'
+                        disableElevation
+                        disableRipple
                         onClick={() => {
                             reset(now);
-                        }}>Reset</button>
+                        }}>Reset</Button>
                     {doneButton}
                 </Stack>
             </Stack>
