@@ -3,10 +3,10 @@
 import { useContext, useEffect, useState } from "react";
 import { Box, IconButton, css } from '@mui/material';
 import CopyAllIcon from '@mui/icons-material/CopyAll';
-import { useSnackbar } from "notistack";
 import { TLLContext } from "../App";
 import { Editor, useMonaco } from "@monaco-editor/react";
 import { set } from "lodash";
+import toast from "react-hot-toast";
 
 type MemoTextAreaProps = {
     disabled: boolean
@@ -18,7 +18,6 @@ const MemoTextArea = (props: MemoTextAreaProps) => {
     const { disabled, todo_id: id, text, onChanged} = props;
     let [monacoValue, setMonacoValue] = useState("")
     const monaco = useMonaco();
-    const { enqueueSnackbar } = useSnackbar();
     const tll = useContext(TLLContext);
     useEffect(() => {
         //画面遷移しようとする前に確認ダイアログを出す.
@@ -43,7 +42,7 @@ const MemoTextArea = (props: MemoTextAreaProps) => {
                 }
             `} sx={{ position: "absolute", right: 0, opacity: 0, zIndex: 100 }} onClick={(e) => {
                     navigator.clipboard.writeText(monacoValue)
-                    enqueueSnackbar(tll.t("CopySuccess"), { variant: "success" });
+                    toast.success(tll.t("CopySuccess"));
                 }}><CopyAllIcon></CopyAllIcon></IconButton>
             <Editor
                 css={css`

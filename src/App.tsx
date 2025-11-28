@@ -2,7 +2,6 @@
 import { createTheme, CssBaseline, ThemeProvider } from '@mui/material';
 import { orange } from '@mui/material/colors';
 import './App.css';
-import { SnackbarProvider, } from 'notistack';
 import { AppCore } from './AppCore';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import TermsOfServicePage from './pages/TermsOfServicePage';
@@ -44,7 +43,6 @@ function App() {
   theme.palette.background.default = "whitesmoke";
 
   return (
-    <SnackbarProvider>
       <TLLContext.Provider value={new TLL(browserLanguage)}>
         <ThemeProvider theme={theme}>
           <CssBaseline />
@@ -63,7 +61,6 @@ function App() {
           </BrowserRouter>
         </ThemeProvider>
       </TLLContext.Provider>
-    </SnackbarProvider>
   )
 }
 

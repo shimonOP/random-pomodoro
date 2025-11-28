@@ -13,8 +13,6 @@ import { TLLContext } from './App';
 import KeyBoardShortCutHelp from './components/KeyBoardShortCutHelp';
 import { todoWeightCalculator_view, useDiceTodoStates } from './hooks/useDiceTodoStates';
 import { addBrotherSCK, addChildSCK, addTodoInboxSCK, changeFCompleteSCK, changeRCompleteSCK, doneSCK, rollDiceSCK, shortCutKeyToFunc, showKeyBoardShortCutKeyHelpSCK, showSearchTodoDialogSCK, useShortCutKeys } from './hooks/useShortCutKeys';
-import { FileUploader } from 'react-drag-drop-files';
-import { updateTodo } from './db';
 import { SearchTodoDialog } from './components/SearchTodoDialog';
 import DateTimeNow from './components/DateTimeNow';
 import { Main, addTodoToInboxButton_ID, calcAppContentLayout, done_, rollDice_ } from './AppCore_';
@@ -418,7 +416,7 @@ export const AppCore = () => {
             <Dialog onClose={handleFileImportDialogClose} open={fileImportDialogOpen} >
                 <DialogContent dividers>
                     <Stack direction="column" spacing={2} sx={{ width: 400, height: 500 }}>
-                        <FileUploader handleChange={handleChange} name="file" types={fileTypes} />
+                        {/* <FileUploader handleChange={handleChange} name="file" types={fileTypes} /> */}
                     </Stack>
                 </DialogContent>
             </Dialog>

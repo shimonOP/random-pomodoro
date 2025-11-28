@@ -1,5 +1,4 @@
 import {Todo} from '../datas/Todo';
-import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 import { Max_Pie_Todos } from '../types/constants';
 
@@ -50,6 +49,7 @@ export default function TodoPie(props: TodoPieProps) {
         ],
     };
     return (
-        <Pie data={data} options={options}></Pie>
+        // <Pie data={data} options={options}></Pie>
+        <></>
     );
 }
