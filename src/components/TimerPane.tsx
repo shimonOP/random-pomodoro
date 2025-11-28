@@ -109,12 +109,12 @@ export function TimerPane(props: {
 
     return (
       <Stack minHeight={50} maxHeight={50} justifyContent="center">
-        <Button disableRipple onClick={() => {
+        <button className="btn btn-primary" onClick={() => {
           setFocusedTodo(runningTodo)
           if (runningTodo) expandTreeView(runningTodo.id, true, true);
         }} disabled={!Boolean(runningTodo)}>
           <Typography sx={sx} color={"inherit"} fontSize={fsize} >{title}</Typography>
-        </Button>
+        </button>
       </Stack>
     )
 
