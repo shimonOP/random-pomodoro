@@ -306,9 +306,6 @@ export const AppCore = () => {
                         expandTreeView(todo.id, true, true);
                     }}
                     titleRef={focusedTodoTitleRef}
-                    onBeforeUnloadMemo={(value: { id: string, text: string }) => {
-                        updateTodo(value.id, { memo: value.text })
-                    }}
                     focusedOrRunning='focused'
                     setTodoParameter={setTodoParameter}
                     addBrotherProcess={addBrotherOfFocusedTodo}

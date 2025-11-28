@@ -6,41 +6,24 @@ import CopyAllIcon from '@mui/icons-material/CopyAll';
 import { useSnackbar } from "notistack";
 import { TLLContext } from "../App";
 import { Editor, useMonaco } from "@monaco-editor/react";
+import { set } from "lodash";
 
-type Value = { id: string, text: string }
 type MemoTextAreaProps = {
     disabled: boolean
-    id: string
+    todo_id: string
     text: string
-    onBlur: (value: Value) => void
-    onBeforeUnload: (value: Value) => void
+    onChanged: (newText: string) => void
 }
-let tempValue: Value = { id: "", text: "" }  //onuploadではreactstateが参照できない
 const MemoTextArea = (props: MemoTextAreaProps) => {
-    const { disabled, id, text, onBlur, onBeforeUnload } = props;
+    const { disabled, todo_id: id, text, onChanged} = props;
     let [monacoValue, setMonacoValue] = useState("")
     const monaco = useMonaco();
-    const setValue_wrap = (value: Value) => {
-        tempValue = value
-        return setMonacoValue(value.text)
-    }
     const { enqueueSnackbar } = useSnackbar();
     const tll = useContext(TLLContext);
-    useEffect(() => {
-        if (monaco) {
-            //add blur event
-            monaco.editor.getEditors().forEach((editor) => {
-                editor.onDidBlurEditorText(() => {
-                    onBlur(tempValue)
-                })
-            })
-        }
-    }, [monaco])
     useEffect(() => {
         //画面遷移しようとする前に確認ダイアログを出す.
         const setonbefore = () => {
             const onbefore = function () {
-                onBeforeUnload(tempValue)
                 //Chromeでは動かない.デフォルトの文言が表示される.
                 return 'OK?';
             };
@@ -49,7 +32,7 @@ const MemoTextArea = (props: MemoTextAreaProps) => {
         setonbefore();
     }, [])
     useEffect(() => {
-        setValue_wrap({ id, text })
+        setMonacoValue(text)
     }, [id, text])
     return (
         <Box position={"relative"} /*relativeにしないとボタンがはみ出す */ >
@@ -69,7 +52,7 @@ const MemoTextArea = (props: MemoTextAreaProps) => {
                     `}
                 onChange={(monacoValue) => {
                     if (monacoValue !== undefined) {
-                        setValue_wrap({ id, text: monacoValue })
+                        onChanged(monacoValue)
                     }
                 }}
                 options={{

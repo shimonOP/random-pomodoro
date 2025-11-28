@@ -33,7 +33,6 @@ type TodoPaneProps = {
     restoreFromTrashButtonClicked: () => void
     deleteButtonClicked: () => void
     titleRef: React.RefObject<HTMLDivElement>
-    onBeforeUnloadMemo: (value: { id: string, text: string }) => void
     setFocused2RunningButtonClicked: () => void
     setPCRelation: (parent: Todo | undefined, child: Todo) => void
     calcWeight: (todo: Todo) => number
@@ -72,7 +71,6 @@ const TodoPane = (props: TodoPaneProps) => {
         restoreFromTrashButtonClicked: restoreFromTrashClicked,
         deleteButtonClicked,
         titleRef,
-        onBeforeUnloadMemo,
         setFocused2RunningButtonClicked,
         setPCRelation,
         calcWeight,
@@ -379,7 +377,7 @@ const TodoPane = (props: TodoPaneProps) => {
         return (
             <Stack direction={"row"} position={"relative"}>
                 <Link component={"button"} color={isInInterval(todo, now) ? GreenColorCode : "inherit"} underline='none'
-                    onClick={(event:React.MouseEvent) => {
+                    onClick={(event: React.MouseEvent) => {
                         setEditNotUntilAnchor(event.currentTarget);
                     }}>{notUntilStr}</Link>
                 <div style={{ position: "absolute", right: 0 }}>{lastRunStr}</div>
@@ -613,13 +611,14 @@ const TodoPane = (props: TodoPaneProps) => {
                     {renderTotal()}
                 </Box>
                 <MemoTextArea
-                    onBeforeUnload={onBeforeUnloadMemo}
                     disabled={!Boolean(todo)}
-                    id={todo.id}
+                    todo_id={todo.id}
                     text={todo.memo}
-                    onBlur={(value) => {
-                        setTodoParameter(value.id, { memo: value.text })
-                    }}
+                    onChanged={
+                        (newText: string) => {
+                                setTodoParameter(todo.id, { memo: newText })
+                        }
+                    }
                 />
                 <TagsInputField
                     tags={tags}
