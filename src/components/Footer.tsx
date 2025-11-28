@@ -1,10 +1,12 @@
+import { Box } from '@mui/material';
 import Copyright from './Copyright';
-
 const Footer = () => {
     return (
-        <div style={{ padding: '3.75rem' }}>
+        <Box sx={{
+            p:15
+        }}>
             <Copyright></Copyright>
-        </div>
+        </Box>
     );
 }
 export default Footer;

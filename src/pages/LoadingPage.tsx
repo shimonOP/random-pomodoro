@@ -1,10 +1,15 @@
+
+import { CircularProgress, Stack, Typography } from "@mui/material";
+
 const LoadingPage = () => {
     return (
-        <div style={{ display: 'flex', flexDirection: 'column', height: 500, justifyContent: 'center' }}>
-            <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-                <span className="loading loading-spinner loading-lg"></span>
-            </div>
-        </div>
+        <>
+            <Stack direction={"column"} height={500} justifyContent="center">
+                <Stack direction={"row"} justifyContent="center">
+                    <CircularProgress></CircularProgress>
+                </Stack>
+            </Stack>
+        </>
     );
 }
 export default LoadingPage;

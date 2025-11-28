@@ -1,13 +1,17 @@
+import { Typography } from "@mui/material";
+import { Link } from "@mui/material";
 const Copyright = () => {
     return (
-        <div className="text-sm text-base-content/70 text-center">
-            {'Copyright © '}
-            <a className="link" href="#">
-                All Right Reserved
-            </a>{' '}
-            {new Date().getFullYear()}
-            {'.'}
-        </div>
+        <>
+            <Typography variant="body2" color="text.secondary" align="center" >
+                {'Copyright © '}
+                <Link color="inherit" href="#">
+                    All Right Reserved
+                </Link>{' '}
+                {new Date().getFullYear()}
+                {'.'}
+            </Typography>
+        </>
     );
 }
 export default Copyright;

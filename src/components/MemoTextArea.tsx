@@ -1,7 +1,7 @@
 /* eslint-disable react/react-in-jsx-scope -- Unaware of jsxImportSource */
 /** @jsxImportSource @emotion/react */
 import { useContext, useEffect, useState } from "react";
-import { css } from '@emotion/react';
+import { Box, IconButton, css } from '@mui/material';
 import CopyAllIcon from '@mui/icons-material/CopyAll';
 import { TLLContext } from "../App";
 import { Editor, useMonaco } from "@monaco-editor/react";
@@ -34,27 +34,21 @@ const MemoTextArea = (props: MemoTextAreaProps) => {
         setMonacoValue(text)
     }, [id, text])
     return (
-        <div style={{ position: "relative" }} /*relativeにしないとボタンがはみ出す */ >
-            <button
-                className="btn btn-ghost btn-sm"
-                css={css`
-                    &:hover {
-                        opacity: 0.5;
-                    }
-                `}
-                style={{ position: "absolute", right: 0, opacity: 0, zIndex: 100 }}
-                onClick={(e) => {
+        <Box position={"relative"} /*relativeにしないとボタンがはみ出す */ >
+            <IconButton css={
+                css`
+                &:hover {
+                    opacity: 50;
+                }
+            `} sx={{ position: "absolute", right: 0, opacity: 0, zIndex: 100 }} onClick={(e) => {
                     navigator.clipboard.writeText(monacoValue)
                     toast.success(tll.t("CopySuccess"));
-                }}
-            >
-                <CopyAllIcon></CopyAllIcon>
-            </button>
+                }}><CopyAllIcon></CopyAllIcon></IconButton>
             <Editor
                 css={css`
                     border: 1px solid #d9d9d9;
                     border-radius: 5px;
-                `}
+                    `}
                 onChange={(monacoValue) => {
                     if (monacoValue !== undefined) {
                         onChanged(monacoValue)
@@ -77,7 +71,7 @@ const MemoTextArea = (props: MemoTextAreaProps) => {
                 width="100%"
                 value={monacoValue}
             />
-        </div>
+        </Box>
     );
 }
 export default MemoTextArea;

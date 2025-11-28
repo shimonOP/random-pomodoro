@@ -1,13 +1,34 @@
+import { Link, Tooltip, Stack, Button, Box, IconButton, Menu, Toolbar, styled, MenuItem } from "@mui/material";
 import { Todo, getTodosArray } from "../datas/Todo";
 import { mapToValueArray } from "../util";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { TLLContext } from "../App";
 import { HelpOutline } from "@mui/icons-material";
 import { addTodoToInboxButton_ID } from "../AppCore_";
 import { Drawer_Width } from "../types/constants";
+import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import AddIcon from '@mui/icons-material/Add';
 import MenuIcon from '@mui/icons-material/Menu';
 import HomeIMG from '../assets/images/homeIcon.webp';
+export interface AppBarProps extends MuiAppBarProps {
+    open?: boolean;
+}
+
+export const AppBar = styled(MuiAppBar, { shouldForwardProp: (prop) => prop !== 'open', })<AppBarProps>(
+    ({ theme, open }) => ({
+        transition: theme.transitions.create(['margin', 'width'], {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+        }),
+        ...(open && {
+            width: `calc(100% - ${Drawer_Width}px)`,
+            marginLeft: `${Drawer_Width}px`,
+            transition: theme.transitions.create(['margin', 'width'], {
+                easing: theme.transitions.easing.easeOut,
+                duration: theme.transitions.duration.enteringScreen,
+            }),
+        }),
+    }));
 
 export function AppHeadBar(props: {
     todos: Map<string, Todo>,
@@ -63,125 +84,137 @@ export function AppHeadBar(props: {
         }
         const menus = inboxs.map(t => {
             return (
-                <li key={t.id + "iAddMenu"}>
-                    <a onClick={() => {
+                <MenuItem
+                    key={t.id + "iAddMenu"}
+                    onClick={() => {
                         onClickProcess(t)
-                    }}>{t.displayTitle + " +"}</a>
-                </li>);
+                    }}>{t.displayTitle + " +"}
+                </MenuItem>);
         })
         menus.unshift(
-            <li key={"HomeIAddMenu"}>
-                <a onClick={() => {
+            <MenuItem
+                key={"HomeIAddMenu"}
+                onClick={() => {
                     onClickProcess(undefined);
-                }}>Home +</a>
-            </li>)
+                }}
+            >Home +</MenuItem>)
         return menus;
     }
-    const [hoveredFavId, setHoveredFavId] = useState<string | null>(null);
-
     const favoriteTodoLinks = mapToValueArray(todos).filter(t => t.isFavorite && !t.isArchived)
         .map(t => {
             return (
-                <div key={"fav-" + t.id} className="dropdown dropdown-hover">
-                    <button
-                        className="btn btn-ghost"
-                        tabIndex={0}
+                <Tooltip
+                    key={"fav-" + t.id}
+                    title={
+                        <Stack >
+                            <Link
+                                style={{ "color": "white" }}
+                                component="button"
+                                onClick={() => {
+                                    setRprobs([]);
+                                    setRunningTodo_withProc(t);
+                                }}>
+                                {tll.t("SetTaskToTimer")}
+                            </Link>
+                            <Link
+                                style={{ "color": "white" }}
+                                component="button"
+                                onClick={() => {
+                                    interruptTodo(t)
+                                }}>
+                                {tll.t("InterruptTodo")}
+                            </Link>
+                            <Link
+                                style={{ "color": "white" }}
+                                component="button"
+                                onClick={() => {
+                                    appendTodo(t)
+                                }}>
+                                {tll.t("AppendTodo")}
+                            </Link>
+                        </Stack>}>
+                    <Button
+                        color='inherit'
                         onClick={() => {
                             setFocusedTodo(t)
                             setWillExpandTreeLateId(t.id)
-                        }}
-                    >
-                        {t.displayTitle}
-                    </button>
-                    <ul tabIndex={0} className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow">
-                        <li>
-                            <a onClick={() => {
-                                setRprobs([]);
-                                setRunningTodo_withProc(t);
-                            }}>
-                                {tll.t("SetTaskToTimer")}
-                            </a>
-                        </li>
-                        <li>
-                            <a onClick={() => {
-                                interruptTodo(t)
-                            }}>
-                                {tll.t("InterruptTodo")}
-                            </a>
-                        </li>
-                        <li>
-                            <a onClick={() => {
-                                appendTodo(t)
-                            }}>
-                                {tll.t("AppendTodo")}
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+                        }}>{t.displayTitle}</Button>
+                </Tooltip>
             )
         })
     return (
-        <div
-            id="RPApp-AppBar"
-            className="navbar bg-base-100 border-b border-base-300 fixed top-0 z-50"
-            style={{
-                width: drawerOpen ? `calc(100% - ${Drawer_Width}px)` : '100%',
-                marginLeft: drawerOpen ? `${Drawer_Width}px` : 0,
-                transition: 'margin 0.3s, width 0.3s',
-                minHeight: '48px',
-                height: '48px',
-                padding: '0.25rem 1rem'
-            }}
-        >
-            <button
-                className="btn btn-ghost btn-sm"
-                aria-label="open drawer"
-                onClick={() => { setDrawerOpen(true) }}
-                style={{ marginRight: '0.5rem', color: "grey", display: drawerOpen ? 'none' : 'flex' }}
-            >
-                <MenuIcon />
-            </button>
-            <div className="flex-1 text-left">
-                <div style={{ display: 'flex', flexDirection: 'row', gap: '0.25rem', alignItems: 'center' }}>
-                    <button
-                        style={{ marginRight: 6 }}
-                        onClick={() => {
-                            setFocusedTodo(undefined)
+        <AppBar id="RPApp-AppBar" position="fixed" open={drawerOpen} elevation={0} variant="elevation" color={"inherit"} >
+            <Toolbar variant='dense'>
+                <IconButton
+                    disableFocusRipple
+                    aria-label="open drawer"
+                    onClick={() => { setDrawerOpen(true) }}
+                    sx={{ mr: 2, color: "grey", ...(drawerOpen && { display: 'none' }) }}
+                >
+                    <MenuIcon />
+                </IconButton>
+                <Box flexGrow={1} textAlign={"left"}>
+                    <Stack direction={"row"} >
+                        <button style={{ marginRight: 6 }}
+                            onClick={() => {
+                                setFocusedTodo(undefined)
+                            }}
+                        ><img
+                                style={{
+                                    height: "20px"
+                                }}
+                                src={HomeIMG} alt="home image" /></button>
+                        {favoriteTodoLinks}
+                    </Stack>
+                </Box>
+                <Tooltip title={"click here to create todolist"} arrow open={addTodoHelpOpen} onClose={() => {
+                    setAddTodoHelpOpen(false)
+                }}>
+                    <IconButton
+                        disableFocusRipple
+                        disableRipple
+                        id={addTodoToInboxButton_ID}
+                        onClick={(event) => {
+                            addTodoToInbox();
                         }}
                     >
-                        <img
-                            style={{ height: "20px" }}
-                            src={HomeIMG}
-                            alt="home image"
-                        />
-                    </button>
-                    {favoriteTodoLinks}
-                </div>
-            </div>
-            <div className={`tooltip ${addTodoHelpOpen ? 'tooltip-open' : ''}`} data-tip="click here to create todolist">
-                <button
-                    className="btn btn-ghost btn-sm"
-                    id={addTodoToInboxButton_ID}
+                        <AddIcon />
+                    </IconButton>
+                </Tooltip>
+                <Menu
+                    anchorEl={addMenuAnchorEl}
+                    open={Boolean(addMenuAnchorEl)}
+                    onClose={handleAddMenuClose}
+                >
+                    {renderAddMenuItems()}
+                </Menu>
+                {/* <Button onClick={async () => {
+                    const from = Date.now()
+                    for (const t of todos.values()) {
+                        calcWeight_view(t)
+                    }
+                    console.log(Date.now() - from)
+                }}>
+                    test
+                </Button> */}
+                <IconButton
+                    disableFocusRipple
+                    sx={{ ml: 2 }}
+                    color={"inherit"}
                     onClick={(event) => {
-                        addTodoToInbox();
+                        setKeyboardShortCutHelpVisibility(true);
                     }}
                 >
-                    <AddIcon />
-                </button>
-            </div>
-            {addMenuAnchorEl && (
-                <ul className="menu bg-base-100 rounded-box shadow absolute top-12 right-32 z-50">
+                    <HelpOutline />
+                </IconButton>
+                <Menu
+                    anchorEl={addMenuAnchorEl}
+                    open={Boolean(addMenuAnchorEl)}
+                    onClose={handleAddMenuClose}
+                >
                     {renderAddMenuItems()}
-                </ul>
-            )}
-            <button
-                className="btn btn-ghost btn-sm ml-2"
-                onClick={(event) => {
-                    setKeyboardShortCutHelpVisibility(true);
-                }}
-            >
-                <HelpOutline />
-            </button>
-        </div>
+                </Menu>
+            </Toolbar>
+        </AppBar>
     )
 }
