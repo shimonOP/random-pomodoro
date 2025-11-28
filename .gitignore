@@ -12,6 +12,7 @@ build_serve.sh
 
 # production
 /build
+/dist
 
 # misc
 .DS_Store

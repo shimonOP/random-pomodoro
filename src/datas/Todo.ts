@@ -1,8 +1,9 @@
 import { v4 as uuidv4 } from 'uuid';
 import { stringUnionToArray } from '../util';
 import { fuzzy } from 'fast-fuzzy';
+import rfdc from "rfdc";
 
-const rfdcCopy = require('rfdc')()
+const rfdcCopy = rfdc();
 export type TodoRawValues = {
     title: string
     memo: string
