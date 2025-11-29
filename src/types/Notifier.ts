@@ -1,3 +1,4 @@
+import { sleep } from '../util';
 import { lang2SpeechLang, Languages, languages } from './Languages';
 
 export default class Notifier {
@@ -68,11 +69,33 @@ export default class Notifier {
         this.speech(message, language, volume);
         this.notified = true;
     }
+    private async playSilence(): Promise<void> {
+        return new Promise((resolve) => {
+            // AudioContextを使って短い無音を再生
+            const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            // 100ms間無音を再生
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 1);
+
+            oscillator.onended = () => {
+                audioContext.close();
+                resolve();
+            };
+        });
+    }
+
     private async speech(text: string, language: Languages, volume: number) {
+        // ワイヤレスイヤホンのスリープ解除のため、最初に無音を再生
 
         const msg = new SpeechSynthesisUtterance();
         msg.lang = lang2SpeechLang(language); //言語
-        msg.text = text;
+        msg.text = "。、。、。、。" + text;
         msg.volume = volume;
         window.speechSynthesis.speak(msg);
     }
