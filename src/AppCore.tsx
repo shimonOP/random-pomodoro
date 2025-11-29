@@ -22,6 +22,7 @@ import { AppHeadBar } from './components/AppHeadBar';
 import { TodoTreeView } from './components/TodoTreeView';
 import { TimerState } from './datas/TimerState';
 import { todoWeightCalculator_view, useDiceTodoStates } from './contexts/DiceTodoContext';
+import { useIsMobile, useIsPC, useIsTablet } from './hooks/useLayout';
 
 export const AppCore = () => {
     //@@usestate
@@ -72,8 +73,8 @@ export const AppCore = () => {
     const { shortCutKeysAndHelps } = useShortCutKeys(tll)
     const [mainAppPaneMobile, setMainAppPaneMobile] = useState<"timer" | "tree" | "todo">("timer") //timer, tree, todo
     const appContentLayoutParams = calcAppContentLayout(windowSize, drawerOpen_notMobile);
-    const isPCLayout = useMediaQuery(`(min-width:${Tablet_BreakPoint + 1}px)`);
-    const isMobileLayout = useMediaQuery(`(max-width:${Mobile_BreakPoint}px)`);
+    const isPCLayout = useIsPC();
+    const isMobileLayout = useIsMobile();
 
     const drawerOpen = drawerOpen_notMobile && !isMobileLayout;
     const setRunningTodo_withProc = (todo: Todo | undefined, initSlider: boolean = true, initTimer: boolean = true) => {
@@ -641,8 +642,6 @@ export const AppCore = () => {
         label={tll.t("EnterShiftEnterAtSearchTodoDialog")}
     />
     const timerSettingDialog = <TimerSettingsDialog
-        userSettings={userSettings}
-        setUserSettings={setUserSettings}
         timerSettingsDialogOpen={timerSettingsDialogOpen}
         handleTimerSettingsDialogClose={
             handleTimerSettingsDialogClose
@@ -695,9 +694,9 @@ export const AppCore = () => {
         <Box sx={{ display: 'flex', fontSize: Font_Size }} ref={thisRef}>
             {appHeaderBar}
             {sideBarContent}
-            <Main 
+            <Main
                 open={drawerOpen} //サイドバーに押し込められるようになる。外すとサイドバーが上に被さる。
-                >
+            >
                 {dateTimeNow}
                 <Stack
                     marginTop={isMobileLayout ? 0 : "10px"}

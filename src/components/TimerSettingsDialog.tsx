@@ -1,27 +1,32 @@
 import { HelpOutline } from "@mui/icons-material";
-import { Tooltip, Dialog, DialogTitle, DialogContent, Stack, Typography, Select, MenuItem, Slider, IconButton, Switch } from "@mui/material";
+import { Tooltip, Dialog, DialogTitle, DialogContent, Stack, Typography, Select, MenuItem, Slider, IconButton, Switch, useMediaQuery } from "@mui/material";
 import { Languages, lang2TranslateLanguage, languages } from "../types/Languages";
 import { UserSettings } from '../datas/UserSettings';
 import { useContext, useEffect } from "react";
 import { TLLContext } from "../App";
 import { CustomWeightEditor } from "./CustomWeightEditor";
+import { useDiceTodoStates } from "../contexts/DiceTodoContext";
+import { useIsMobile } from "../hooks/useLayout";
 
 export function TimerSettingsDialog(
   props: {
-    userSettings: UserSettings,
-    setUserSettings: (userSettings: UserSettings) => void,
     timerSettingsDialogOpen: boolean,
     handleTimerSettingsDialogClose: () => void
     onCustomWeightEditorButtonClick: (value: string) => void
   }
 ) {
-  const { userSettings, setUserSettings, timerSettingsDialogOpen, handleTimerSettingsDialogClose, onCustomWeightEditorButtonClick } = props;
+  const { timerSettingsDialogOpen, handleTimerSettingsDialogClose, onCustomWeightEditorButtonClick } = props;
+  const { userSettings, setUserSettings } = useDiceTodoStates();
+  const isMobileLayout = useIsMobile();
+  const stackWidth = isMobileLayout ? "90vw" : 500;
+  const stackHeight = isMobileLayout ? "90vh" : 700;
+  if (!userSettings) return <></>;
   const tll = useContext(TLLContext);
   return (
     <Dialog onClose={handleTimerSettingsDialogClose} open={timerSettingsDialogOpen} >
       <DialogTitle >{tll.t("TimerSettings")}</DialogTitle>
       <DialogContent dividers>
-        <Stack direction="column" spacing={2} sx={{ width: 500, height: 700 }}>
+        <Stack direction="column" spacing={2} sx={{ width: stackWidth, height: stackHeight }}>
           <Stack direction="row" spacing={8}>
             <Typography >{tll.t("NotifyBySpeechOnStart")}</Typography>
             <Switch checked={userSettings.needSpeechNotifyOnStart} onChange={(e) => {
@@ -73,7 +78,7 @@ export function TimerSettingsDialog(
             } />
           </Stack>
           <Stack direction="row" spacing={8}>
-            <Typography fontSize={16}>{tll.t("EditRunTimeOnTimerPane")}</Typography>
+            <Typography >{tll.t("EditRunTimeOnTimerPane")}</Typography>
             <Switch checked={userSettings.editRuntimeOnTimerPane} onChange={(e) => {
               setUserSettings({ ...userSettings, editRuntimeOnTimerPane: e.target.checked });
             }
