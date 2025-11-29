@@ -59,7 +59,8 @@ export const calcAppContentLayout = (windowSize: { width: number, height: number
   const isMobileLayout = windowSize.width <= Mobile_BreakPoint
   const drawerWidth = isDrawerOpen ? Drawer_Width : 0;
   const appWidth = windowSize.width - drawerWidth;
-  const todoPaneWidth = isPCLayout ? 0.4 * appWidth : 0.7 * appWidth
+  const todoPaneWidth = isPCLayout ? 0.4 * appWidth : 
+                        0.85 * appWidth
   const timerPaneWidth = isPCLayout ? 3 / 4 * todoPaneWidth : todoPaneWidth;
   const todoPanePadding_X = isMobileLayout ? 0 : Card_PaddingX;
   const todoPanePadding_Y = isMobileLayout ? 0 : Card_PaddingY;

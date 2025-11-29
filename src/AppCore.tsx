@@ -450,7 +450,9 @@ export const AppCore = () => {
     const todoPane = (
         <Card key="dt-todo-pane" variant="elevation" elevation={0}
             sx={{
-                paddingX: Card_PaddingX, paddingTop: Card_PaddingY * 2, paddingBottom: Card_PaddingY * 4,
+                paddingX: isMobileLayout ? 0 : Card_PaddingX,
+                paddingTop: Card_PaddingY * 2,
+                paddingBottom: Card_PaddingY * 4,
                 borderWidth: 0.5,
                 borderColor: "#BBB",
             }}>

@@ -1,4 +1,4 @@
-import { Autocomplete, Box, Button, Checkbox, Collapse, FormControl, FormControlLabel, IconButton, Link, Menu, MenuItem, MenuList, Popover, Select, Stack, Switch, TextField, Tooltip, Typography } from '@mui/material';
+import { Autocomplete, Box, Button, Checkbox, Collapse, Dialog, DialogContent, DialogTitle, FormControl, FormControlLabel, IconButton, Link, Menu, MenuItem, MenuList, Popover, Select, Stack, Switch, TextField, Tooltip, Typography, useMediaQuery, useTheme } from '@mui/material';
 import React, { Dispatch, SetStateAction, useContext, useEffect, useState, useRef } from 'react';
 import { calcDateOfOutBreak, getAncestors, getBrothers, getOffSprings, isInInterval, isInTags, isRootWithCondition, Todo, getLevel, getTodoOptions, TodoRawValues } from '../datas/Todo';
 import { BsNodePlus } from 'react-icons/bs';
@@ -91,6 +91,9 @@ const TodoPane = (props: TodoPaneProps) => {
     const [editNotUntilAnchor, setEditNotUntilAnchor] = useState<null | Element>(null);
     const titleDebounceTimerRef = useRef<NodeJS.Timeout | null>(null);
     const TITLE_DEBOUNCE_MS = 300;
+    const theme = useTheme();
+    const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+    const [memoModalOpen, setMemoModalOpen] = useState(false);
 
     useEffect(() => {
         setMoveToOptions(getTodoOptions(todos, ""))
@@ -622,16 +625,65 @@ const TodoPane = (props: TodoPaneProps) => {
                     {renderNotUntil()}
                     {renderTotal()}
                 </Box>
-                <MemoTextArea
-                    disabled={!Boolean(focusedTodo)}
-                    todo_id={focusedTodo.id}
-                    text={focusedTodo.memo}
-                    onChanged={
-                        (newText: string) => {
+                {isMobile ? (
+                    <>
+                        <Typography
+                            sx={{
+                                border: '1px solid #d9d9d9',
+                                borderRadius: '5px',
+                                padding: '8px',
+                                minHeight: '40px',
+                                cursor: 'pointer',
+                                whiteSpace: 'pre-wrap',
+                                wordBreak: 'break-word',
+                                color: focusedTodo.memo ? 'inherit' : '#999',
+                                '&:hover': {
+                                    backgroundColor: '#f5f5f5'
+                                }
+                            }}
+                            onClick={() => setMemoModalOpen(true)}
+                        >
+                            {focusedTodo.memo || tll.t("Memo")}
+                        </Typography>
+                        <Dialog
+                            fullScreen
+                            open={memoModalOpen}
+                            onClose={() => setMemoModalOpen(false)}
+                        >
+                            <DialogTitle>
+                                <Stack direction="row" justifyContent="space-between" alignItems="center">
+                                    <span>{tll.t("Memo")}</span>
+                                    <Button onClick={() => setMemoModalOpen(false)}>
+                                        {tll.t("Close")}
+                                    </Button>
+                                </Stack>
+                            </DialogTitle>
+                            <DialogContent>
+                                <MemoTextArea
+                                    disabled={!Boolean(focusedTodo)}
+                                    todo_id={focusedTodo.id}
+                                    text={focusedTodo.memo}
+                                    onChanged={
+                                        (newText: string) => {
+                                            setTodoParameter(focusedTodo.id, { memo: newText })
+                                        }
+                                    }
+                                />
+                            </DialogContent>
+                        </Dialog>
+                    </>
+                ) : (
+                    <MemoTextArea
+                        disabled={!Boolean(focusedTodo)}
+                        todo_id={focusedTodo.id}
+                        text={focusedTodo.memo}
+                        onChanged={
+                            (newText: string) => {
                                 setTodoParameter(focusedTodo.id, { memo: newText })
+                            }
                         }
-                    }
-                />
+                    />
+                )}
                 <TagsInputField
                     tags={tags}
                     enable={Boolean(focusedTodo)}

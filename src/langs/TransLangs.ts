@@ -123,7 +123,9 @@ export type transDescriptions =
     "PickFromSubTodos" |
     "UpdateIntervalBySliderInterval" |
     "ResetAllData" |
-    "AreYouSureToResetAllData"
+    "AreYouSureToResetAllData" |
+    "Memo" |
+    "Close"
     ;//@@Keys
 type transSentenses = transDescriptions | transKeyBoardShortCutHelps
 export class TLL {
@@ -358,6 +360,10 @@ export class TLL {
                         return "すべてのデータを初期化"
                     case "AreYouSureToResetAllData":
                         return "すべてのデータを削除してもよろしいですか？この操作は取り消せません。"
+                    case "Memo":
+                        return "メモ"
+                    case "Close":
+                        return "閉じる"
                     //@@japanese
                 }
             // eslint-disable-next-line no-fallthrough
@@ -587,6 +593,10 @@ export class TLL {
                         return "Reset All Data"
                     case "AreYouSureToResetAllData":
                         return "Are you sure you want to delete all data? This action cannot be undone."
+                    case "Memo":
+                        return "Memo"
+                    case "Close":
+                        return "Close"
                     //@@english
                 }
         }
