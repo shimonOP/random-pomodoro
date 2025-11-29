@@ -16,21 +16,17 @@ import { useContext, useEffect } from "react"
 import { TLLContext } from "../App"
 import Timer from "./Timer"
 import CasinoIcon from '@mui/icons-material/Casino';
+import { useDiceTodoStates } from "../contexts/DiceTodoContext"
 
 let lastNotifyTime: number = 0
 let hasNotifiedBrowser: boolean = false // ブラウザ通知を1回だけ表示するためのフラグ
 let doingAutoTimerStatus: "stable" | "doingAutoTimer" = "stable" // doAutoTimerを一回しか発生しないようにするためのもの。
 
 export function TimerPane(props: {
-  runningTodo: Todo | undefined,
   rollDice: () => void,
-  setFocusedTodo: (todo: Todo | undefined) => void,
   expandTreeView: (id: string, expand: boolean, recursive: boolean) => void,
-  timerState: TimerState,
-  setTimerState: (timerState: TimerState) => void,
   done: (elapsedTime: number) => void,
   setRunningTodo_withProc: (todo: Todo | undefined, isCompleted?: boolean, needDelete?: boolean) => void,
-  setTodoParameter: (id: string, param: { interval?: number }) => void,
   sliderRunTime: number,
   setSliderRunTime: (value: number) => void,
   sliderInterval: number,
@@ -39,14 +35,7 @@ export function TimerPane(props: {
   sliderIntervalMax: number,
   setSliderInterval: (value: number) => void,
   setSliderIntervalUnit: (value: "Min" | "Day") => void,
-  todos: Map<string, Todo>,
-  records: TodoRecord[],
-  setRecords: (records: TodoRecord[]) => void,
-  todoFutures: TodoFuture[],
-  setTodoFutures: (todoFutures: TodoFuture[]) => void,
   tags: string[],
-  userSettings: UserSettings,
-  setUserSettings: (userSettings: UserSettings) => void,
   settingsButton: JSX.Element,
   intervalString: string,
   rProbs: number[],
@@ -54,15 +43,10 @@ export function TimerPane(props: {
   isDiceRolling: boolean,
 }) {
   const {
-    runningTodo,
     rollDice,
-    setFocusedTodo,
     expandTreeView,
-    timerState,
-    setTimerState,
     done,
     setRunningTodo_withProc,
-    setTodoParameter,
     sliderRunTime,
     setSliderRunTime,
     sliderInterval,
@@ -71,19 +55,27 @@ export function TimerPane(props: {
     sliderIntervalMax,
     setSliderInterval,
     setSliderIntervalUnit,
-    todos,
-    records,
-    todoFutures,
-    setTodoFutures,
     tags,
-    userSettings,
-    setUserSettings,
     settingsButton,
     intervalString,
     rProbs,
     timerIntervalSliderMarks,
     isDiceRolling,
   } = props;
+  const { 
+    todos, 
+    runningTodo, 
+    timerState, 
+    setTimerState,
+    setTodoParameter,
+    setFocusedTodo, 
+    userSettings, 
+    setUserSettings, 
+    records ,
+    todoFutures,
+    setTodoFutures
+  } = useDiceTodoStates();
+  if (userSettings === undefined) return (<></>);
   const tll = useContext(TLLContext);
   const isMobileLayout = useMediaQuery(`(max-width:${Mobile_BreakPoint}px)`);
   const timerPadding_X = isMobileLayout ? 3 : Card_PaddingX;

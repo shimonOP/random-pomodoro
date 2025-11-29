@@ -298,17 +298,12 @@ export const AppCore = () => {
             !focusedTodo ?
                 <HomePane /> :
                 <TodoPane
-                    userSettings={userSettings}
-                    todo={focusedTodo}
-                    todos={todos}
-                    records={records}
                     linkClicked={(todo: Todo) => {
                         setFocusedTodo(todo);
                         expandTreeView(todo.id, true, true);
                     }}
                     titleRef={focusedTodoTitleRef}
                     focusedOrRunning='focused'
-                    setTodoParameter={setTodoParameter}
                     addBrotherProcess={addBrotherOfFocusedTodo}
                     addChildProcess={addChildOfFocusedTodo}
                     moveToArchiveButtonClicked={() => {
@@ -496,33 +491,21 @@ export const AppCore = () => {
             </Card>)
         const timerUI = (
             <TimerPane
-                runningTodo={runningTodo}
-                timerState={timerState}
                 timerIntervalSliderMarks={timerIntervalSliderMarks}
                 sliderInterval={sliderInterval}
                 sliderIntervalUnit={sliderIntervalUnit}
                 sliderIntervalCoeff={sliderIntervalCoeff}
                 setSliderInterval={setSliderInterval}
                 setSliderIntervalUnit={setSliderIntervalUnit}
-                setTimerState={setTimerState}
                 setRunningTodo_withProc={setRunningTodo_withProc}
-                setTodoParameter={setTodoParameter}
                 rProbs={rProbs}
-                userSettings={userSettings}
                 rollDice={rollDice}
-                setFocusedTodo={setFocusedTodo}
                 expandTreeView={expandTreeView}
                 done={done}
                 sliderRunTime={sliderRunTime}
                 setSliderRunTime={setSliderRunTime}
                 sliderIntervalMax={sliderIntervalMax}
-                todos={todos}
-                records={records}
-                setRecords={setRecords}
-                todoFutures={todoFutures}
-                setTodoFutures={setTodoFutures}
                 tags={tags}
-                setUserSettings={setUserSettings}
                 settingsButton={settingsButton}
                 intervalString={intervalString}
                 isDiceRolling={isDiceRolling}

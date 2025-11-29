@@ -18,15 +18,11 @@ import MemoTextArea from './MemoTextArea';
 import { TLLContext } from '../App';
 import { todaysTotal } from '../AppCore_';
 import { TodoRecord } from '../datas/TodoRecord';
+import { useDiceTodoStates } from '../contexts/DiceTodoContext';
 
 type TodoPaneProps = {
-    userSettings: UserSettings
-    todo: Todo
-    todos: Map<String, Todo>
-    records: Array<TodoRecord>
     linkClicked: (todo: Todo) => void
     focusedOrRunning: "focused" | "running"
-    setTodoParameter: (targetId: string, property: Partial<TodoRawValues>) => void
     addChildProcess: () => void
     addBrotherProcess: () => void
     moveToArchiveButtonClicked: () => void
@@ -58,13 +54,8 @@ function secondsToMaxTimeUnit(sec: number, prevTimeUnit: TimeUnit): TimeUnit {
 
 const TodoPane = (props: TodoPaneProps) => {
     const {
-        userSettings,
-        todo,
-        todos,
-        records,
         linkClicked,
         focusedOrRunning,
-        setTodoParameter,
         addBrotherProcess,
         addChildProcess,
         moveToArchiveButtonClicked,
@@ -78,12 +69,14 @@ const TodoPane = (props: TodoPaneProps) => {
         appendTodoFutureClicked,
         pickFromSubClicked,
     } = props
-    const tags = todo.tags
-    const runTime = todo.runTime
-    const weight = todo.weight
-    const interval = todo.interval
-    const defaultInterval = todo.defaultInterval
-    const [title, setTitle] = useState(todo.title)
+    const {todos, userSettings, records, focusedTodo, setTodoParameter} = useDiceTodoStates();
+    if (focusedTodo === undefined || userSettings === undefined) return (<></>);
+    const tags = focusedTodo.tags
+    const runTime = focusedTodo.runTime
+    const weight = focusedTodo.weight
+    const interval = focusedTodo.interval
+    const defaultInterval = focusedTodo.defaultInterval
+    const [title, setTitle] = useState(focusedTodo.title)
     const [intervalTimeUnit, setIntervalTimeUnit] = useState<TimeUnit>("minutes");
     const [defaultIntervalTimeUnit, setDefaultIntervalTimeUnit] = useState<TimeUnit>("minutes");
     const [settingVisible, setSettingVisible] = useState(true);
@@ -101,16 +94,16 @@ const TodoPane = (props: TodoPaneProps) => {
         setMoveToOptions(getTodoOptions(todos, ""))
     }, [todos])
     useEffect(() => {
-        setTitle(todo.title)
-    }, [todo.id])
+        setTitle(focusedTodo.title)
+    }, [focusedTodo.id])
     const tll = useContext(TLLContext)
-    if (todo) {
-        if ((prevTodo && todo.id !== prevTodo.id) || (!prevTodo && todo)) {
-            setIntervalTimeUnit(secondsToMaxTimeUnit(todo.interval, intervalTimeUnit))
-            setDefaultIntervalTimeUnit(secondsToMaxTimeUnit(todo.defaultInterval, defaultIntervalTimeUnit))
-            setPrevTodo(todo);
-        } else if (!prevTodo && todo) {
-            setPrevTodo(todo);
+    if (focusedTodo) {
+        if ((prevTodo && focusedTodo.id !== prevTodo.id) || (!prevTodo && focusedTodo)) {
+            setIntervalTimeUnit(secondsToMaxTimeUnit(focusedTodo.interval, intervalTimeUnit))
+            setDefaultIntervalTimeUnit(secondsToMaxTimeUnit(focusedTodo.defaultInterval, defaultIntervalTimeUnit))
+            setPrevTodo(focusedTodo);
+        } else if (!prevTodo && focusedTodo) {
+            setPrevTodo(focusedTodo);
         }
     } else {
         return (<></>)
@@ -118,19 +111,19 @@ const TodoPane = (props: TodoPaneProps) => {
     const renderAddButtons = () => {
         const abButton =
             <Button
-                disabled={!Boolean(todo) || (todo && todo.isArchived)}
+                disabled={!Boolean(focusedTodo) || (focusedTodo && focusedTodo.isArchived)}
                 onClick={addBrotherProcess}
             ><AiOutlineSisternode
                 /></Button>
         const acButton =
             <Button
                 disableElevation
-                disabled={!Boolean(todo) || (todo && todo.isArchived)}
+                disabled={!Boolean(focusedTodo) || (focusedTodo && focusedTodo.isArchived)}
                 onClick={addChildProcess}
             ><BsNodePlus
             ></BsNodePlus></Button>
 
-        if (todo && !todo.isArchived) {
+        if (focusedTodo && !focusedTodo.isArchived) {
             return (
                 <>
                     <Tooltip title={tll.t("AddTodoAtTheSameLevel")}>
@@ -152,7 +145,7 @@ const TodoPane = (props: TodoPaneProps) => {
         }
     }
     const renderMoveButton = () => {
-        const disabled = !Boolean(todo) || (todo && todo.isArchived)
+        const disabled = !Boolean(focusedTodo) || (focusedTodo && focusedTodo.isArchived)
         const button = (
             <Button
                 disabled={disabled}
@@ -179,9 +172,9 @@ const TodoPane = (props: TodoPaneProps) => {
     }
     const renderRemoveOrComeBackButton = () => {
         if (focusedOrRunning === "running") return (<></>);
-        if (todo === undefined) return (<></>);
-        if (todo.isArchived) {
-            if (isRootWithCondition(todo, todos, (t: Todo) => t.isArchived)) {
+        if (focusedTodo === undefined) return (<></>);
+        if (focusedTodo.isArchived) {
+            if (isRootWithCondition(focusedTodo, todos, (t: Todo) => t.isArchived)) {
                 return (
                     <Tooltip title={tll.t("ReturnTask")}>
                         <Button
@@ -204,8 +197,8 @@ const TodoPane = (props: TodoPaneProps) => {
     }
     const renderSetRunningTodoButton = () => {
         if (focusedOrRunning === "running") return (<></>);
-        if (todo === undefined) return (<></>);
-        if (todo.isArchived) return (<></>);
+        if (focusedTodo === undefined) return (<></>);
+        if (focusedTodo.isArchived) return (<></>);
         return (
             <Tooltip title={
                 <Stack>
@@ -247,8 +240,8 @@ const TodoPane = (props: TodoPaneProps) => {
     }
     const renderDeleteButton = () => {
         if (focusedOrRunning === "running") return (<></>);
-        if (todo === undefined) return (<></>);
-        if (todo.isArchived) {
+        if (focusedTodo === undefined) return (<></>);
+        if (focusedTodo.isArchived) {
             return (<Button
                 style={{ color: 'red' }}
                 onClick={deleteButtonClicked}
@@ -260,14 +253,14 @@ const TodoPane = (props: TodoPaneProps) => {
         let unitValue: TimeUnit;
         let setUnitValue: Dispatch<SetStateAction<TimeUnit>>;
         let textFieldOnChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-            if (todo) {
+            if (focusedTodo) {
                 const d = event.target.value === '' ? 0 : Number.parseFloat(event.target.value);
                 switch (intervalOrDefaultInterval) {
                     case "interval":
-                        setTodoParameter(todo.id, { interval: convertTime(d, intervalTimeUnit, "seconds") })
+                        setTodoParameter(focusedTodo.id, { interval: convertTime(d, intervalTimeUnit, "seconds") })
                         break;
                     case "defaultInterval":
-                        setTodoParameter(todo.id, { defaultInterval: convertTime(d, defaultIntervalTimeUnit, "seconds") })
+                        setTodoParameter(focusedTodo.id, { defaultInterval: convertTime(d, defaultIntervalTimeUnit, "seconds") })
                         break;
                 }
             }
@@ -280,7 +273,7 @@ const TodoPane = (props: TodoPaneProps) => {
                 value = convertTime(interval, "seconds", unitValue);
                 setUnitValue = setIntervalTimeUnit;
                 timeChange = (unit) => {
-                    setTodoParameter(todo!.id, { interval: convertTime(value, unit, "seconds") })
+                    setTodoParameter(focusedTodo!.id, { interval: convertTime(value, unit, "seconds") })
                 }
                 break;
             case "defaultInterval":
@@ -288,18 +281,18 @@ const TodoPane = (props: TodoPaneProps) => {
                 value = convertTime(defaultInterval, "seconds", unitValue);
                 setUnitValue = setDefaultIntervalTimeUnit;
                 timeChange = (unit) => {
-                    setTodoParameter(todo!.id, { defaultInterval: convertTime(value, unit, "seconds") })
+                    setTodoParameter(focusedTodo!.id, { defaultInterval: convertTime(value, unit, "seconds") })
                 }
                 break;
         }
-        const lastRunDate = new Date(todo.lastRunDateTime).toLocaleString()
+        const lastRunDate = new Date(focusedTodo.lastRunDateTime).toLocaleString()
         const label = intervalOrDefaultInterval === "interval" ?
             lastRunDate :
             tll.t("Interval")
         return (
             <Stack direction={"row"}>
                 <TextField
-                    disabled={!Boolean(todo)}
+                    disabled={!Boolean(focusedTodo)}
                     label={label}
                     variant={"standard"}
                     inputProps={{
@@ -324,7 +317,7 @@ const TodoPane = (props: TodoPaneProps) => {
                             onChange={(event) => {
                                 if (isTimeUnit(event.target.value)) {
                                     const unit = event.target.value;
-                                    if (todo) {
+                                    if (focusedTodo) {
                                         timeChange(unit);
                                     }
                                     setUnitValue(unit);
@@ -346,18 +339,18 @@ const TodoPane = (props: TodoPaneProps) => {
         )
     }
     const renderBreadCrumbs = () => {
-        if (!todo) return;
+        if (!focusedTodo) return;
         return (
             <Stack direction={'row'} sx={{ alignItems: "center" }} justifyContent="space-between">
                 <TodoBreadCrumbs
-                    todo={todo}
+                    todo={focusedTodo}
                     todos={todos}
                     linkOnClick={
                         linkClicked
                     }
                 ></TodoBreadCrumbs>
-                <Checkbox checked={todo.isCompleted} onChange={(e) => {
-                    setTodoParameter(todo.id, { isCompleted: e.target.checked })
+                <Checkbox checked={focusedTodo.isCompleted} onChange={(e) => {
+                    setTodoParameter(focusedTodo.id, { isCompleted: e.target.checked })
                 }}></Checkbox>
             </Stack>
         )
@@ -366,17 +359,17 @@ const TodoPane = (props: TodoPaneProps) => {
     const renderNotUntil = () => {
         let notUntilStr = "";
         const now = new Date()
-        if (todo === undefined) {
+        if (focusedTodo === undefined) {
             return <></>
         }
-        if (todo.isArchived) {
+        if (focusedTodo.isArchived) {
             return <>{notUntilStr}<br></br></>;
         }
-        const lastRunStr = (todo.sumRunTime ? new Date(todo.lastRunDateTime).toLocaleString() : "");
-        notUntilStr = "NotUntil : " + (isInInterval(todo, now) ? calcDateOfOutBreak(todo).toLocaleString() : "null");
+        const lastRunStr = (focusedTodo.sumRunTime ? new Date(focusedTodo.lastRunDateTime).toLocaleString() : "");
+        notUntilStr = "NotUntil : " + (isInInterval(focusedTodo, now) ? calcDateOfOutBreak(focusedTodo).toLocaleString() : "null");
         return (
             <Stack direction={"row"} position={"relative"}>
-                <Link component={"button"} color={isInInterval(todo, now) ? GreenColorCode : "inherit"} underline='none'
+                <Link component={"button"} color={isInInterval(focusedTodo, now) ? GreenColorCode : "inherit"} underline='none'
                     onClick={(event: React.MouseEvent) => {
                         setEditNotUntilAnchor(event.currentTarget);
                     }}>{notUntilStr}</Link>
@@ -401,9 +394,9 @@ const TodoPane = (props: TodoPaneProps) => {
         );
     }
     const renderTodoPie = () => {
-        if (todo === undefined ||
-            getBrothers(todo, todos).length === 0) return <></>
-        return <TodoPie todos={getBrothers(todo, todos).filter(t => {
+        if (focusedTodo === undefined ||
+            getBrothers(focusedTodo, todos).length === 0) return <></>
+        return <TodoPie todos={getBrothers(focusedTodo, todos).filter(t => {
             if (considerCondition) {
                 const isEnable = calcWeight(t) !== 0;
                 if (userSettings.doRestrictByTags) {
@@ -417,59 +410,59 @@ const TodoPane = (props: TodoPaneProps) => {
         })} legendVisible={true} weight={calcWeight}></TodoPie>
     }
     const renderTotal = () => {
-        if (todo === undefined) return undefined;
-        const sec = todo.sumRunTime;
+        if (focusedTodo === undefined) return undefined;
+        const sec = focusedTodo.sumRunTime;
         const displayMin = extractTime(sec, "seconds", "minutes")
         const displayHour = extractTime(sec, "seconds", "hours")
         return <Stack direction={"row"} spacing={1}>
             <div>{(tll.t("Total") + " : " + displayHour + "h" + displayMin + "m ")}</div>
-            <div>{tll.t("Today") + " : " + todaysTotal(todo, records)}</div>
+            <div>{tll.t("Today") + " : " + todaysTotal(focusedTodo, records)}</div>
         </Stack>
     }
     const renderFavoriteSwitch = () => {
-        if (todo === undefined) return <></>
-        return <FormControlLabel control={<Switch checked={todo.isFavorite} onChange={(e) => {
-            if (todo) {
-                setTodoParameter(todo.id, { isFavorite: !todo.isFavorite })
+        if (focusedTodo === undefined) return <></>
+        return <FormControlLabel control={<Switch checked={focusedTodo.isFavorite} onChange={(e) => {
+            if (focusedTodo) {
+                setTodoParameter(focusedTodo.id, { isFavorite: !focusedTodo.isFavorite })
             }
         }} />} label={tll.t("IsFavorite")} />
     }
     const renderForcedLeafSwitch = () => {
-        if (todo === undefined) return <></>
-        return <FormControlLabel control={<Switch checked={todo.isForcedLeaf} onChange={(e) => {
-            if (todo) {
-                setTodoParameter(todo.id, { isForcedLeaf: !todo.isForcedLeaf })
+        if (focusedTodo === undefined) return <></>
+        return <FormControlLabel control={<Switch checked={focusedTodo.isForcedLeaf} onChange={(e) => {
+            if (focusedTodo) {
+                setTodoParameter(focusedTodo.id, { isForcedLeaf: !focusedTodo.isForcedLeaf })
             }
         }} />} label={tll.t("IsForcedLeaf")} />
     }
     //ACD = All Children Disable
     const renderDisableIfACDSwitch = () => {
-        if (todo === undefined) return <></>
-        return <FormControlLabel control={<Switch checked={todo.disableIfAllChildrenDisable} onChange={(e) => {
-            if (todo) {
-                setTodoParameter(todo.id, { disableIfAllChildrenDisable: !todo.disableIfAllChildrenDisable })
+        if (focusedTodo === undefined) return <></>
+        return <FormControlLabel control={<Switch checked={focusedTodo.disableIfAllChildrenDisable} onChange={(e) => {
+            if (focusedTodo) {
+                setTodoParameter(focusedTodo.id, { disableIfAllChildrenDisable: !focusedTodo.disableIfAllChildrenDisable })
             }
         }} />} label={tll.t("NotSelectTodoIfSubTodosDisable")} />
     }
     const renderPieSwitch = () => {
-        if (todo === undefined) return <></>
+        if (focusedTodo === undefined) return <></>
         return <FormControlLabel control={<Switch checked={considerCondition} onChange={(e) => {
             setConsiderCondition(!considerCondition);
         }} />} label={tll.t("ConsiderCondition")} />
     }
     const renderForceSpeechSwitch = () => {
-        if (todo === undefined) return <></>
-        return <FormControlLabel control={<Switch checked={todo.doForceSpeech} onChange={(e) => {
-            if (todo) {
-                setTodoParameter(todo.id, { doForceSpeech: !todo.doForceSpeech })
+        if (focusedTodo === undefined) return <></>
+        return <FormControlLabel control={<Switch checked={focusedTodo.doForceSpeech} onChange={(e) => {
+            if (focusedTodo) {
+                setTodoParameter(focusedTodo.id, { doForceSpeech: !focusedTodo.doForceSpeech })
             }
         }} />} label={tll.t("DoForceSpeechDescription")} />
     }
     const renderIsInboxSwitch = () => {
-        if (todo === undefined) return <></>
-        return <FormControlLabel control={<Switch checked={todo.isInbox} onChange={(e) => {
-            if (todo) {
-                setTodoParameter(todo.id, { isInbox: !todo.isInbox })
+        if (focusedTodo === undefined) return <></>
+        return <FormControlLabel control={<Switch checked={focusedTodo.isInbox} onChange={(e) => {
+            if (focusedTodo) {
+                setTodoParameter(focusedTodo.id, { isInbox: !focusedTodo.isInbox })
             }
         }} />} label={tll.t("InboxDescription")} />
     }
@@ -481,7 +474,7 @@ const TodoPane = (props: TodoPaneProps) => {
         return (
             <>
                 <IconButton
-                    disabled={!Boolean(todo) || (todo && todo.isArchived)}
+                    disabled={!Boolean(focusedTodo) || (focusedTodo && focusedTodo.isArchived)}
                     onClick={(event) => {
                         setTodoMenuAnchorEl(event.currentTarget);
                     }}>
@@ -530,9 +523,9 @@ const TodoPane = (props: TodoPaneProps) => {
                     key={"todoMenuItem2"}
                     onClick={() => {
                         closeTodoMenu();
-                        if (todo) {
-                            getOffSprings(todo, todos).forEach(c => {
-                                setTodoParameter(c.id, { runTime: todo.runTime })
+                        if (focusedTodo) {
+                            getOffSprings(focusedTodo, todos).forEach(c => {
+                                setTodoParameter(c.id, { runTime: focusedTodo.runTime })
                             });
                         }
                     }}>
@@ -542,9 +535,9 @@ const TodoPane = (props: TodoPaneProps) => {
                     key={"todoMenuItem3"}
                     onClick={() => {
                         closeTodoMenu();
-                        if (todo) {
-                            getOffSprings(todo, todos).forEach(c => {
-                                setTodoParameter(c.id, { defaultInterval: todo.defaultInterval })
+                        if (focusedTodo) {
+                            getOffSprings(focusedTodo, todos).forEach(c => {
+                                setTodoParameter(c.id, { defaultInterval: focusedTodo.defaultInterval })
                             });
                         }
                     }}>
@@ -574,7 +567,7 @@ const TodoPane = (props: TodoPaneProps) => {
                 <>{renderBreadCrumbs()}</>
                 <Stack direction={{ xs: 'column', md: 'row' }} justifyContent="space-between">
                     <TextField
-                        disabled={!Boolean(todo)}
+                        disabled={!Boolean(focusedTodo)}
                         variant='standard'
                         inputProps={{
                             maxLength: Max_Todo_Title
@@ -587,7 +580,7 @@ const TodoPane = (props: TodoPaneProps) => {
                             (event) => {
                                 const newTitle = event.target.value;
                                 setTitle(newTitle);
-                                setTodoParameter(todo.id, { title: newTitle });
+                                setTodoParameter(focusedTodo.id, { title: newTitle });
                             }
                         }
                         onKeyDown={(e) => {
@@ -611,28 +604,28 @@ const TodoPane = (props: TodoPaneProps) => {
                     {renderTotal()}
                 </Box>
                 <MemoTextArea
-                    disabled={!Boolean(todo)}
-                    todo_id={todo.id}
-                    text={todo.memo}
+                    disabled={!Boolean(focusedTodo)}
+                    todo_id={focusedTodo.id}
+                    text={focusedTodo.memo}
                     onChanged={
                         (newText: string) => {
-                                setTodoParameter(todo.id, { memo: newText })
+                                setTodoParameter(focusedTodo.id, { memo: newText })
                         }
                     }
                 />
                 <TagsInputField
                     tags={tags}
-                    enable={Boolean(todo)}
+                    enable={Boolean(focusedTodo)}
                     handleDelete={(name: string) => {
-                        if (todo) {
-                            setTodoParameter(todo.id, { tags: todo.tags.filter((t) => t !== name) })
+                        if (focusedTodo) {
+                            setTodoParameter(focusedTodo.id, { tags: focusedTodo.tags.filter((t) => t !== name) })
                         }
                     }}
                     onChange={(text: string) => {
                         if (text === "" || text.length > Max_TagName_Length) return "";
-                        if (todo) {
-                            if (!todo.tags.some(t => t === text)) {
-                                setTodoParameter(todo.id, { tags: (todo.tags).concat([text]) })
+                        if (focusedTodo) {
+                            if (!focusedTodo.tags.some(t => t === text)) {
+                                setTodoParameter(focusedTodo.id, { tags: (focusedTodo.tags).concat([text]) })
                             }
                         }
                         return "";
@@ -651,7 +644,7 @@ const TodoPane = (props: TodoPaneProps) => {
                 <Collapse in={settingVisible}>
                     <Stack direction={"column"}>
                         <TextField
-                            disabled={!Boolean(todo)}
+                            disabled={!Boolean(focusedTodo)}
                             label={tll.t("RunTime")}
                             variant={"standard"}
                             inputProps={{
@@ -661,15 +654,15 @@ const TodoPane = (props: TodoPaneProps) => {
                             }}
                             value={Math.floor(runTime / 60)}
                             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                if (todo) {
+                                if (focusedTodo) {
                                     const runT = event.target.value === '' ? 0 : Number.parseInt(event.target.value);
-                                    setTodoParameter(todo.id, { runTime: runT * 60 })
+                                    setTodoParameter(focusedTodo.id, { runTime: runT * 60 })
                                 }
                             }}
                         />
                         <>{renderIntervalOrDefaultIntervalField("defaultInterval")}</>
                         <TextField
-                            disabled={!Boolean(todo)}
+                            disabled={!Boolean(focusedTodo)}
                             label={renderWeightLabel()}
                             variant={"standard"}
                             inputProps={{
@@ -679,9 +672,9 @@ const TodoPane = (props: TodoPaneProps) => {
                             }}
                             value={weight}
                             onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                if (todo) {
+                                if (focusedTodo) {
                                     const w = event.target.value === '' ? 0 : Number.parseInt(event.target.value);
-                                    setTodoParameter(todo.id, { weight: w })
+                                    setTodoParameter(focusedTodo.id, { weight: w })
                                 }
                             }}
                         />
@@ -717,13 +710,13 @@ const TodoPane = (props: TodoPaneProps) => {
                             setMoveToOptions(options)
                         }}
                         onChange={(event, newValue) => {
-                            if (todo && newValue) {
+                            if (focusedTodo && newValue) {
                                 if (typeof newValue === "string") {
-                                    setPCRelation(undefined, todo)
+                                    setPCRelation(undefined, focusedTodo)
                                 } else {
-                                    if (newValue.id === todo.id) return;
+                                    if (newValue.id === focusedTodo.id) return;
                                     const parent = todos.get(newValue.id)
-                                    setPCRelation(parent, todo)
+                                    setPCRelation(parent, focusedTodo)
                                 }
                                 setMoveToMenuAnchorEl(null);
                             }
