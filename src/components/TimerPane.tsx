@@ -17,6 +17,7 @@ import { TLLContext } from "../App"
 import Timer from "./Timer"
 import CasinoIcon from '@mui/icons-material/Casino';
 import { useDiceTodoStates } from "../contexts/DiceTodoContext"
+import { useIsMobile } from "../hooks/useLayout"
 
 let lastNotifyTime: number = 0
 let hasNotifiedBrowser: boolean = false // ブラウザ通知を1回だけ表示するためのフラグ
@@ -77,7 +78,7 @@ export function TimerPane(props: {
   } = useDiceTodoStates();
   if (userSettings === undefined) return (<></>);
   const tll = useContext(TLLContext);
-  const isMobileLayout = useMediaQuery(`(max-width:${Mobile_BreakPoint}px)`);
+  const isMobileLayout = useIsMobile();
   const timerPadding_X = isMobileLayout ? 3 : Card_PaddingX;
   const timerPadding_Y = isMobileLayout ? 3 : Card_PaddingY;
   const timerPaneWidth = isMobileLayout ? '100%' : 0.75 * 0.4 * window.innerWidth;
