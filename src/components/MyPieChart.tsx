@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, memo } from "react";
 import { ChartData, ChartOptions } from "chart.js/auto";
 import Chart from "chart.js/auto";
 
@@ -7,7 +7,7 @@ type PieChartProps = {
   values: number[];
 };
 
-export const MyPieChart: React.FC<PieChartProps> = ({ labels, values }) => {
+const MyPieChartComponent: React.FC<PieChartProps> = ({ labels, values }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   // ⭐ 型エラーにならない型定義（重要）
@@ -60,3 +60,12 @@ export const MyPieChart: React.FC<PieChartProps> = ({ labels, values }) => {
 
   return <canvas ref={canvasRef} />;
 };
+
+// React.memoでラップして、propsが変わらない限り再レンダリングを防ぐ
+export const MyPieChart = memo(MyPieChartComponent, (prevProps, nextProps) => {
+  // labelsとvaluesが同じ内容なら再レンダリングしない
+  return (
+    JSON.stringify(prevProps.labels) === JSON.stringify(nextProps.labels) &&
+    JSON.stringify(prevProps.values) === JSON.stringify(nextProps.values)
+  );
+});
