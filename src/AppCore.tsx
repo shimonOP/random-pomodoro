@@ -624,7 +624,6 @@ export const AppCore = () => {
             {todoTreeView}
             <Stack paddingLeft={"5%"} direction={"column"} justifyContent={"left"}>
                 {archiveButton}
-                {statsButton}
             </Stack>
             {todoCountsUI}
         </Drawer>

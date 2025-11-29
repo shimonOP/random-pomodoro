@@ -1,5 +1,6 @@
 import React, { useContext, useMemo, useState } from 'react';
 import { Box, Card, CardContent, FormControl, MenuItem, Paper, Select, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
+import { BarChart } from '@mui/x-charts/BarChart';
 import { TLLContext } from '../App';
 import { extractTime } from '../util';
 import { useDiceTodoStates } from '../contexts/DiceTodoContext';
@@ -54,8 +55,8 @@ const StatsPane = () => {
         });
 
         return Array.from(statsMap.values()).sort((a, b) => {
-            if (a.year !== b.year) return b.year - a.year;
-            return b.month - a.month;
+            if (a.year !== b.year) return a.year - b.year;
+            return a.month - b.month;
         });
     }, [records]);
 
@@ -173,19 +174,36 @@ const StatsPane = () => {
                             <Typography color="textSecondary">{tll.t("Total")} {tll.t("Hour")}</Typography>
                             <Typography variant="h4">{totalStats.totalHours}{tll.t("H")}</Typography>
                         </Box>
-                        <Box>
-                            <Typography color="textSecondary">{tll.t("Total")} {tll.t("Min")}</Typography>
-                            <Typography variant="h4">{totalStats.totalMinutes % 60}{tll.t("M")}</Typography>
-                        </Box>
                     </Stack>
                 </CardContent>
             </Card>
 
-            {/* 月ごとの統計テーブル */}
-            {selectedYear === 'all' && selectedMonth === 'all' && (
+            {/* 月ごとの統計チャート */}
+            {selectedYear === 'all' && selectedMonth === 'all' && monthlyStats.length > 0 && (
                 <Box>
                     <Typography variant="h6" gutterBottom>Monthly Summary</Typography>
-                    <TableContainer component={Paper}>
+                    <Card>
+                        <CardContent sx={{ width: '100%' }}>
+                            <Box sx={{ width: '100%', height: 300 }}>
+                                <BarChart
+                                    xAxis={[{
+                                        scaleType: 'band',
+                                        data: monthlyStats.map(stat => `${stat.year}/${stat.month}`),
+                                        label: tll.t("Year") + '/' + tll.t("Month")
+                                    }]}
+                                    series={[
+                                        {
+                                            data: monthlyStats.map(stat => stat.totalHours),
+                                            label: tll.t("Hour"),
+                                            color: '#1976d2'
+                                        }
+                                    ]}
+                                    height={300}
+                                />
+                            </Box>
+                        </CardContent>
+                    </Card>
+                    <TableContainer component={Paper} sx={{ mt: 2 }}>
                         <Table size="small">
                             <TableHead>
                                 <TableRow>
@@ -196,7 +214,7 @@ const StatsPane = () => {
                                 </TableRow>
                             </TableHead>
                             <TableBody>
-                                {monthlyStats.map((stat) => (
+                                {monthlyStats.slice().reverse().map((stat) => (
                                     <TableRow key={`${stat.year}-${stat.month}`}>
                                         <TableCell>{stat.year}/{stat.month}</TableCell>
                                         <TableCell align="right">{stat.taskCount}</TableCell>
