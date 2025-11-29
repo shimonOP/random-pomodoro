@@ -4,25 +4,17 @@ import { TLL, transKeyBoardShortCutHelps } from '../langs/TransLangs';
 import { KeyShortCutter } from '../types/KeyShortCutter';
 import { disableKeyBoardShortCut } from '../util';
 //@@short cut keys
-const shortCutKeys = ["r", "d", "ctrl+Enter", "shift+Enter", "a", "shift+c", "c", "shift+/", "/"] as const;
+const shortCutKeys = ["ctrl+Enter", "shift+Enter", "shift+c","shift+/", "/"] as const;
 export type ShortCutKey = typeof shortCutKeys[number];
 
-export const rollDiceSCK: ShortCutKey = "r";
-export const doneSCK: ShortCutKey = "d";
 export const addChildSCK: ShortCutKey = "ctrl+Enter";
 export const addBrotherSCK: ShortCutKey = "shift+Enter";
-export const addTodoInboxSCK: ShortCutKey = "a";
-export const changeRCompleteSCK: ShortCutKey = "c";
 export const changeFCompleteSCK: ShortCutKey = "shift+c";
 export const showKeyBoardShortCutKeyHelpSCK: ShortCutKey = "shift+/"
 export const showSearchTodoDialogSCK: ShortCutKey = "/"
 export const shortCutKeyAndTransNames: { key: ShortCutKey, transName: transKeyBoardShortCutHelps }[] = [
-    { key: rollDiceSCK, transName: "RollDiceSCK" },
-    { key: doneSCK, transName: "DoneSCK" },
     { key: addChildSCK, transName: "AddChildSCK" },
     { key: addBrotherSCK, transName: "AddBrotherSCK" },
-    { key: addTodoInboxSCK, transName: "AddTodoInboxSCK" },
-    { key: changeRCompleteSCK, transName: "RMakeCompleteSCK" },
     { key: changeFCompleteSCK, transName: "FMakeCompleteSCK" },
     { key: showKeyBoardShortCutKeyHelpSCK, transName: "ShowKeyBoardShortCutKeyHelpSCK" },
     { key: showSearchTodoDialogSCK, transName: "ShowSearchTodoDialogSCK" },
@@ -32,13 +24,9 @@ export const shortCutKeyToFunc = new Map<ShortCutKey, () => Promise<any>>()
 export const useShortCutKeys = (tll: TLL) => {
     const [shortCutKey, setShortCutKey] = useState<ShortCutKey | undefined>(undefined);
 
-    useHotkeys(rollDiceSCK, () => { pSetCommand(rollDiceSCK) });
-    useHotkeys(doneSCK, () => { pSetCommand(doneSCK) });
     useHotkeys(addBrotherSCK, () => { pSetCommand(addBrotherSCK) });
     useHotkeys(addChildSCK, () => { pSetCommand(addChildSCK) });
-    useHotkeys(addTodoInboxSCK, () => { pSetCommand(addTodoInboxSCK) });
     useHotkeys(changeFCompleteSCK, () => { pSetCommand(changeFCompleteSCK) });
-    useHotkeys(changeRCompleteSCK, () => { pSetCommand(changeRCompleteSCK) });
     useHotkeys(showKeyBoardShortCutKeyHelpSCK, () => { pSetCommand(showKeyBoardShortCutKeyHelpSCK) });
     useHotkeys(showSearchTodoDialogSCK, () => { pSetCommand(showSearchTodoDialogSCK) });
 

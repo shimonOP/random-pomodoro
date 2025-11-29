@@ -11,7 +11,7 @@ import { Document_Title, Font_Size, Card_PaddingX, Card_PaddingY, timerIntervalS
 import ArchivePane from './components/ArchivePane';
 import { TLLContext } from './App';
 import KeyBoardShortCutHelp from './components/KeyBoardShortCutHelp';
-import { addBrotherSCK, addChildSCK, addTodoInboxSCK, changeFCompleteSCK, changeRCompleteSCK, doneSCK, rollDiceSCK, shortCutKeyToFunc, showKeyBoardShortCutKeyHelpSCK, showSearchTodoDialogSCK, useShortCutKeys } from './hooks/useShortCutKeys';
+import { addBrotherSCK, addChildSCK, changeFCompleteSCK, shortCutKeyToFunc, showKeyBoardShortCutKeyHelpSCK, showSearchTodoDialogSCK, useShortCutKeys } from './hooks/useShortCutKeys';
 import { SearchTodoDialog } from './components/SearchTodoDialog';
 import DateTimeNow from './components/DateTimeNow';
 import { Main, addTodoToInboxButton_ID, calcAppContentLayout, done_, rollDice_ } from './AppCore_';
@@ -133,27 +133,11 @@ export const AppCore = () => {
     }, [userSettings])
     //useHotKeysで直接実行するとtodosなどが空なので苦肉の策
     useEffect(function setShortCutKey() {
-        shortCutKeyToFunc.set(rollDiceSCK, async () => { rollDice() })
-        shortCutKeyToFunc.set(
-            doneSCK, async () => {
-                if (isDiceRolling) {
-                    return
-                }
-                done(calcElapsedTime(timerState))
-            })
         shortCutKeyToFunc.set(addChildSCK, async () => {
             addChildOfFocusedTodo();
         })
         shortCutKeyToFunc.set(addBrotherSCK, async () => {
             addBrotherOfFocusedTodo();
-        })
-        shortCutKeyToFunc.set(addTodoInboxSCK, async () => {
-            addTodoToInbox();
-        })
-        shortCutKeyToFunc.set(changeRCompleteSCK, async () => {
-            if (runningTodo) {
-                setTodoParameter(runningTodo.id, { isCompleted: !runningTodo.isCompleted })
-            }
         })
         shortCutKeyToFunc.set(changeFCompleteSCK, async () => {
             if (focusedTodo) {
