@@ -1,5 +1,5 @@
-import { Add, Download, Remove, Start } from "@mui/icons-material"
-import { Link, Tooltip, Card, Stack, Typography, Slider, Box, Button, SxProps, Theme, useMediaQuery } from "@mui/material"
+import { Add, Download, Remove, Start, Edit } from "@mui/icons-material"
+import { Link, Tooltip, Card, Stack, Typography, Slider, Box, Button, SxProps, Theme, useMediaQuery, IconButton, TextField, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material"
 import { Card_PaddingX, Card_PaddingY, GreenColorCode, IntervalInTimer_Height, Mobile_BreakPoint, Tablet_BreakPoint, TimerTitle_FontSize, TodayTotalTimeR_FontSize, TodayTotalTime_FontSize, timerRuntimeSliderMarks } from "../types/constants"
 import { extractTime, probsToString, timeToString } from "../util"
 import { todaysTotal, uniqueExecuter_notify, uniqueExecuter_autoDoTimer } from "../AppCore_"
@@ -12,7 +12,7 @@ import TodoBreadCrumbs from "./TodoBreadCrumbs"
 import { TimerState } from "../datas/TimerState"
 import { TodoFuture } from "../datas/TodoPlan"
 import { UserSettings } from "../datas/UserSettings"
-import { useContext, useEffect } from "react"
+import { useContext, useEffect, useState } from "react"
 import { TLLContext } from "../App"
 import Timer from "./Timer"
 import CasinoIcon from '@mui/icons-material/Casino';
@@ -84,6 +84,13 @@ export function TimerPane(props: {
   const timerPadding_X = isMobileLayout ? 3 : Card_PaddingX;
   const timerPadding_Y = isMobileLayout ? 3 : Card_PaddingY;
   const timerPaneWidth = isMobileLayout ? '100%' : 0.75 * 0.4 * window.innerWidth;
+
+  // モバイル用の入力ダイアログの状態
+  const [runtimeDialogOpen, setRuntimeDialogOpen] = useState(false);
+  const [intervalDialogOpen, setIntervalDialogOpen] = useState(false);
+  const [tempRuntimeValue, setTempRuntimeValue] = useState("");
+  const [tempIntervalValue, setTempIntervalValue] = useState("");
+
   useEffect(() => {
     doingAutoTimerStatus = "stable"
     hasNotifiedBrowser = false // 新しいTODOが開始されたらフラグをリセット
@@ -336,30 +343,71 @@ export function TimerPane(props: {
           {
             userSettings.editRuntimeOnTimerPane ?
               <Stack>
-                {<Typography textAlign={"center"}> {tll.t("RunTime")} </Typography>}
-                {
+                <Typography textAlign={"center"}> {tll.t("RunTime")} </Typography>
+                {isMobileLayout ? (
+                  <>
+                    <Button
+                      disabled={!runningTodo}
+                      variant="outlined"
+                      onClick={() => {
+                        setTempRuntimeValue(sliderRunTime < 0 ? "" : sliderRunTime.toString());
+                        setRuntimeDialogOpen(true);
+                      }}
+                      endIcon={<Edit />}
+                      sx={{ minWidth: 150 }}
+                    >
+                      {sliderRunTime < 0 ? "default" : `${sliderRunTime}min`}
+                    </Button>
+                    <Dialog open={runtimeDialogOpen} onClose={() => setRuntimeDialogOpen(false)}>
+                      <DialogTitle>{tll.t("RunTime")}</DialogTitle>
+                      <DialogContent>
+                        <TextField
+                          autoFocus
+                          margin="dense"
+                          label="Minutes (-1 for default)"
+                          type="number"
+                          fullWidth
+                          variant="outlined"
+                          value={tempRuntimeValue}
+                          onChange={(e) => setTempRuntimeValue(e.target.value)}
+                          inputProps={{ min: -1, max: 60 }}
+                        />
+                      </DialogContent>
+                      <DialogActions>
+                        <Button onClick={() => setRuntimeDialogOpen(false)}>Cancel</Button>
+                        <Button onClick={() => {
+                          if (!runningTodo) return;
+                          const newValue = tempRuntimeValue === "" ? -1 : parseInt(tempRuntimeValue);
+                          if (isNaN(newValue)) return;
+                          const clampedValue = Math.max(-1, Math.min(60, newValue));
+                          setSliderRunTime(clampedValue);
+                          const runTime_sec = clampedValue < 0 ? runningTodo.runTime : clampedValue * 60;
+                          setTimerState({ ...timerState, remainTime: runTime_sec });
+                          setRuntimeDialogOpen(false);
+                        }}>OK</Button>
+                      </DialogActions>
+                    </Dialog>
+                  </>
+                ) : (
                   <Slider
                     disabled={!runningTodo}
                     max={60}
-                    min={- 1
-                    }
+                    min={-1}
                     step={1}
                     marks={timerRuntimeSliderMarks}
                     value={runningTodo ? sliderRunTime : -1}
                     valueLabelDisplay='auto'
-                    valueLabelFormat={(num) => num < 0 ? "default" : num.toString()
-                    }
+                    valueLabelFormat={(num) => num < 0 ? "default" : num.toString()}
                     onChange={(event, value) => {
-                      if (!runningTodo) {
-                        return
-                      }
+                      if (!runningTodo) return;
                       if (typeof (value) === "number") {
-                        setSliderRunTime(value)
-                        const runTime_sec = value < 0 ? runningTodo.runTime : value * 60
-                        setTimerState({ ...timerState, remainTime: runTime_sec })
+                        setSliderRunTime(value);
+                        const runTime_sec = value < 0 ? runningTodo.runTime : value * 60;
+                        setTimerState({ ...timerState, remainTime: runTime_sec });
                       }
-                    }}> </Slider>
-                }
+                    }}
+                  />
+                )}
               </Stack>
               : null
           }
@@ -380,36 +428,73 @@ export function TimerPane(props: {
                       }
                       }> {tll.t("UpdateIntervalBySliderInterval")} </Link>}
                     </Stack>}>
-                    {
-                      <Typography textAlign={"center"}> {tll.t("Interval")} </Typography>}
+                    <Typography textAlign={"center"}> {tll.t("Interval")} </Typography>
                   </Tooltip>
-                  {
-                    <Link color={"inherit"} underline='none' component={"button"} onClick={() => {
-                      setSliderInterval(-1)
-                      setSliderIntervalUnit(sliderIntervalUnit === "Min" ? "Day" : "Min")
-                    }
-                    }> {" " + tll.t("(") + tll.t(sliderIntervalUnit) + tll.t(")")} </Link>}
+                  <Link color={"inherit"} underline='none' component={"button"} onClick={() => {
+                    setSliderInterval(-1)
+                    setSliderIntervalUnit(sliderIntervalUnit === "Min" ? "Day" : "Min")
+                  }}> {" " + tll.t("(") + tll.t(sliderIntervalUnit) + tll.t(")")} </Link>
                 </Stack>
-                {
+                {isMobileLayout ? (
+                  <>
+                    <Button
+                      disabled={!runningTodo}
+                      variant="outlined"
+                      onClick={() => {
+                        setTempIntervalValue(sliderInterval < 0 ? "" : sliderInterval.toString());
+                        setIntervalDialogOpen(true);
+                      }}
+                      endIcon={<Edit />}
+                      sx={{ minWidth: 150 }}
+                    >
+                      {sliderInterval < 0 ? "default" : `${sliderInterval}${sliderIntervalUnit === "Min" ? "min" : "day"}`}
+                    </Button>
+                    <Dialog open={intervalDialogOpen} onClose={() => setIntervalDialogOpen(false)}>
+                      <DialogTitle>{tll.t("Interval")}</DialogTitle>
+                      <DialogContent>
+                        <TextField
+                          autoFocus
+                          margin="dense"
+                          label={`${sliderIntervalUnit} (-1 for default)`}
+                          type="number"
+                          fullWidth
+                          variant="outlined"
+                          value={tempIntervalValue}
+                          onChange={(e) => setTempIntervalValue(e.target.value)}
+                          inputProps={{ min: -1, max: sliderIntervalMax }}
+                        />
+                      </DialogContent>
+                      <DialogActions>
+                        <Button onClick={() => setIntervalDialogOpen(false)}>Cancel</Button>
+                        <Button onClick={() => {
+                          if (!runningTodo) return;
+                          const newValue = tempIntervalValue === "" ? -1 : parseInt(tempIntervalValue);
+                          if (isNaN(newValue)) return;
+                          const clampedValue = Math.max(-1, Math.min(sliderIntervalMax, newValue));
+                          setSliderInterval(clampedValue);
+                          setIntervalDialogOpen(false);
+                        }}>OK</Button>
+                      </DialogActions>
+                    </Dialog>
+                  </>
+                ) : (
                   <Slider
                     max={sliderIntervalMax}
-                    min={- 1
-                    }
-                    disabled={!runningTodo
-                    }
+                    min={-1}
+                    disabled={!runningTodo}
                     step={1}
                     marks={timerIntervalSliderMarks}
                     value={runningTodo ? sliderInterval : -1}
-                    valueLabelFormat={(num) => num < 0 ? "default" : num.toString()
-                    }
+                    valueLabelFormat={(num) => num < 0 ? "default" : num.toString()}
                     valueLabelDisplay='auto'
                     onChange={(event, value) => {
                       if (!runningTodo) return
                       if (typeof (value) === "number") {
                         setSliderInterval(value)
                       }
-                    }}> </Slider>
-                }
+                    }}
+                  />
+                )}
               </Stack>
               : null
           }
