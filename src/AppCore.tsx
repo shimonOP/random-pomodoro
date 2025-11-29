@@ -70,6 +70,7 @@ export const AppCore = () => {
 
     const [windowSize, setWindowSize] = useState(getWindowDimensions());
     const { shortCutKeysAndHelps } = useShortCutKeys(tll)
+    const [mainAppPaneMobile, setMainAppPaneMobile] = useState("timer") //timer, tree, todo
     const appContentLayoutParams = calcAppContentLayout(windowSize, drawerOpen);
     const isPCLayout = useMediaQuery(`(min-width:${Tablet_BreakPoint + 1}px)`);
     const isMobileLayout = useMediaQuery(`(max-width:${Mobile_BreakPoint}px)`);
@@ -475,7 +476,7 @@ export const AppCore = () => {
             <Settings></Settings>
         </Button>
     )
-    const switchOrderUIWithWindowWidth = () => {
+    const todoPane_and_timerPane = () => {
         const todoPaneWidth = appContentLayoutParams.todoPaneWidth
         const timerIntervalSliderMarks = sliderIntervalUnit === "Min" ? timerIntervalSliderMarks_min : timerIntervalSliderMarks_day
         const todoPane = (
@@ -538,28 +539,86 @@ export const AppCore = () => {
             focusOnTitleLate={focusOnTitleLate}
             addTodo={addTodo}
         />
-    const dateTimeNow = isMobileLayout ? <></> : 
+    const dateTimeNow = isMobileLayout ? <></> :
         <Stack direction={'row-reverse'} color="grey"><DateTimeNow /></Stack>
+    const todoTreeView = <TodoTreeView
+        todos={todos}
+        expandedTodos={expandedTodos}
+        expandTreeView={expandTreeView}
+        userSettings={userSettings}
+        calcWeight_view={calcWeight_view}
+        focusedTodoID={focusedTodoID}
+        setFocusedTodo={setFocusedTodo}
+        setIsArchiveFocused={setIsArchiveFocused}
+        setDrawerOpen={setDrawerOpen}
+        drawerOpen={drawerOpen}
+        collapseTreeView={collapseTreeView}
+        stringifyAppData={stringifyAppData}
+        setFileImportDialogOpen={setFileImportDialogOpen}
+    />
+    const searchTodoDialog = <SearchTodoDialog
+        getOptionLabel={(option: Todo | string) => {
+            return typeof option === "string" ? option : getAncestors(option, todos)
+                .sort((a, b) => - getLevel(a, todos) + getLevel(b, todos))
+                .map(t => t.displayTitle).join("/")
+        }}
+        getOptions={(value) => {
+            return getTodoOptions(todos, value)
+        }}
+        onSelect={(newValue, shiftEnter) => {
+            const set = shiftEnter ?
+                setRunningTodo_withProc :
+                (todo: Todo | undefined) => {
+                    setFocusedTodo(todo)
+                    if (todo) {
+                        expandTreeView(todo.id, true, true);
+                    }
+                }
+            if (newValue) {
+                if (typeof newValue === "string") {
+                    set(undefined)
+                } else {
+                    set(newValue)
+                }
+            }
+            setSearchTodoDialogOpen(false)
+        }}
+        onclose={() => {
+            setSearchTodoDialogOpen(false)
+        }}
+        ref={searchTodoDialogInputRef}
+        open={searchTodoDialogOpen}
+        label={tll.t("EnterShiftEnterAtSearchTodoDialog")}
+    />
+    const timerSettingDialog = <TimerSettingsDialog
+        userSettings={userSettings}
+        setUserSettings={setUserSettings}
+        timerSettingsDialogOpen={timerSettingsDialogOpen}
+        handleTimerSettingsDialogClose={
+            handleTimerSettingsDialogClose
+        }
+        onCustomWeightEditorButtonClick={(value: string) => {
+            try {
+                // eslint-disable-next-line no-new-func
+                const func = new Function('todos', 'records', 'date', value)
+                const a = func((todos.values()), records, new Date())
+                console.log(a)
+            } catch (error) {
+                console.log(error)
+            }
+        }}
+    />
+    const keyboardShortCutHelp = <KeyBoardShortCutHelp
+        open={keyboardShortCutHelpVisibility}
+        onclose={() => { setKeyboardShortCutHelpVisibility(false) }}
+        keyAndDescs={shortCutKeysAndHelps}
+    ></KeyBoardShortCutHelp>
 
     //@@return
     return (
         <Box sx={{ display: 'flex', fontSize: Font_Size }} ref={thisRef}>
             {appHeaderBar}
-            <TodoTreeView
-                todos={todos}
-                expandedTodos={expandedTodos}
-                expandTreeView={expandTreeView}
-                userSettings={userSettings}
-                calcWeight_view={calcWeight_view}
-                focusedTodoID={focusedTodoID}
-                setFocusedTodo={setFocusedTodo}
-                setIsArchiveFocused={setIsArchiveFocused}
-                setDrawerOpen={setDrawerOpen}
-                drawerOpen={drawerOpen}
-                collapseTreeView={collapseTreeView}
-                stringifyAppData={stringifyAppData}
-                setFileImportDialogOpen={setFileImportDialogOpen}
-            />
+            {todoTreeView}
             <Main open={drawerOpen} >
                 {dateTimeNow}
                 <Stack
@@ -568,70 +627,16 @@ export const AppCore = () => {
                     spacing={{ xs: 1, sm: 2, }}
                     justifyContent="space-around"
                 >
-                    {switchOrderUIWithWindowWidth()}
+                    {todoPane_and_timerPane()}
                 </Stack>
             </Main>
             {/* --------------------------------------------@modals -------------------------------------*/}
             {renderUserSettingsDialog()}
-            {<SearchTodoDialog
-                getOptionLabel={(option: Todo | string) => {
-                    return typeof option === "string" ? option : getAncestors(option, todos)
-                        .sort((a, b) => - getLevel(a, todos) + getLevel(b, todos))
-                        .map(t => t.displayTitle).join("/")
-                }}
-                getOptions={(value) => {
-                    return getTodoOptions(todos, value)
-                }}
-                onSelect={(newValue, shiftEnter) => {
-                    const set = shiftEnter ?
-                        setRunningTodo_withProc :
-                        (todo: Todo | undefined) => {
-                            setFocusedTodo(todo)
-                            if (todo) {
-                                expandTreeView(todo.id, true, true);
-                            }
-                        }
-                    if (newValue) {
-                        if (typeof newValue === "string") {
-                            set(undefined)
-                        } else {
-                            set(newValue)
-                        }
-                    }
-                    setSearchTodoDialogOpen(false)
-                }}
-                onclose={() => {
-                    setSearchTodoDialogOpen(false)
-                }}
-                ref={searchTodoDialogInputRef}
-                open={searchTodoDialogOpen}
-                label={tll.t("EnterShiftEnterAtSearchTodoDialog")}
-            />}
-            <TimerSettingsDialog
-                userSettings={userSettings}
-                setUserSettings={setUserSettings}
-                timerSettingsDialogOpen={timerSettingsDialogOpen}
-                handleTimerSettingsDialogClose={
-                    handleTimerSettingsDialogClose
-                }
-                onCustomWeightEditorButtonClick={(value: string) => {
-                    try {
-                        // eslint-disable-next-line no-new-func
-                        const func = new Function('todos', 'records', 'date', value)
-                        const a = func((todos.values()), records, new Date())
-                        console.log(a)
-                    } catch (error) {
-                        console.log(error)
-                    }
-                }}
-            />
+            {searchTodoDialog}
+            {timerSettingDialog}
             {renderFileImportModal()}
             {/* --------------------------------------------@invisible components -------------------------------------*/}
-            <KeyBoardShortCutHelp
-                open={keyboardShortCutHelpVisibility}
-                onclose={() => { setKeyboardShortCutHelpVisibility(false) }}
-                keyAndDescs={shortCutKeysAndHelps}
-            ></KeyBoardShortCutHelp>
+            {keyboardShortCutHelp}
         </Box >
     );
 }
