@@ -29,8 +29,8 @@ const StyledTreeItemRoot = styled(TreeItem)(({ theme }) => ({
         paddingLeft: theme.spacing(0),
         paddingTop: theme.spacing(0.1),
         paddingBottom: theme.spacing(0.1),
-        borderTopRightRadius: theme.spacing(2),
-        borderBottomRightRadius: theme.spacing(2),
+        borderTopRightRadius: theme.spacing(0.5),
+        borderBottomRightRadius: theme.spacing(0.5),
         fontWeight: theme.typography.fontWeightMedium,
         '&.Mui-expanded': {
             fontWeight: theme.typography.fontWeightRegular,
