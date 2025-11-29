@@ -7,8 +7,6 @@ import { TLLContext } from "../App";
 import { CustomWeightEditor } from "./CustomWeightEditor";
 import { useDiceTodoStates } from "../contexts/DiceTodoContext";
 import { useIsMobile } from "../hooks/useLayout";
-import { useDiceTodoStates } from "../contexts/DiceTodoContext";
-import { useIsMobile } from "../hooks/useLayout";
 
 export function TimerSettingsDialog(
   props: {
