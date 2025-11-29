@@ -1,5 +1,5 @@
 import { Autocomplete, Box, Button, Checkbox, Collapse, FormControl, FormControlLabel, IconButton, Link, Menu, MenuItem, MenuList, Popover, Select, Stack, Switch, TextField, Tooltip, Typography } from '@mui/material';
-import React, { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react';
+import React, { Dispatch, SetStateAction, useContext, useEffect, useState, useRef } from 'react';
 import { calcDateOfOutBreak, getAncestors, getBrothers, getOffSprings, isInInterval, isInTags, isRootWithCondition, Todo, getLevel, getTodoOptions, TodoRawValues } from '../datas/Todo';
 import { BsNodePlus } from 'react-icons/bs';
 import { AiOutlineSisternode } from 'react-icons/ai'
@@ -89,6 +89,8 @@ const TodoPane = (props: TodoPaneProps) => {
     const timerExTags = userSettings.timerExTags;
     const [movetoOptions, setMoveToOptions] = useState<(Todo | string)[]>([]);
     const [editNotUntilAnchor, setEditNotUntilAnchor] = useState<null | Element>(null);
+    const titleDebounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+    const TITLE_DEBOUNCE_MS = 300;
 
     useEffect(() => {
         setMoveToOptions(getTodoOptions(todos, ""))
@@ -96,6 +98,14 @@ const TodoPane = (props: TodoPaneProps) => {
     useEffect(() => {
         setTitle(focusedTodo.title)
     }, [focusedTodo.id])
+    useEffect(() => {
+        return () => {
+            // クリーンアップ: タイマーをクリア
+            if (titleDebounceTimerRef.current) {
+                clearTimeout(titleDebounceTimerRef.current);
+            }
+        };
+    }, [])
     const tll = useContext(TLLContext)
     if (focusedTodo) {
         if ((prevTodo && focusedTodo.id !== prevTodo.id) || (!prevTodo && focusedTodo)) {
@@ -580,7 +590,16 @@ const TodoPane = (props: TodoPaneProps) => {
                             (event) => {
                                 const newTitle = event.target.value;
                                 setTitle(newTitle);
-                                setTodoParameter(focusedTodo.id, { title: newTitle });
+
+                                // 既存のタイマーをクリア
+                                if (titleDebounceTimerRef.current) {
+                                    clearTimeout(titleDebounceTimerRef.current);
+                                }
+
+                                // 新しいタイマーを設定
+                                titleDebounceTimerRef.current = setTimeout(() => {
+                                    setTodoParameter(focusedTodo.id, { title: newTitle });
+                                }, TITLE_DEBOUNCE_MS);
                             }
                         }
                         onKeyDown={(e) => {

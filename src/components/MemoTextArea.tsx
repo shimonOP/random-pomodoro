@@ -1,6 +1,6 @@
 /* eslint-disable react/react-in-jsx-scope -- Unaware of jsxImportSource */
 /** @jsxImportSource @emotion/react */
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import { Box, IconButton, css } from '@mui/material';
 import CopyAllIcon from '@mui/icons-material/CopyAll';
 import { TLLContext } from "../App";
@@ -13,12 +13,14 @@ type MemoTextAreaProps = {
     todo_id: string
     text: string
     onChanged: (newText: string) => void
+    debounceMs?: number
 }
 const MemoTextArea = (props: MemoTextAreaProps) => {
-    const { disabled, todo_id: id, text, onChanged} = props;
+    const { disabled, todo_id: id, text, onChanged, debounceMs = 300 } = props;
     let [monacoValue, setMonacoValue] = useState("")
-    const monaco = useMonaco();
     const tll = useContext(TLLContext);
+    const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+
     useEffect(() => {
         //画面遷移しようとする前に確認ダイアログを出す.
         const setonbefore = () => {
@@ -33,6 +35,15 @@ const MemoTextArea = (props: MemoTextAreaProps) => {
     useEffect(() => {
         setMonacoValue(text)
     }, [id, text])
+
+    useEffect(() => {
+        return () => {
+            // クリーンアップ: コンポーネントがアンマウントされる時にタイマーをクリア
+            if (debounceTimerRef.current) {
+                clearTimeout(debounceTimerRef.current);
+            }
+        };
+    }, []);
     return (
         <Box position={"relative"} /*relativeにしないとボタンがはみ出す */ >
             <IconButton css={
@@ -51,7 +62,17 @@ const MemoTextArea = (props: MemoTextAreaProps) => {
                     `}
                 onChange={(monacoValue) => {
                     if (monacoValue !== undefined) {
-                        onChanged(monacoValue)
+                        setMonacoValue(monacoValue);
+
+                        // 既存のタイマーをクリア
+                        if (debounceTimerRef.current) {
+                            clearTimeout(debounceTimerRef.current);
+                        }
+
+                        // 新しいタイマーを設定
+                        debounceTimerRef.current = setTimeout(() => {
+                            onChanged(monacoValue);
+                        }, debounceMs);
                     }
                 }}
                 options={{
