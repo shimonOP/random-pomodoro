@@ -42,6 +42,7 @@ export function TimerPane(props: {
   rProbs: number[],
   timerIntervalSliderMarks: { value: number, label: string }[],
   isDiceRolling: boolean,
+  onTitleClicked: () => void,
 }) {
   const {
     rollDice,
@@ -62,6 +63,7 @@ export function TimerPane(props: {
     rProbs,
     timerIntervalSliderMarks,
     isDiceRolling,
+    onTitleClicked,
   } = props;
   const {
     todos,
@@ -74,7 +76,7 @@ export function TimerPane(props: {
     setUserSettings,
     records,
     todoFutures,
-    setTodoFutures
+    setTodoFutures,
   } = useDiceTodoStates();
   if (userSettings === undefined) return (<></>);
   const tll = useContext(TLLContext);
@@ -107,6 +109,7 @@ export function TimerPane(props: {
         <Button disableRipple onClick={() => {
           setFocusedTodo(runningTodo)
           if (runningTodo) expandTreeView(runningTodo.id, true, true);
+          onTitleClicked();
         }} disabled={!Boolean(runningTodo)}>
           <Typography sx={sx} color={"inherit"} fontSize={fsize} >{title}</Typography>
         </Button>

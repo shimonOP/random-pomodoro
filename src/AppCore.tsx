@@ -427,7 +427,7 @@ export const AppCore = () => {
             todos={todos}
             onTodoTitleClicked={(todo: Todo) => {
                 setFocusedTodo(todo);
-
+                setMainAppPaneMobile("todo");
             }}
             onArchiveButtonClicked={(todo: Todo) => {
                 archiveTodo(todo);
@@ -483,6 +483,9 @@ export const AppCore = () => {
             settingsButton={settingsButton}
             intervalString={intervalString}
             isDiceRolling={isDiceRolling}
+            onTitleClicked={() => {
+                setMainAppPaneMobile("todo");
+            }}
         />
 
     )
@@ -536,6 +539,7 @@ export const AppCore = () => {
         focusedTodoID={focusedTodoID}
         setFocusedTodo={setFocusedTodo}
         collapseTreeView={collapseTreeView}
+        onItemClicked={()=>{setMainAppPaneMobile("todo")}}
     />
     const importButton = (
         <Button

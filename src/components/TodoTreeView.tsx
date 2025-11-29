@@ -24,6 +24,7 @@ export function TodoTreeView(props: {
   focusedTodoID: string,
   setFocusedTodo: (todo: Todo | undefined) => void,
   collapseTreeView: (id: string) => void,
+  onItemClicked?: ()=>void,
 }) {
   const {
     todos,
@@ -34,6 +35,7 @@ export function TodoTreeView(props: {
     focusedTodoID,
     setFocusedTodo,
     collapseTreeView,
+    onItemClicked,
   } = props;
   const isMobileLayout = useIsMobileLayout();
   const todoCountsUI = (
@@ -106,6 +108,7 @@ export function TodoTreeView(props: {
               expandTreeView(todo.id, false, false);
             }}
             onClick={() => {
+              onItemClicked && onItemClicked();
             }} className={'treeItem-' + todo.id} key={todo.id} itemId={todo.id} labelText={label} style={{ color: labelColor }} makeTextLined={todo.isCompleted} >
             {constructRecursionTree(children, type, userSettings)}
           </StyledTreeItem>
