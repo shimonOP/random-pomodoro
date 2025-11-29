@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { styled } from '@mui/material/styles';
+import { alpha, styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import { TreeItem, treeItemClasses } from '@mui/x-tree-view/TreeItem';
 import type { TreeItemProps } from '@mui/x-tree-view/TreeItem';
@@ -26,6 +26,9 @@ type StyledTreeItemProps = TreeItemProps & {
 const StyledTreeItemRoot = styled(TreeItem)(({ theme }) => ({
     color: theme.palette.text.secondary,
     [`& .${treeItemClasses.content}`]: {
+        paddingLeft: theme.spacing(0),
+        paddingTop: theme.spacing(0.1),
+        paddingBottom: theme.spacing(0.1),
         borderTopRightRadius: theme.spacing(2),
         borderBottomRightRadius: theme.spacing(2),
         fontWeight: theme.typography.fontWeightMedium,
@@ -43,8 +46,9 @@ const StyledTreeItemRoot = styled(TreeItem)(({ theme }) => ({
         },
     },
     [`& .${treeItemClasses.groupTransition}`]: {
-        [`& .${treeItemClasses.content}`]: {
-        },
+        marginLeft: theme.spacing(2),
+        paddingLeft: 0,
+        borderLeft: `1px solid gray`,
     },
 }));
 
@@ -71,7 +75,7 @@ export default function StyledTreeItem(props: StyledTreeItemProps) {
                             onClickedLabel()
                         }}
                         color="inherit"
-                        sx={{ minWidth: 10, maxWidth: "auto", zIndex: 10000, ml: "-15px", p: "1px", px: "3px" }} >
+                        sx={{ minWidth: 10, maxWidth: "auto", zIndex: 10000, ml: "-20px", p: "1px", px: "1px" }} >
                         {labelIcon}</Button>}
                     <Typography variant="body1" sx={{ flexGrow: 1 }}>
                         {labelText}
