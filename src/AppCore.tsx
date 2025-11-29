@@ -72,11 +72,11 @@ export const AppCore = () => {
     const [windowSize, setWindowSize] = useState(getWindowDimensions());
     const { shortCutKeysAndHelps } = useShortCutKeys(tll)
     const [mainAppPaneMobile, setMainAppPaneMobile] = useState<"timer" | "tree" | "todo">("timer") //timer, tree, todo
-    const appContentLayoutParams = calcAppContentLayout(windowSize, drawerOpen_notMobile);
     const isPCLayout = useIsPCLayout();
     const isMobileLayout = useIsMobileLayout();
-
     const drawerOpen = drawerOpen_notMobile && !isMobileLayout;
+    const appContentLayoutParams = calcAppContentLayout(windowSize, drawerOpen);
+
     const setRunningTodo_withProc = (todo: Todo | undefined, initSlider: boolean = true, initTimer: boolean = true) => {
         setRunningTodo_core(todo)
         if (initSlider) {
