@@ -22,12 +22,7 @@ export function TodoTreeView(props: {
   calcWeight_view: (todo: Todo) => number,
   focusedTodoID: string,
   setFocusedTodo: (todo: Todo | undefined) => void,
-  setIsArchiveFocused: (b: boolean) => void,
-  setDrawerOpen: (b: boolean) => void,
-  drawerOpen: boolean,
   collapseTreeView: (id: string) => void,
-  stringifyAppData: () => Promise<string>,
-  setFileImportDialogOpen: React.Dispatch<React.SetStateAction<boolean>>,
 }) {
   const {
     todos,
@@ -37,12 +32,7 @@ export function TodoTreeView(props: {
     calcWeight_view,
     focusedTodoID,
     setFocusedTodo,
-    setIsArchiveFocused,
-    setDrawerOpen,
-    drawerOpen,
     collapseTreeView,
-    stringifyAppData,
-    setFileImportDialogOpen,
   } = props;
   const tll = useContext(TLLContext)
   const todoCountsUI = (
@@ -101,7 +91,7 @@ export function TodoTreeView(props: {
     const todoTree = constructRecursionTree(rootTodosArray, "todo", userSettings);
     return todoTree;
   };
-  const treeViewOnFocused = (_:React.SyntheticEvent | null, itemId: string) => {
+  const treeViewOnFocused = (_: React.SyntheticEvent | null, itemId: string) => {
     if (itemId === Todo_Archive_NodeID) {
       return;
     }
@@ -110,78 +100,27 @@ export function TodoTreeView(props: {
 
     setFocusedTodo(focused)
   }
-  return (<Drawer
-    sx={{
-      width: Drawer_Width,
-      flexShrink: 0,
-      '& .MuiDrawer-paper': {
-        width: Drawer_Width,
-        boxSizing: 'border-box',
-      },
-    }}
-    variant="persistent"
-    anchor="left"
-    open={drawerOpen}
-  >
-    <DrawerHeader>
-      <IconButton onClick={(event) => { setDrawerOpen(false) }}>
-        {drawerOpen ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-      </IconButton>
-    </DrawerHeader>
-    <SimpleTreeView
-      selectedItems={focusedTodoID}
-      expandedItems={expandedTodos}
-      defaultExpandedItems={['root']}
-      onItemFocus={treeViewOnFocused}
-      slots={{expandIcon: EmptyIcon, collapseIcon: EmptyIcon}}
-      onKeyUp={(e: React.KeyboardEvent) => {
-        if (e.key === "ArrowRight") {
-          expandTreeView(focusedTodoID, true, true);
-        } else if (e.key === "ArrowLeft") {
-          collapseTreeView(focusedTodoID);
-        }
-      }}
-      sx={{ flexGrow: 1, maxWidth: TreeView_MaxWidth, overflowY: 'auto' }}
-    >
-      {renderTree(todos, userSettings)}
-    </SimpleTreeView>
-    {todoCountsUI}
-    <Stack paddingLeft={"5%"} direction={"row"} justifyContent={"left"}>
-      <Button color='inherit' onClick={() => {
-        setFocusedTodo(undefined);
-        setIsArchiveFocused(true);
-      }} startIcon={<DeleteIcon></DeleteIcon>}>
-        {tll.t("Archive")}
-      </Button>
-    </Stack>
-    <Stack paddingBottom={"5px"} minHeight={50} direction={"row"} justifyContent={'space-evenly'}>
-      <Button
-        color='inherit'
-        sx={{ height: 30 }}
-        disableFocusRipple
-        id={"importbuttonid"}
-        onClick={async (event) => {
-          setFileImportDialogOpen(true);
-        }}
-      >
-        import
-      </Button>
-      <Button
-        color='inherit'
-        sx={{ height: 30 }}
-        disableFocusRipple
-        id={"exportbuttonid"}
-        onClick={async (event) => {
-          const str = await stringifyAppData();
-          if (str) {
-            const yyyymmdd = getYYYYMMDD()
-            downloadString(str, "", "dt_" + yyyymmdd + ".json");
+  return (
+    <>
+      <SimpleTreeView
+        selectedItems={focusedTodoID}
+        expandedItems={expandedTodos}
+        defaultExpandedItems={['root']}
+        onItemFocus={treeViewOnFocused}
+        slots={{ expandIcon: EmptyIcon, collapseIcon: EmptyIcon }}
+        onKeyUp={(e: React.KeyboardEvent) => {
+          if (e.key === "ArrowRight") {
+            expandTreeView(focusedTodoID, true, true);
+          } else if (e.key === "ArrowLeft") {
+            collapseTreeView(focusedTodoID);
           }
         }}
+        sx={{ flexGrow: 1, maxWidth: TreeView_MaxWidth, overflowY: 'auto' }}
       >
-        export
-      </Button>
-    </Stack>
-  </Drawer>)
+        {renderTree(todos, userSettings)}
+      </SimpleTreeView>
+      {todoCountsUI}
+    </>
+  )
 }
 const EmptyIcon = () => <span />;

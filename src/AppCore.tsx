@@ -1,20 +1,20 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable eqeqeq */
 import React, { useContext, useEffect, useState } from 'react';
-import { Box, Button, Card, Dialog, DialogContent, DialogTitle, MenuItem, Select, Stack, TextField, Typography, useMediaQuery } from '@mui/material';
+import { BottomNavigation, BottomNavigationAction, Box, Button, Card, Dialog, DialogContent, DialogTitle, Drawer, IconButton, MenuItem, Paper, Select, Stack, TextField, Typography, useMediaQuery } from '@mui/material';
 import { getAncestors, getParent, getPrev, getTodosArray, Todo, getLevel, getTodoOptions } from './datas/Todo';
-import { getWindowDimensions, withoutDuplicate, intervalToString } from './util';
-import { Settings } from '@mui/icons-material';
+import { getWindowDimensions, withoutDuplicate, intervalToString, downloadString, getYYYYMMDD } from './util';
+import { Archive, Casino, ChevronLeft, ChevronRight, Create, Delete, Favorite, FormatListBulleted, Restore, Settings } from '@mui/icons-material';
 import { Languages, languages, lang2TranslateLanguage } from './types/Languages';
 import TodoPane from './components/TodoPane';
-import { Document_Title, Font_Size, Card_PaddingX, Card_PaddingY, timerIntervalSliderMarks_day, timerIntervalSliderMarks_min, Tablet_BreakPoint, Mobile_BreakPoint } from './types/constants';
+import { Document_Title, Font_Size, Card_PaddingX, Card_PaddingY, timerIntervalSliderMarks_day, timerIntervalSliderMarks_min, Tablet_BreakPoint, Mobile_BreakPoint, Drawer_Width } from './types/constants';
 import ArchivePane from './components/ArchivePane';
 import { TLLContext } from './App';
 import KeyBoardShortCutHelp from './components/KeyBoardShortCutHelp';
 import { addBrotherSCK, addChildSCK, changeFCompleteSCK, shortCutKeyToFunc, showKeyBoardShortCutKeyHelpSCK, showSearchTodoDialogSCK, useShortCutKeys } from './hooks/useShortCutKeys';
 import { SearchTodoDialog } from './components/SearchTodoDialog';
 import DateTimeNow from './components/DateTimeNow';
-import { Main, addTodoToInboxButton_ID, calcAppContentLayout, done_, rollDice_ } from './AppCore_';
+import { DrawerHeader, Main, addTodoToInboxButton_ID, calcAppContentLayout, done_, rollDice_ } from './AppCore_';
 import { TimerSettingsDialog } from './components/TimerSettingsDialog';
 import { TimerPane } from './components/TimerPane';
 import { HomePane } from './components/HomePane';
@@ -41,7 +41,7 @@ export const AppCore = () => {
     const focusedTodoID = focusedTodo ? focusedTodo.id : "";
     const thisRef = React.useRef<HTMLDivElement>(null);
     // モバイルデバイスではSidebarを初期状態で非表示にする
-    const [drawerOpen, setDrawerOpen] = React.useState(() => {
+    const [drawerOpen_notMobile, setDrawerOpen] = React.useState(() => {
         const { width } = getWindowDimensions();
         return width > Tablet_BreakPoint;
     });
@@ -70,11 +70,12 @@ export const AppCore = () => {
 
     const [windowSize, setWindowSize] = useState(getWindowDimensions());
     const { shortCutKeysAndHelps } = useShortCutKeys(tll)
-    const [mainAppPaneMobile, setMainAppPaneMobile] = useState("timer") //timer, tree, todo
-    const appContentLayoutParams = calcAppContentLayout(windowSize, drawerOpen);
+    const [mainAppPaneMobile, setMainAppPaneMobile] = useState<"timer" | "tree" | "todo">("timer") //timer, tree, todo
+    const appContentLayoutParams = calcAppContentLayout(windowSize, drawerOpen_notMobile);
     const isPCLayout = useMediaQuery(`(min-width:${Tablet_BreakPoint + 1}px)`);
     const isMobileLayout = useMediaQuery(`(max-width:${Mobile_BreakPoint}px)`);
 
+    const drawerOpen = drawerOpen_notMobile && !isMobileLayout;
     const setRunningTodo_withProc = (todo: Todo | undefined, initSlider: boolean = true, initTimer: boolean = true) => {
         setRunningTodo_core(todo)
         if (initSlider) {
@@ -460,47 +461,47 @@ export const AppCore = () => {
             <Settings></Settings>
         </Button>
     )
-    const todoPane_and_timerPane = () => {
-        const todoPaneWidth = appContentLayoutParams.todoPaneWidth
-        const timerIntervalSliderMarks = sliderIntervalUnit === "Min" ? timerIntervalSliderMarks_min : timerIntervalSliderMarks_day
-        const todoPane = (
-            <Card key="dt-todo-pane" variant="elevation" elevation={0}
-                sx={{
-                    paddingX: Card_PaddingX, paddingTop: Card_PaddingY * 2, paddingBottom: Card_PaddingY * 4,
-                    borderWidth: 0.5,
-                    borderColor: "#BBB",
-                }}>
-                <Stack direction={"row"} justifyContent="center">
-                    <Box width={todoPaneWidth}>{isArchiveFocused ? archivePane : renderTodoPane()}</Box>
-                </Stack>
-            </Card>)
-        const timerUI = (
-            <TimerPane
-                timerIntervalSliderMarks={timerIntervalSliderMarks}
-                sliderInterval={sliderInterval}
-                sliderIntervalUnit={sliderIntervalUnit}
-                sliderIntervalCoeff={sliderIntervalCoeff}
-                setSliderInterval={setSliderInterval}
-                setSliderIntervalUnit={setSliderIntervalUnit}
-                setRunningTodo_withProc={setRunningTodo_withProc}
-                rProbs={rProbs}
-                rollDice={rollDice}
-                expandTreeView={expandTreeView}
-                done={done}
-                sliderRunTime={sliderRunTime}
-                setSliderRunTime={setSliderRunTime}
-                sliderIntervalMax={sliderIntervalMax}
-                tags={tags}
-                settingsButton={settingsButton}
-                intervalString={intervalString}
-                isDiceRolling={isDiceRolling}
-            />
+    const timerIntervalSliderMarks = sliderIntervalUnit === "Min" ? timerIntervalSliderMarks_min : timerIntervalSliderMarks_day
+    const timerPane = (
+        <TimerPane
+            timerIntervalSliderMarks={timerIntervalSliderMarks}
+            sliderInterval={sliderInterval}
+            sliderIntervalUnit={sliderIntervalUnit}
+            sliderIntervalCoeff={sliderIntervalCoeff}
+            setSliderInterval={setSliderInterval}
+            setSliderIntervalUnit={setSliderIntervalUnit}
+            setRunningTodo_withProc={setRunningTodo_withProc}
+            rProbs={rProbs}
+            rollDice={rollDice}
+            expandTreeView={expandTreeView}
+            done={done}
+            sliderRunTime={sliderRunTime}
+            setSliderRunTime={setSliderRunTime}
+            sliderIntervalMax={sliderIntervalMax}
+            tags={tags}
+            settingsButton={settingsButton}
+            intervalString={intervalString}
+            isDiceRolling={isDiceRolling}
+        />
 
-        )
+    )
+    const todoPaneWidth = appContentLayoutParams.todoPaneWidth
+    const todoPane = (
+        <Card key="dt-todo-pane" variant="elevation" elevation={0}
+            sx={{
+                paddingX: Card_PaddingX, paddingTop: Card_PaddingY * 2, paddingBottom: Card_PaddingY * 4,
+                borderWidth: 0.5,
+                borderColor: "#BBB",
+            }}>
+            <Stack direction={"row"} justifyContent="center">
+                <Box width={todoPaneWidth}>{isArchiveFocused ? archivePane : renderTodoPane()}</Box>
+            </Stack>
+        </Card>)
+    const todoPane_and_timerPane = () => {
         if (isPCLayout) {
-            return <>{todoPane}{timerUI}</>
+            return <>{todoPane}{timerPane}</>
         } else {
-            return <>{timerUI}{todoPane}</>
+            return <>{timerPane}{todoPane}</>
         }
     }
     const appHeaderBar = isMobileLayout ? <></> :
@@ -533,13 +534,78 @@ export const AppCore = () => {
         calcWeight_view={calcWeight_view}
         focusedTodoID={focusedTodoID}
         setFocusedTodo={setFocusedTodo}
-        setIsArchiveFocused={setIsArchiveFocused}
-        setDrawerOpen={setDrawerOpen}
-        drawerOpen={drawerOpen}
         collapseTreeView={collapseTreeView}
-        stringifyAppData={stringifyAppData}
-        setFileImportDialogOpen={setFileImportDialogOpen}
     />
+    const importButton = (
+        <Button
+            color='inherit'
+            sx={{ height: 30 }}
+            disableFocusRipple
+            id={"importbuttonid"}
+            onClick={async (event) => {
+                setFileImportDialogOpen(true);
+            }}
+        >
+            import
+        </Button>
+    )
+    const exportButton = (
+        <Button
+            color='inherit'
+            sx={{ height: 30 }}
+            disableFocusRipple
+            id={"exportbuttonid"}
+            onClick={async (event) => {
+                const str = await stringifyAppData();
+                if (str) {
+                    const yyyymmdd = getYYYYMMDD()
+                    downloadString(str, "", "dt_" + yyyymmdd + ".json");
+                }
+            }}
+        >
+            export
+        </Button>
+    )
+    const inportExportButtons = (
+        <Stack paddingBottom={"5px"} minHeight={50} direction={"row"} justifyContent={'space-evenly'}>
+            {importButton}
+            {exportButton}
+        </Stack>
+    )
+    const archiveButton = (
+        <Button color='inherit' onClick={() => {
+            setFocusedTodo(undefined);
+            setIsArchiveFocused(true);
+        }} startIcon={<Delete></Delete>}>
+            {tll.t("Archive")}
+        </Button>
+    )
+    const sideBarContent = (
+        <Drawer
+            sx={{
+                width: Drawer_Width,
+                flexShrink: 0,
+                '& .MuiDrawer-paper': {
+                    width: Drawer_Width,
+                    boxSizing: 'border-box',
+                },
+            }}
+            variant="persistent"
+            anchor="left"
+            open={drawerOpen}
+        >
+            <DrawerHeader>
+                <IconButton onClick={(event) => { setDrawerOpen(false) }}>
+                    {drawerOpen ? <ChevronLeft /> : <ChevronRight />}
+                </IconButton>
+            </DrawerHeader>
+            {todoTreeView}
+            <Stack paddingLeft={"5%"} direction={"row"} justifyContent={"left"}>
+                {archiveButton}
+            </Stack>
+            {inportExportButtons}
+        </Drawer>
+    )
     const searchTodoDialog = <SearchTodoDialog
         getOptionLabel={(option: Todo | string) => {
             return typeof option === "string" ? option : getAncestors(option, todos)
@@ -597,13 +663,36 @@ export const AppCore = () => {
         onclose={() => { setKeyboardShortCutHelpVisibility(false) }}
         keyAndDescs={shortCutKeysAndHelps}
     ></KeyBoardShortCutHelp>
+    const mainAppPaneMobileUI = !isMobileLayout ? <></> : (
+        mainAppPaneMobile === "timer" ? timerPane :
+            mainAppPaneMobile === "tree" ? todoTreeView :
+                todoPane
+    )
+    const mainApp = isMobileLayout ? mainAppPaneMobileUI : todoPane_and_timerPane()
+    const buttonNavMobile = !isMobileLayout ? <></> : (
+        <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
+            <BottomNavigation
+                value={mainAppPaneMobile}
+                onChange={(event, newValue) => {
+                    console.log(newValue);
+                    setMainAppPaneMobile(newValue);
+                }}
+            >
+                <BottomNavigationAction value={"todo"} label="Todo" icon={<Create />} />
+                <BottomNavigationAction value={"timer"} label="Timer" icon={<Casino />} />
+                <BottomNavigationAction value={"tree"} label="Tree" icon={<FormatListBulleted />} />
+            </BottomNavigation>
+        </Paper>
+    )
 
     //@@return
     return (
         <Box sx={{ display: 'flex', fontSize: Font_Size }} ref={thisRef}>
             {appHeaderBar}
-            {todoTreeView}
-            <Main open={drawerOpen} >
+            {sideBarContent}
+            <Main 
+                open={drawerOpen} //サイドバーに押し込められるようになる。外すとサイドバーが上に被さる。
+                >
                 {dateTimeNow}
                 <Stack
                     marginTop={isMobileLayout ? 0 : "10px"}
@@ -611,7 +700,8 @@ export const AppCore = () => {
                     spacing={{ xs: 1, sm: 2, }}
                     justifyContent="space-around"
                 >
-                    {todoPane_and_timerPane()}
+                    {mainApp}
+                    {buttonNavMobile}
                 </Stack>
             </Main>
             {/* --------------------------------------------@modals -------------------------------------*/}
