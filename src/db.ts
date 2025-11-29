@@ -141,7 +141,7 @@ export const useDTDexieStates = () => {
         return nMap
     }) || new Map<string, Todo>()
     const records = useLiveQuery(() => {
-        return loadRecordsLatestN(7)
+        return loadRecordsLatestN(null)
     }) || []
     const userSettings = useLiveQuery(async () => {
         const userSettings_old = await db.userSettings.get("userSettings")
@@ -174,7 +174,11 @@ export async function existUserSettings() {
     const uF = await db.userSettings.get("userSettings")
     return uF !== undefined
 }
-export async function loadRecordsLatestN(day: number) {
+export async function loadRecordsLatestN(day: number | null) {
+    if (day === null) {
+        const recordArray = await db.records.toArray();
+        return recordArray
+    }
     if (day <= 0) return []
     const day_ms = day * 86400 * 1000
     const since_ms = Date.now() - day_ms

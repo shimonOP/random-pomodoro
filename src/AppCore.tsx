@@ -4,10 +4,11 @@ import React, { useContext, useEffect, useState } from 'react';
 import { BottomNavigation, BottomNavigationAction, Box, Button, Card, Dialog, DialogContent, Drawer, IconButton, Paper, Stack, Typography } from '@mui/material';
 import { getAncestors, getParent, getPrev, getTodosArray, Todo, getLevel, getTodoOptions, countTodos } from './datas/Todo';
 import { getWindowDimensions, withoutDuplicate, intervalToString, downloadString, getYYYYMMDD } from './util';
-import { Archive, Casino, ChevronLeft, ChevronRight, Create, Delete, Favorite, FileDownload, FileUpload, FormatListBulleted, Restore, Settings } from '@mui/icons-material';
+import { Archive, BarChart, Casino, ChevronLeft, ChevronRight, Create, Delete, Favorite, FileDownload, FileUpload, FormatListBulleted, Restore, Settings } from '@mui/icons-material';
 import TodoPane from './components/TodoPane';
 import { Document_Title, Font_Size, Card_PaddingX, Card_PaddingY, timerIntervalSliderMarks_day, timerIntervalSliderMarks_min, Tablet_BreakPoint, Mobile_BreakPoint, Drawer_Width, AboveAppContentArea_MinHeight } from './types/constants';
 import ArchivePane from './components/ArchivePane';
+import StatsPane from './components/StatsPane';
 import { TLLContext } from './App';
 import KeyBoardShortCutHelp from './components/KeyBoardShortCutHelp';
 import { addBrotherSCK, addChildSCK, changeFCompleteSCK, shortCutKeyToFunc, showKeyBoardShortCutKeyHelpSCK, showSearchTodoDialogSCK, useShortCutKeys } from './hooks/useShortCutKeys';
@@ -70,7 +71,7 @@ export const AppCore = () => {
 
     const [windowSize, setWindowSize] = useState(getWindowDimensions());
     const { shortCutKeysAndHelps } = useShortCutKeys(tll)
-    const [mainAppPaneMobile, setMainAppPaneMobile] = useState<"timer" | "tree" | "todo">("timer") //timer, tree, todo
+    const [mainAppPaneMobile, setMainAppPaneMobile] = useState<"timer" | "tree" | "todo" | "stats">("timer") //timer, tree, todo, stats
     const isPCLayout = useIsPCLayout();
     const isMobileLayout = useIsMobileLayout();
     const drawerOpen = drawerOpen_notMobile && !isMobileLayout;
@@ -589,8 +590,16 @@ export const AppCore = () => {
         <Button color='inherit' onClick={() => {
             setFocusedTodo(undefined);
             setIsArchiveFocused(true);
+            setMainAppPaneMobile("todo");
         }} startIcon={<Delete></Delete>}>
             {tll.t("Archive")}
+        </Button>
+    )
+    const statsButton = (
+        <Button color='inherit' onClick={() => {
+            setMainAppPaneMobile("stats");
+        }} startIcon={<BarChart></BarChart>}>
+            Statistics
         </Button>
     )
     const sideBarContent = (
@@ -613,8 +622,9 @@ export const AppCore = () => {
                 </IconButton>
             </DrawerHeader>
             {todoTreeView}
-            <Stack paddingLeft={"5%"} direction={"row"} justifyContent={"left"}>
+            <Stack paddingLeft={"5%"} direction={"column"} justifyContent={"left"}>
                 {archiveButton}
+                {statsButton}
             </Stack>
             {todoCountsUI}
         </Drawer>
@@ -680,10 +690,22 @@ export const AppCore = () => {
         keyAndDescs={shortCutKeysAndHelps}
     ></KeyBoardShortCutHelp>
 
+    const statsPane = <Card key="dt-stats-pane" variant="elevation" elevation={0}
+        sx={{
+            paddingX: isMobileLayout ? 0 : Card_PaddingX,
+            paddingTop: Card_PaddingY * 2,
+            paddingBottom: Card_PaddingY * 4,
+            borderWidth: 0.5,
+            borderColor: "#BBB",
+        }}>
+        <StatsPane />
+    </Card>
+
     const mainAppPaneMobileUI = !isMobileLayout ? <></> : (
         mainAppPaneMobile === "timer" ? timerPane :
             mainAppPaneMobile === "tree" ? treeViewPane_Mobile :
-                todoPane
+                mainAppPaneMobile === "stats" ? statsPane :
+                    todoPane
     )
     const mainApp = isMobileLayout ? mainAppPaneMobileUI : todoPane_and_timerPane()
     const buttonNavMobile = !isMobileLayout ? <></> : (
@@ -698,6 +720,7 @@ export const AppCore = () => {
                 <BottomNavigationAction value={"todo"} label="Todo" icon={<Create />} />
                 <BottomNavigationAction value={"timer"} label="Timer" icon={<Casino />} />
                 <BottomNavigationAction value={"tree"} label="Tree" icon={<FormatListBulleted />} />
+                <BottomNavigationAction value={"stats"} label="Stats" icon={<BarChart />} />
             </BottomNavigation>
         </Paper>
     )
