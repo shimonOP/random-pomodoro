@@ -658,14 +658,19 @@ export const AppCore = () => {
             }
         }}
     />
+    const treeViewPane_Mobile = <Paper>
+        {todoTreeView}
+    </Paper>
+
     const keyboardShortCutHelp = <KeyBoardShortCutHelp
         open={keyboardShortCutHelpVisibility}
         onclose={() => { setKeyboardShortCutHelpVisibility(false) }}
         keyAndDescs={shortCutKeysAndHelps}
     ></KeyBoardShortCutHelp>
+
     const mainAppPaneMobileUI = !isMobileLayout ? <></> : (
         mainAppPaneMobile === "timer" ? timerPane :
-            mainAppPaneMobile === "tree" ? todoTreeView :
+            mainAppPaneMobile === "tree" ? treeViewPane_Mobile :
                 todoPane
     )
     const mainApp = isMobileLayout ? mainAppPaneMobileUI : todoPane_and_timerPane()
