@@ -587,7 +587,7 @@ export const AppCore = () => {
             <FileDownload sx={{ fontSize: 18 }} />
         </IconButton>
     )
-    const inportExportButtons = (
+    const importExportButtons = (
         <Stack direction="row" gap={0.5}>
             {importButton}
             {exportButton}
@@ -620,7 +620,7 @@ export const AppCore = () => {
                         <Typography sx={{ color: "grey", fontSize: 11, fontWeight: 500 }}>
                             Tasks {countTodos(todos)}
                         </Typography>
-                        {inportExportButtons}
+                        {importExportButtons}
                     </Stack>
                 )}
             </Stack>
@@ -712,6 +712,7 @@ export const AppCore = () => {
     />
     const treeViewPane_Mobile = <Paper>
         {todoTreeView}
+        {todoCountsUI}
     </Paper>
 
     const keyboardShortCutHelp = <KeyBoardShortCutHelp
