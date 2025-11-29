@@ -1,5 +1,6 @@
-import { HelpOutline, VolumeUp, Timer, Language, Notifications, Casino, Label, Edit, Functions, Close } from "@mui/icons-material";
-import { Tooltip, Dialog, DialogTitle, DialogContent, Stack, Typography, Select, MenuItem, Slider, IconButton, Switch, useMediaQuery, Paper, Divider, Box } from "@mui/material";
+import { HelpOutline, VolumeUp, Timer, Language, Notifications, Casino, Label, Edit, Functions, Close, DeleteForever } from "@mui/icons-material";
+import { Tooltip, Dialog, DialogTitle, DialogContent, Stack, Typography, Select, MenuItem, Slider, IconButton, Switch, useMediaQuery, Paper, Divider, Box, Button } from "@mui/material";
+import { clearAllData } from "../db";
 import { Languages, lang2TranslateLanguage, languages } from "../types/Languages";
 import { UserSettings } from '../datas/UserSettings';
 import { useContext, useEffect } from "react";
@@ -241,6 +242,25 @@ export function TimerSettingsDialog(
                 />
               </Box>
             )}
+          </Paper>
+
+          {/* データ管理セクション */}
+          <Paper elevation={0} sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
+            <SectionTitle>{tll.t("Others")}</SectionTitle>
+            <Button
+              fullWidth
+              variant="outlined"
+              color="error"
+              startIcon={<DeleteForever />}
+              onClick={async () => {
+                if (window.confirm(tll.t("AreYouSureToResetAllData"))) {
+                  await clearAllData();
+                  window.location.reload();
+                }
+              }}
+            >
+              {tll.t("ResetAllData")}
+            </Button>
           </Paper>
         </Stack>
       </DialogContent>

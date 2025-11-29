@@ -1,11 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable eqeqeq */
 import React, { useContext, useEffect, useState } from 'react';
-import { BottomNavigation, BottomNavigationAction, Box, Button, Card, Dialog, DialogContent, DialogTitle, Drawer, IconButton, MenuItem, Paper, Select, Stack, TextField, Typography, useMediaQuery } from '@mui/material';
+import { BottomNavigation, BottomNavigationAction, Box, Button, Card, Dialog, DialogContent, Drawer, IconButton, Paper, Stack, Typography } from '@mui/material';
 import { getAncestors, getParent, getPrev, getTodosArray, Todo, getLevel, getTodoOptions, countTodos } from './datas/Todo';
 import { getWindowDimensions, withoutDuplicate, intervalToString, downloadString, getYYYYMMDD } from './util';
 import { Archive, Casino, ChevronLeft, ChevronRight, Create, Delete, Favorite, FileDownload, FileUpload, FormatListBulleted, Restore, Settings } from '@mui/icons-material';
-import { Languages, languages, lang2TranslateLanguage } from './types/Languages';
 import TodoPane from './components/TodoPane';
 import { Document_Title, Font_Size, Card_PaddingX, Card_PaddingY, timerIntervalSliderMarks_day, timerIntervalSliderMarks_min, Tablet_BreakPoint, Mobile_BreakPoint, Drawer_Width, AboveAppContentArea_MinHeight } from './types/constants';
 import ArchivePane from './components/ArchivePane';
@@ -23,6 +22,7 @@ import { TodoTreeView } from './components/TodoTreeView';
 import { TimerState } from './datas/TimerState';
 import { todoWeightCalculator_view, useDiceTodoStates } from './contexts/DiceTodoContext';
 import { useIsMobileLayout, useIsPCLayout, useIsTabletLayout } from './hooks/useLayout';
+import { lang2TranslateLanguage } from './types/Languages';
 
 export const AppCore = () => {
     //@@usestate
@@ -52,7 +52,6 @@ export const AppCore = () => {
     const [addTodoInboxButtonRef, setAddTodoInboxButtonRef] = React.useState<null | HTMLElement>(null);
     const [expandedTodos, setExpandedTodos] = useState<string[]>([]);
     const [willTreeViewScroll, setWillTreeViewScroll] = useState(false);
-    const [userSettingsDialogOpen, setUserSettingsDialogOpen] = useState(false);
     const [searchTodoDialogOpen, setSearchTodoDialogOpen] = useState(false);
     const searchTodoDialogInputRef = React.useRef<HTMLDivElement>(null);
     const [timerSettingsDialogOpen, setTimerSettingsDialogOpen] = useState(false);
@@ -341,48 +340,6 @@ export const AppCore = () => {
                         rollDice(focusedTodo)
                     }}
                 />
-        )
-    }
-
-    const handleUserSettingsDialogClose = () => {
-        setUserSettingsDialogOpen(false);
-    }
-    const renderUserSettingsDialog = () => {
-        const nameUI =
-            <Stack direction="row" spacing={8}>
-                <Typography >{tll.t("Name")}</Typography>
-                <TextField variant='standard' value={userSettings.name} inputProps={{ maxLength: 20 }} onChange={(event) => {
-                    const str = event.target.value;
-                    userSettings.name = str;
-                    setUserSettings({ ...userSettings, name: str });
-                }}></TextField>
-            </Stack>
-        const languageUI =
-            <Stack direction="row" spacing={8}>
-                <Typography >{tll.t("Language")}</Typography>
-                <Select variant='standard' value={userSettings.language} onChange={(event) => {
-                    setUserSettings({ ...userSettings, language: event.target.value as Languages });
-                }}>
-                    {languages.map(l => <MenuItem key={l} value={l}>{l}</MenuItem>)}
-                </Select>
-            </Stack>
-
-        return (
-            <Dialog onClose={handleUserSettingsDialogClose} open={userSettingsDialogOpen}>
-                <DialogTitle >{tll.t("ProfileAndSettings")}</DialogTitle>
-                <DialogContent dividers>
-                    <Stack direction="column" spacing={2}>
-                        {
-                            <Typography fontWeight={700} >{tll.t("Account")}</Typography>
-                        }
-                        {nameUI}
-                        <Typography fontWeight={700} >{tll.t("Settings")}</Typography>
-                        {languageUI}
-                        <Typography fontWeight={700} >{tll.t("Others")}</Typography>
-
-                    </Stack>
-                </DialogContent>
-            </Dialog>
         )
     }
     const handleTimerSettingsDialogClose = () => {
@@ -763,7 +720,6 @@ export const AppCore = () => {
                 </Stack>
             </Main>
             {/* --------------------------------------------@modals -------------------------------------*/}
-            {renderUserSettingsDialog()}
             {searchTodoDialog}
             {timerSettingDialog}
             {renderFileImportModal()}

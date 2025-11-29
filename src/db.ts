@@ -181,3 +181,13 @@ export async function loadRecordsLatestN(day: number) {
     const recordArray = await db.records.where("createdAt").above(since_ms).sortBy("createdAt"); // 300ms +- 100ms 10倍で2倍
     return recordArray
 }
+
+export async function clearAllData() {
+    await db.todos.clear()
+    await db.records.clear()
+    await db.userSettings.clear()
+    await db.userInfo.clear()
+    await db.timerState.clear()
+    await db.todoFutures.clear()
+    await db.runningTodoID.clear()
+}
