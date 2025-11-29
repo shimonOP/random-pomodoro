@@ -9,6 +9,7 @@ import PrivacyPolicyPage from './pages/PrivacyPolicyPage';
 import { createContext } from 'react';
 import { browserLanguage, TLL } from './langs/TransLangs';
 import HowToUsePage from './pages/HowToUsePage';
+import { DiceTodoProvider } from './contexts/DiceTodoContext';
 
 const theme = createTheme({
   components: {
@@ -39,7 +40,7 @@ const theme = createTheme({
 
 export const TLLContext = createContext(new TLL(browserLanguage));
 function App() {
-  const page = <AppCore ></AppCore>
+  const page = <DiceTodoProvider><AppCore ></AppCore></DiceTodoProvider>
   theme.palette.background.default = "whitesmoke";
 
   return (

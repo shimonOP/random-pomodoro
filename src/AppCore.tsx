@@ -11,7 +11,6 @@ import { Document_Title, Font_Size, Card_PaddingX, Card_PaddingY, timerIntervalS
 import ArchivePane from './components/ArchivePane';
 import { TLLContext } from './App';
 import KeyBoardShortCutHelp from './components/KeyBoardShortCutHelp';
-import { todoWeightCalculator_view, useDiceTodoStates } from './hooks/useDiceTodoStates';
 import { addBrotherSCK, addChildSCK, addTodoInboxSCK, changeFCompleteSCK, changeRCompleteSCK, doneSCK, rollDiceSCK, shortCutKeyToFunc, showKeyBoardShortCutKeyHelpSCK, showSearchTodoDialogSCK, useShortCutKeys } from './hooks/useShortCutKeys';
 import { SearchTodoDialog } from './components/SearchTodoDialog';
 import DateTimeNow from './components/DateTimeNow';
@@ -22,6 +21,7 @@ import { HomePane } from './components/HomePane';
 import { AppHeadBar } from './components/AppHeadBar';
 import { TodoTreeView } from './components/TodoTreeView';
 import { TimerState } from './datas/TimerState';
+import { todoWeightCalculator_view, useDiceTodoStates } from './contexts/DiceTodoContext';
 
 export const AppCore = () => {
     //@@usestate

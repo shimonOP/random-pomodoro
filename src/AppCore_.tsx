@@ -5,11 +5,11 @@ import { Todo, TodoRawValues, getAncestors, getTitlesReadByVoice, isInInterval }
 import { getRecordsToday, newRecord } from "./datas/TodoRecord";
 import { extractTime } from "./util";
 import { TodoRecord } from "./datas/TodoRecord";
-import { todoWeightCalculator_sim } from "./hooks/useDiceTodoStates";
 import { selectTodoAtRandom } from "./selectTodo";
 import Notifier from "./types/Notifier";
 import { UserSettings } from "./datas/UserSettings";
 import { TimerState } from "./datas/TimerState";
+import { todoWeightCalculator_sim } from "./contexts/DiceTodoContext";
 // 流石に1000行超えると、エディタの動作速度が落ちるので、
 
 //constants_dicetodoapp

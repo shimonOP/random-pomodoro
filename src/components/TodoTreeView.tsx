@@ -1,7 +1,6 @@
 import { Button, Drawer, IconButton, Stack, Typography } from '@mui/material';
 import { Todo, countTodos, getChildren, getTodo, hasCompletedAncestor, hasForcedLeafAncestor, isInInterval, isInTags, isRoot } from "../datas/Todo";
 import { UserSettings } from "../datas/UserSettings";
-import { todoWeightCalculator_view } from "../hooks/useDiceTodoStates";
 import { LightGreyColorCode, GreenColorCode, IndigoColorCode, Drawer_Width, TreeView_MaxWidth, AboveAppContentArea_MinHeight } from "../types/constants";
 import { downloadString, getYYYYMMDD, mapToValueArray } from "../util";
 import StyledTreeItem from "./StyledTreeItem";
@@ -13,6 +12,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { useContext } from 'react';
 import { TLLContext } from '../App';
 import { SimpleTreeView } from '@mui/x-tree-view';
+import { todoWeightCalculator_view } from '../contexts/DiceTodoContext';
 
 export function TodoTreeView(props: {
   todos: Map<string, Todo>,
