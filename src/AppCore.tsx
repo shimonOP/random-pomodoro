@@ -22,7 +22,7 @@ import { AppHeadBar } from './components/AppHeadBar';
 import { TodoTreeView } from './components/TodoTreeView';
 import { TimerState } from './datas/TimerState';
 import { todoWeightCalculator_view, useDiceTodoStates } from './contexts/DiceTodoContext';
-import { useIsMobile, useIsPC, useIsTablet } from './hooks/useLayout';
+import { useIsMobileLayout, useIsPCLayout, useIsTabletLayout } from './hooks/useLayout';
 
 export const AppCore = () => {
     //@@usestate
@@ -73,8 +73,8 @@ export const AppCore = () => {
     const { shortCutKeysAndHelps } = useShortCutKeys(tll)
     const [mainAppPaneMobile, setMainAppPaneMobile] = useState<"timer" | "tree" | "todo">("timer") //timer, tree, todo
     const appContentLayoutParams = calcAppContentLayout(windowSize, drawerOpen_notMobile);
-    const isPCLayout = useIsPC();
-    const isMobileLayout = useIsMobile();
+    const isPCLayout = useIsPCLayout();
+    const isMobileLayout = useIsMobileLayout();
 
     const drawerOpen = drawerOpen_notMobile && !isMobileLayout;
     const setRunningTodo_withProc = (todo: Todo | undefined, initSlider: boolean = true, initTimer: boolean = true) => {

@@ -13,6 +13,7 @@ import { useContext } from 'react';
 import { TLLContext } from '../App';
 import { SimpleTreeView } from '@mui/x-tree-view';
 import { todoWeightCalculator_view } from '../contexts/DiceTodoContext';
+import { useIsMobileLayout } from '../hooks/useLayout';
 
 export function TodoTreeView(props: {
   todos: Map<string, Todo>,
@@ -34,11 +35,39 @@ export function TodoTreeView(props: {
     setFocusedTodo,
     collapseTreeView,
   } = props;
-  const tll = useContext(TLLContext)
+  const isMobileLayout = useIsMobileLayout();
   const todoCountsUI = (
-    <Stack direction="column" justifyContent={"end"}>
-      <Stack sx={{ minHeight: AboveAppContentArea_MinHeight }} direction="row" justifyContent={"end"}>
-        <Typography sx={{ color: "grey", marginRight: 1, fontSize: 12 }}>
+    <Stack
+      direction="column"
+      justifyContent={"end"}
+      sx={{
+        position: isMobileLayout ? 'sticky' : 'static',
+        bottom: isMobileLayout ? 0 : 'auto',
+        backgroundColor: isMobileLayout ? 'rgba(255, 255, 255, 0.95)' : 'transparent',
+        backdropFilter: isMobileLayout ? 'blur(8px)' : 'none',
+        borderTop: isMobileLayout ? '1px solid rgba(0, 0, 0, 0.08)' : 'none',
+        padding: isMobileLayout ? '8px 16px' : 0,
+        marginTop: isMobileLayout ? 'auto' : 0,
+        zIndex: 10,
+      }}
+    >
+      <Stack
+        sx={{ minHeight: isMobileLayout ? 'auto' : AboveAppContentArea_MinHeight }}
+        direction="row"
+        justifyContent={isMobileLayout ? "space-between" : "end"}
+        alignItems="center"
+      >
+        {isMobileLayout && (
+          <Typography sx={{ color: "grey", fontSize: 11, fontWeight: 500 }}>
+            Tasks
+          </Typography>
+        )}
+        <Typography sx={{
+          color: "grey",
+          marginRight: isMobileLayout ? 0 : 1,
+          fontSize: isMobileLayout ? 13 : 12,
+          fontWeight: isMobileLayout ? 600 : 400,
+        }}>
           {countTodos(todos)}
         </Typography>
       </Stack>
@@ -101,7 +130,15 @@ export function TodoTreeView(props: {
     setFocusedTodo(focused)
   }
   return (
-    <>
+    <Stack
+      direction="column"
+      sx={{
+        height: '100%',
+        width: '100%',
+        overflow: 'hidden',
+        position: 'relative',
+      }}
+    >
       <SimpleTreeView
         selectedItems={focusedTodoID}
         expandedItems={expandedTodos}
@@ -115,12 +152,34 @@ export function TodoTreeView(props: {
             collapseTreeView(focusedTodoID);
           }
         }}
-        sx={{ flexGrow: 1, maxWidth: TreeView_MaxWidth, overflowY: 'auto' }}
+        sx={{
+          flexGrow: 1,
+          maxWidth: isMobileLayout ? '100%' : TreeView_MaxWidth,
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          paddingBottom: isMobileLayout ? '60px' : 0,
+          paddingLeft: isMobileLayout ? '8px' : 0,
+          paddingRight: isMobileLayout ? '8px' : 0,
+          paddingTop: isMobileLayout ? '8px' : 0,
+          // モバイルでのスムーズなスクロール
+          WebkitOverflowScrolling: 'touch',
+          // スクロールバーのスタイリング（モバイルでは非表示）
+          '&::-webkit-scrollbar': {
+            width: isMobileLayout ? '0px' : '8px',
+          },
+          '&::-webkit-scrollbar-track': {
+            background: 'transparent',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            background: isMobileLayout ? 'transparent' : 'rgba(0,0,0,0.2)',
+            borderRadius: '4px',
+          },
+        }}
       >
         {renderTree(todos, userSettings)}
       </SimpleTreeView>
       {todoCountsUI}
-    </>
+    </Stack>
   )
 }
 const EmptyIcon = () => <span />;

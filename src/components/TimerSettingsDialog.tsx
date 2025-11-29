@@ -6,7 +6,7 @@ import { useContext, useEffect } from "react";
 import { TLLContext } from "../App";
 import { CustomWeightEditor } from "./CustomWeightEditor";
 import { useDiceTodoStates } from "../contexts/DiceTodoContext";
-import { useIsMobile } from "../hooks/useLayout";
+import { useIsMobileLayout } from "../hooks/useLayout";
 
 export function TimerSettingsDialog(
   props: {
@@ -17,7 +17,7 @@ export function TimerSettingsDialog(
 ) {
   const { timerSettingsDialogOpen, handleTimerSettingsDialogClose, onCustomWeightEditorButtonClick } = props;
   const { userSettings, setUserSettings } = useDiceTodoStates();
-  const isMobileLayout = useIsMobile();
+  const isMobileLayout = useIsMobileLayout();
   if (!userSettings) return <></>;
   const tll = useContext(TLLContext);
 
