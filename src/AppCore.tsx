@@ -2,12 +2,12 @@
 /* eslint-disable eqeqeq */
 import React, { useContext, useEffect, useState } from 'react';
 import { BottomNavigation, BottomNavigationAction, Box, Button, Card, Dialog, DialogContent, DialogTitle, Drawer, IconButton, MenuItem, Paper, Select, Stack, TextField, Typography, useMediaQuery } from '@mui/material';
-import { getAncestors, getParent, getPrev, getTodosArray, Todo, getLevel, getTodoOptions } from './datas/Todo';
+import { getAncestors, getParent, getPrev, getTodosArray, Todo, getLevel, getTodoOptions, countTodos } from './datas/Todo';
 import { getWindowDimensions, withoutDuplicate, intervalToString, downloadString, getYYYYMMDD } from './util';
-import { Archive, Casino, ChevronLeft, ChevronRight, Create, Delete, Favorite, FormatListBulleted, Restore, Settings } from '@mui/icons-material';
+import { Archive, Casino, ChevronLeft, ChevronRight, Create, Delete, Favorite, FileDownload, FileUpload, FormatListBulleted, Restore, Settings } from '@mui/icons-material';
 import { Languages, languages, lang2TranslateLanguage } from './types/Languages';
 import TodoPane from './components/TodoPane';
-import { Document_Title, Font_Size, Card_PaddingX, Card_PaddingY, timerIntervalSliderMarks_day, timerIntervalSliderMarks_min, Tablet_BreakPoint, Mobile_BreakPoint, Drawer_Width } from './types/constants';
+import { Document_Title, Font_Size, Card_PaddingX, Card_PaddingY, timerIntervalSliderMarks_day, timerIntervalSliderMarks_min, Tablet_BreakPoint, Mobile_BreakPoint, Drawer_Width, AboveAppContentArea_MinHeight } from './types/constants';
 import ArchivePane from './components/ArchivePane';
 import { TLLContext } from './App';
 import KeyBoardShortCutHelp from './components/KeyBoardShortCutHelp';
@@ -539,42 +539,91 @@ export const AppCore = () => {
         focusedTodoID={focusedTodoID}
         setFocusedTodo={setFocusedTodo}
         collapseTreeView={collapseTreeView}
-        onItemClicked={()=>{setMainAppPaneMobile("todo")}}
+        onItemClicked={() => { setMainAppPaneMobile("todo") }}
     />
     const importButton = (
-        <Button
-            color='inherit'
-            sx={{ height: 30 }}
-            disableFocusRipple
-            id={"importbuttonid"}
+        <IconButton
             onClick={async (event) => {
                 setFileImportDialogOpen(true);
             }}
-        >
-            import
-        </Button>
-    )
-    const exportButton = (
-        <Button
-            color='inherit'
-            sx={{ height: 30 }}
-            disableFocusRipple
-            id={"exportbuttonid"}
-            onClick={async (event) => {
-                const str = await stringifyAppData();
-                if (str) {
-                    const yyyymmdd = getYYYYMMDD()
-                    downloadString(str, "", "dt_" + yyyymmdd + ".json");
-                }
+            size="small"
+            sx={{
+                padding: '8px',
+                backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                '&:hover': {
+                    backgroundColor: 'rgba(0, 0, 0, 0.08)',
+                },
+                '&:active': {
+                    backgroundColor: 'rgba(0, 0, 0, 0.12)',
+                },
             }}
         >
-            export
-        </Button>
+            <FileUpload sx={{ fontSize: 18 }} />
+        </IconButton>
+    )
+    const exportButton = (
+        <IconButton
+            onClick={
+                async (event) => {
+                    const str = await stringifyAppData();
+                    if (str) {
+                        const yyyymmdd = getYYYYMMDD()
+                        downloadString(str, "", "dt_" + yyyymmdd + ".json");
+                    }
+                }
+            }
+            size="small"
+            sx={{
+                padding: '8px',
+                backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                '&:hover': {
+                    backgroundColor: 'rgba(0, 0, 0, 0.08)',
+                },
+                '&:active': {
+                    backgroundColor: 'rgba(0, 0, 0, 0.12)',
+                },
+            }}
+        >
+            <FileDownload sx={{ fontSize: 18 }} />
+        </IconButton>
     )
     const inportExportButtons = (
-        <Stack paddingBottom={"5px"} minHeight={50} direction={"row"} justifyContent={'space-evenly'}>
+        <Stack direction="row" gap={0.5}>
             {importButton}
             {exportButton}
+        </Stack>
+    )
+    const todoCountsUI = (
+        <Stack
+            direction="column"
+            justifyContent={"end"}
+            sx={{
+                position: isMobileLayout ? 'sticky' : 'static',
+                bottom: isMobileLayout ? 0 : 'auto',
+                backgroundColor: isMobileLayout ? 'rgba(255, 255, 255, 0.95)' : 'transparent',
+                backdropFilter: isMobileLayout ? 'blur(8px)' : 'none',
+                borderTop: isMobileLayout ? '1px solid rgba(0, 0, 0, 0.08)' : 'none',
+                padding: isMobileLayout ? '12px 16px' : 0,
+                marginTop: isMobileLayout ? 'auto' : 0,
+                zIndex: 10,
+            }}
+        >
+            <Stack
+                sx={{ minHeight: isMobileLayout ? 'auto' : AboveAppContentArea_MinHeight }}
+                direction="row"
+                justifyContent={isMobileLayout ? "space-between" : "end"}
+                alignItems="center"
+                gap={isMobileLayout ? 1 : 0}
+            >
+                {(
+                    <Stack direction="row" justifyContent={"space-between"} alignItems="center" gap={1} flexGrow={1}>
+                        <Typography sx={{ color: "grey", fontSize: 11, fontWeight: 500 }}>
+                            Tasks {countTodos(todos)}
+                        </Typography>
+                        {inportExportButtons}
+                    </Stack>
+                )}
+            </Stack>
         </Stack>
     )
     const archiveButton = (
@@ -608,7 +657,7 @@ export const AppCore = () => {
             <Stack paddingLeft={"5%"} direction={"row"} justifyContent={"left"}>
                 {archiveButton}
             </Stack>
-            {inportExportButtons}
+            {todoCountsUI}
         </Drawer>
     )
     const searchTodoDialog = <SearchTodoDialog

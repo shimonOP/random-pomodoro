@@ -1,5 +1,5 @@
 import { Button, Drawer, IconButton, Stack, Typography } from '@mui/material';
-import { Todo, countTodos, getChildren, getTodo, hasCompletedAncestor, hasForcedLeafAncestor, isInInterval, isInTags, isRoot } from "../datas/Todo";
+import { Todo, getChildren, getTodo, hasCompletedAncestor, hasForcedLeafAncestor, isInInterval, isInTags, isRoot } from "../datas/Todo";
 import { UserSettings } from "../datas/UserSettings";
 import { LightGreyColorCode, GreenColorCode, IndigoColorCode, Drawer_Width, TreeView_MaxWidth, AboveAppContentArea_MinHeight } from "../types/constants";
 import { downloadString, getYYYYMMDD, mapToValueArray } from "../util";
@@ -9,6 +9,8 @@ import { DrawerHeader, Todo_Archive_NodeID } from '../AppCore_';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import DeleteIcon from '@mui/icons-material/Delete';
+import FileUploadIcon from '@mui/icons-material/FileUpload';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import { useContext } from 'react';
 import { TLLContext } from '../App';
 import { SimpleTreeView } from '@mui/x-tree-view';
@@ -38,43 +40,7 @@ export function TodoTreeView(props: {
     onItemClicked,
   } = props;
   const isMobileLayout = useIsMobileLayout();
-  const todoCountsUI = (
-    <Stack
-      direction="column"
-      justifyContent={"end"}
-      sx={{
-        position: isMobileLayout ? 'sticky' : 'static',
-        bottom: isMobileLayout ? 0 : 'auto',
-        backgroundColor: isMobileLayout ? 'rgba(255, 255, 255, 0.95)' : 'transparent',
-        backdropFilter: isMobileLayout ? 'blur(8px)' : 'none',
-        borderTop: isMobileLayout ? '1px solid rgba(0, 0, 0, 0.08)' : 'none',
-        padding: isMobileLayout ? '8px 16px' : 0,
-        marginTop: isMobileLayout ? 'auto' : 0,
-        zIndex: 10,
-      }}
-    >
-      <Stack
-        sx={{ minHeight: isMobileLayout ? 'auto' : AboveAppContentArea_MinHeight }}
-        direction="row"
-        justifyContent={isMobileLayout ? "space-between" : "end"}
-        alignItems="center"
-      >
-        {isMobileLayout && (
-          <Typography sx={{ color: "grey", fontSize: 11, fontWeight: 500 }}>
-            Tasks
-          </Typography>
-        )}
-        <Typography sx={{
-          color: "grey",
-          marginRight: isMobileLayout ? 0 : 1,
-          fontSize: isMobileLayout ? 13 : 12,
-          fontWeight: isMobileLayout ? 600 : 400,
-        }}>
-          {countTodos(todos)}
-        </Typography>
-      </Stack>
-    </Stack>
-  )
+
   const constructRecursionTree = (todosArray: Todo[], type: "todo" | "archive", userSettings: UserSettings) => {
     return [...todosArray.filter(t => !t.isCompleted), ...todosArray.filter(t => t.isCompleted)].filter(t => type !== "todo" || !t.isArchived).map(todo => {
       if (type == "todo" && todo.isArchived) return undefined;
@@ -181,7 +147,6 @@ export function TodoTreeView(props: {
       >
         {renderTree(todos, userSettings)}
       </SimpleTreeView>
-      {todoCountsUI}
     </Stack>
   )
 }
