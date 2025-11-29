@@ -1,13 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable eqeqeq */
 import React, { useContext, useEffect, useState } from 'react';
-import { Box, Button, Card, Dialog, DialogContent, DialogTitle, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
+import { Box, Button, Card, Dialog, DialogContent, DialogTitle, MenuItem, Select, Stack, TextField, Typography, useMediaQuery } from '@mui/material';
 import { getAncestors, getParent, getPrev, getTodosArray, Todo, getLevel, getTodoOptions } from './datas/Todo';
 import { getWindowDimensions, withoutDuplicate, intervalToString } from './util';
 import { Settings } from '@mui/icons-material';
 import { Languages, languages, lang2TranslateLanguage } from './types/Languages';
 import TodoPane from './components/TodoPane';
-import { Document_Title, Font_Size, Card_PaddingX, Card_PaddingY, timerIntervalSliderMarks_day, timerIntervalSliderMarks_min, Mobile_BreakPoint } from './types/constants';
+import { Document_Title, Font_Size, Card_PaddingX, Card_PaddingY, timerIntervalSliderMarks_day, timerIntervalSliderMarks_min, Tablet_BreakPoint, Mobile_BreakPoint } from './types/constants';
 import ArchivePane from './components/ArchivePane';
 import { TLLContext } from './App';
 import KeyBoardShortCutHelp from './components/KeyBoardShortCutHelp';
@@ -43,7 +43,7 @@ export const AppCore = () => {
     // モバイルデバイスではSidebarを初期状態で非表示にする
     const [drawerOpen, setDrawerOpen] = React.useState(() => {
         const { width } = getWindowDimensions();
-        return width > Mobile_BreakPoint;
+        return width > Tablet_BreakPoint;
     });
     const [addMenuAnchorEl, setAddMenuAnchorEl] = React.useState<null | HTMLElement>(null);
     const [addTodoHelpOpen, setAddTodoHelpOpen] = React.useState(false);
@@ -70,6 +70,9 @@ export const AppCore = () => {
 
     const [windowSize, setWindowSize] = useState(getWindowDimensions());
     const { shortCutKeysAndHelps } = useShortCutKeys(tll)
+    const appContentLayoutParams = calcAppContentLayout(windowSize, drawerOpen);
+    const isPCLayout = useMediaQuery(`(min-width:${Tablet_BreakPoint + 1}px)`);
+    const isMobileLayout = useMediaQuery(`(max-width:${Mobile_BreakPoint}px)`);
 
     const setRunningTodo_withProc = (todo: Todo | undefined, initSlider: boolean = true, initTimer: boolean = true) => {
         setRunningTodo_core(todo)
@@ -132,7 +135,7 @@ export const AppCore = () => {
         shortCutKeyToFunc.set(rollDiceSCK, async () => { rollDice() })
         shortCutKeyToFunc.set(
             doneSCK, async () => {
-                if(isDiceRolling){
+                if (isDiceRolling) {
                     return
                 }
                 done(calcElapsedTime(timerState))
@@ -171,8 +174,8 @@ export const AppCore = () => {
     // ブラウザタグの文字列を変更する処理
     useEffect(function updateTitle() {
         document.title =
-                !runningTodo ? Document_Title :
-                    document.title
+            !runningTodo ? Document_Title :
+                document.title
     }, [runningTodo])
     useEffect(() => {
         if (willExpandTreeLateId) {
@@ -282,7 +285,7 @@ export const AppCore = () => {
         }
     }
     function done(elapsedTime: number) {
-        if(isDiceRolling) return;
+        if (isDiceRolling) return;
         done_(
             elapsedTime,
             runningTodo, sliderInterval, sliderIntervalCoeff, todos,
@@ -407,36 +410,36 @@ export const AppCore = () => {
         setFileImportDialogOpen(false);
     }
     const renderFileImportModal = () => {
-    const fileTypes = ["json"];
+        const fileTypes = ["json"];
 
-    const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (!file) return;
+        const handleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
 
-        const text = await file.text();
-        loadDataFromText(text);  // ← 元の処理そのまま
-    };
+            const text = await file.text();
+            loadDataFromText(text);  // ← 元の処理そのまま
+        };
 
-    return (
-        <Dialog onClose={handleFileImportDialogClose} open={fileImportDialogOpen}>
-            <DialogContent dividers>
-                <Stack direction="column" spacing={2} sx={{ width: 400, height: 500 }}>
+        return (
+            <Dialog onClose={handleFileImportDialogClose} open={fileImportDialogOpen}>
+                <DialogContent dividers>
+                    <Stack direction="column" spacing={2} sx={{ width: 400, height: 500 }}>
 
-                    <Button variant="contained" component="label">
-                        ファイルを選択
-                        <input
-                            type="file"
-                            accept="application/json"
-                            hidden
-                            onChange={handleChange}
-                        />
-                    </Button>
+                        <Button variant="contained" component="label">
+                            ファイルを選択
+                            <input
+                                type="file"
+                                accept="application/json"
+                                hidden
+                                onChange={handleChange}
+                            />
+                        </Button>
 
-                </Stack>
-            </DialogContent>
-        </Dialog>
-    );
-}
+                    </Stack>
+                </DialogContent>
+            </Dialog>
+        );
+    }
     const archivePane =
         <ArchivePane
             todos={todos}
@@ -478,10 +481,7 @@ export const AppCore = () => {
         </Button>
     )
     const switchOrderUIWithWindowWidth = () => {
-        const appContentLayoutParams = calcAppContentLayout(windowSize, drawerOpen);
-        const isPCWidth = appContentLayoutParams.isPCLayout
         const todoPaneWidth = appContentLayoutParams.todoPaneWidth
-        const timerPaneWidth = appContentLayoutParams.timerPaneWidth
         const timerIntervalSliderMarks = sliderIntervalUnit === "Min" ? timerIntervalSliderMarks_min : timerIntervalSliderMarks_day
         const todoPane = (
             <Card key="dt-todo-pane" variant="elevation" elevation={0}
@@ -525,40 +525,43 @@ export const AppCore = () => {
                 setUserSettings={setUserSettings}
                 settingsButton={settingsButton}
                 intervalString={intervalString}
-                timerPaneWidth={timerPaneWidth}
                 isDiceRolling={isDiceRolling}
             />
 
         )
-        if (isPCWidth) {
+        if (isPCLayout) {
             return <>{todoPane}{timerUI}</>
         } else {
             return <>{timerUI}{todoPane}</>
         }
     }
+    const appHeaderBar = isMobileLayout ? <></> :
+        <AppHeadBar
+            todos={todos}
+            setRprobs={setRprobs}
+            setRunningTodo_withProc={setRunningTodo_withProc}
+            setFocusedTodo={setFocusedTodo}
+            setWillExpandTreeLateId={setWillExpandTreeLateId}
+            interruptTodo={interruptTodo}
+            appendTodo={appendTodo}
+            setAddMenuAnchorEl={setAddMenuAnchorEl}
+            addMenuAnchorEl={addMenuAnchorEl}
+            drawerOpen={drawerOpen}
+            setDrawerOpen={setDrawerOpen}
+            addTodoToInbox={addTodoToInbox}
+            addTodoHelpOpen={addTodoHelpOpen}
+            setAddTodoHelpOpen={setAddTodoHelpOpen}
+            setKeyboardShortCutHelpVisibility={setKeyboardShortCutHelpVisibility}
+            focusOnTitleLate={focusOnTitleLate}
+            addTodo={addTodo}
+        />
+    const dateTimeNow = isMobileLayout ? <></> : 
+        <Stack direction={'row-reverse'} color="grey"><DateTimeNow /></Stack>
 
     //@@return
     return (
         <Box sx={{ display: 'flex', fontSize: Font_Size }} ref={thisRef}>
-            <AppHeadBar
-                todos={todos}
-                setRprobs={setRprobs}
-                setRunningTodo_withProc={setRunningTodo_withProc}
-                setFocusedTodo={setFocusedTodo}
-                setWillExpandTreeLateId={setWillExpandTreeLateId}
-                interruptTodo={interruptTodo}
-                appendTodo={appendTodo}
-                setAddMenuAnchorEl={setAddMenuAnchorEl}
-                addMenuAnchorEl={addMenuAnchorEl}
-                drawerOpen={drawerOpen}
-                setDrawerOpen={setDrawerOpen}
-                addTodoToInbox={addTodoToInbox}
-                addTodoHelpOpen={addTodoHelpOpen}
-                setAddTodoHelpOpen={setAddTodoHelpOpen}
-                setKeyboardShortCutHelpVisibility={setKeyboardShortCutHelpVisibility}
-                focusOnTitleLate={focusOnTitleLate}
-                addTodo={addTodo}
-            />
+            {appHeaderBar}
             <TodoTreeView
                 todos={todos}
                 expandedTodos={expandedTodos}
@@ -575,17 +578,9 @@ export const AppCore = () => {
                 setFileImportDialogOpen={setFileImportDialogOpen}
             />
             <Main open={drawerOpen} >
-                <Stack direction={'row-reverse'} marginTop={
-                    (() => {
-                        const appbar = document.getElementById("RPApp-AppBar")
-                        if (appbar) {
-                            return appbar.clientHeight / 2 + "px"
-                        }
-                        return "48px"
-                    })()
-                } paddingTop={"2px"} color="grey"><DateTimeNow /></Stack>
+                {dateTimeNow}
                 <Stack
-                    marginTop={"10px"}
+                    marginTop={isMobileLayout ? 0 : "10px"}
                     direction={{ xs: 'column', md: 'row' }}
                     spacing={{ xs: 1, sm: 2, }}
                     justifyContent="space-around"

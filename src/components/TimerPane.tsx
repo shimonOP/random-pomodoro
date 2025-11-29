@@ -1,6 +1,6 @@
 import { Add, Download, Remove, Start } from "@mui/icons-material"
-import { Link, Tooltip, Card, Stack, Typography, Slider, Box, Button, SxProps, Theme } from "@mui/material"
-import { Card_PaddingX, Card_PaddingY, GreenColorCode, IntervalInTimer_Height, TimerTitle_FontSize, TodayTotalTimeR_FontSize, TodayTotalTime_FontSize, timerRuntimeSliderMarks } from "../types/constants"
+import { Link, Tooltip, Card, Stack, Typography, Slider, Box, Button, SxProps, Theme, useMediaQuery } from "@mui/material"
+import { Card_PaddingX, Card_PaddingY, GreenColorCode, IntervalInTimer_Height, Mobile_BreakPoint, Tablet_BreakPoint, TimerTitle_FontSize, TodayTotalTimeR_FontSize, TodayTotalTime_FontSize, timerRuntimeSliderMarks } from "../types/constants"
 import { extractTime, probsToString, timeToString } from "../util"
 import { todaysTotal, uniqueExecuter_notify, uniqueExecuter_autoDoTimer } from "../AppCore_"
 import { Todo, isInInterval } from "../datas/Todo"
@@ -51,7 +51,6 @@ export function TimerPane(props: {
   intervalString: string,
   rProbs: number[],
   timerIntervalSliderMarks: { value: number, label: string }[],
-  timerPaneWidth: number,
   isDiceRolling: boolean,
 }) {
   const {
@@ -83,10 +82,13 @@ export function TimerPane(props: {
     intervalString,
     rProbs,
     timerIntervalSliderMarks,
-    timerPaneWidth,
     isDiceRolling,
   } = props;
   const tll = useContext(TLLContext);
+  const isMobileLayout = useMediaQuery(`(max-width:${Mobile_BreakPoint}px)`);
+  const timerPadding_X = isMobileLayout ? 3 : Card_PaddingX;
+  const timerPadding_Y = isMobileLayout ? 3 : Card_PaddingY;
+  const timerPaneWidth = isMobileLayout ? '100%' : 0.75 * 0.4 * window.innerWidth;
   useEffect(() => {
     doingAutoTimerStatus = "stable"
     hasNotifiedBrowser = false // 新しいTODOが開始されたらフラグをリセット
@@ -287,7 +289,6 @@ export function TimerPane(props: {
   const renderBreadCrumbs = () => {
     const container = (contain: JSX.Element) => (
       <Box
-        marginTop={2}
         minHeight={20}
         maxHeight={20}
       >{contain}</Box>)
@@ -316,10 +317,11 @@ export function TimerPane(props: {
   return (
     <Card key="dt-timer" variant="elevation" elevation={0} sx={{
       margin: "0px !important",
-      paddingX: Card_PaddingX, paddingTop: Card_PaddingY, paddingBottom: Card_PaddingY,
-      height: "auto",
-      borderWidth: 0.5,
+      paddingX: timerPadding_X, paddingTop: timerPadding_Y, paddingBottom: timerPadding_Y,
+      height: isMobileLayout ? "100vh" : "auto",
+      borderWidth: isMobileLayout ? 0 : 0.5,
       borderColor: "#BBB",
+      position: isMobileLayout ? "relative" : "static",
     }}>
       <Stack direction={'row'} justifyContent={'center'} >
         <Stack

@@ -1,5 +1,5 @@
 import { styled } from "@mui/material"
-import { Drawer_Width, Mobile_BreakPoint } from "./types/constants"
+import { Card_PaddingX, Card_PaddingY, Drawer_Width, Mobile_BreakPoint, Tablet_BreakPoint } from "./types/constants"
 import { UniqueInTabsExecuter } from "./types/uniqueInTabsExecuter"
 import { Todo, TodoRawValues, getAncestors, getTitlesReadByVoice, isInInterval } from "./datas/Todo";
 import { getRecordsToday, newRecord } from "./datas/TodoRecord";
@@ -31,6 +31,12 @@ export const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open
     duration: theme.transitions.duration.leavingScreen,
   }),
   marginLeft: `-${Drawer_Width}px`,
+  [theme.breakpoints.down(Mobile_BreakPoint)]: {
+    padding: 0,
+  },
+  [theme.breakpoints.up(Mobile_BreakPoint + 1)]: {
+    marginTop: '48px', // Toolbar height for dense variant (only on non-mobile)
+  },
   ...(open && {
     transition: theme.transitions.create('margin', {
       easing: theme.transitions.easing.easeOut,
@@ -49,15 +55,19 @@ export const DrawerHeader = styled('div')(({ theme }) => ({
   justifyContent: 'flex-end',
 }));
 export const calcAppContentLayout = (windowSize: { width: number, height: number }, isDrawerOpen: boolean) => {
-  const isPCLayout = windowSize.width > Mobile_BreakPoint
+  const isPCLayout = windowSize.width > Tablet_BreakPoint
+  const isMobileLayout = windowSize.width <= Mobile_BreakPoint
   const drawerWidth = isDrawerOpen ? Drawer_Width : 0;
   const appWidth = windowSize.width - drawerWidth;
   const todoPaneWidth = isPCLayout ? 0.4 * appWidth : 0.7 * appWidth
   const timerPaneWidth = isPCLayout ? 3 / 4 * todoPaneWidth : todoPaneWidth;
+  const todoPanePadding_X = isMobileLayout ? 0 : Card_PaddingX;
+  const todoPanePadding_Y = isMobileLayout ? 0 : Card_PaddingY;
   return {
     todoPaneWidth: todoPaneWidth,
     timerPaneWidth: timerPaneWidth,
-    isPCLayout: isPCLayout
+    todoPanePadding_X: todoPanePadding_X,
+    todoPanePadding_Y: todoPanePadding_Y,
   }
 }
 export const todaysTotal = (todo: Todo, records: TodoRecord[]) => {

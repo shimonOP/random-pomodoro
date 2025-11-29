@@ -2,8 +2,9 @@
 export const Document_Title = "Random Pomodoro";
 export const DocumentTitle_WhileSync = "...saving";
 
-export const Mobile_BreakPoint = 900;
-export const Max_Mobile_Width = 1111;
+export const Mobile_BreakPoint = 600;
+export const Tablet_BreakPoint = 900;
+export const Max_Tablet_Width = 1111;
 export const Max_Todo_Title = 24;
 export const Max_Todo_Memo = 2000;
 export const Max_TagName_Length = 24;
