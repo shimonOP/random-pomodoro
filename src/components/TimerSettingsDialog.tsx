@@ -1,5 +1,5 @@
-import { HelpOutline, VolumeUp, Timer, Language, Notifications, Casino, Label, Edit, Functions, Close, DeleteForever } from "@mui/icons-material";
-import { Tooltip, Dialog, DialogTitle, DialogContent, Stack, Typography, Select, MenuItem, Slider, IconButton, Switch, useMediaQuery, Paper, Divider, Box, Button } from "@mui/material";
+import { HelpOutline, VolumeUp, Timer, Language, Notifications, Casino, Label, Edit, Functions, Close, DeleteForever, PhoneIphone } from "@mui/icons-material";
+import { Tooltip, Dialog, DialogTitle, DialogContent, Stack, Typography, Select, MenuItem, Slider, IconButton, Switch, useMediaQuery, Paper, Divider, Box, Button, TextField } from "@mui/material";
 import { clearAllData } from "../db";
 import { Languages, lang2TranslateLanguage, languages } from "../types/Languages";
 import { UserSettings } from '../datas/UserSettings';
@@ -8,6 +8,7 @@ import { TLLContext } from "../App";
 import { CustomWeightEditor } from "./CustomWeightEditor";
 import { useDiceTodoStates } from "../contexts/DiceTodoContext";
 import { useIsMobileLayout } from "../hooks/useLayout";
+import { WebPushSettings } from "./WebPushSettings";
 
 export function TimerSettingsDialog(
   props: {
@@ -133,6 +134,15 @@ export function TimerSettingsDialog(
                   onChange={(e, newValue) => setUserSettings({ ...userSettings, notifyVolume: newValue as number })}
                 />
               }
+            />
+
+            <Divider sx={{ my: 2 }} />
+
+            <SectionTitle>{"WebPush通知"}</SectionTitle>
+
+            <WebPushSettings
+              enabled={userSettings.webPushEnabled}
+              onEnabledChange={(enabled) => setUserSettings({ ...userSettings, webPushEnabled: enabled })}
             />
           </Paper>
 

@@ -18,6 +18,7 @@ export type UserSettings = {
     customWeightCode: string,
     useCustomWeight: boolean,
     diceRollDuration: number, // サイコロが回る秒数（ミリ秒単位）
+    webPushEnabled: boolean, // WebPush通知の有効/無効
 }
 export type SubscriptionPlan = "free" | "standard" | "pro" | "business" | "education"
 export const createUserSettings = (data?: any) => {
@@ -38,6 +39,7 @@ export const createUserSettings = (data?: any) => {
         customWeightCode: "",
         useCustomWeight: false,
         diceRollDuration: 500, // ms デフォルト1秒
+        webPushEnabled: false,
     }
     if (data) {
         Object.assign(userSettings, data);

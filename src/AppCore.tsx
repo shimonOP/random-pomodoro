@@ -276,7 +276,7 @@ export const AppCore = () => {
         done_(
             elapsedTime,
             runningTodo, sliderInterval, sliderIntervalCoeff, todos,
-            setRunningTodo_withProc, setTimerState, updateTodos, setRecords)
+            setRunningTodo_withProc, setTimerState, updateTodos, setRecords, userSettings)
     }
 
     //--------------------------------@@render-----------------------------------

@@ -10,6 +10,7 @@ import Notifier from "./types/Notifier";
 import { UserSettings } from "./datas/UserSettings";
 import { TimerState } from "./datas/TimerState";
 import { todoWeightCalculator_sim } from "./contexts/DiceTodoContext";
+import { WebPushService } from "./services/WebPushService";
 // 流石に1000行超えると、エディタの動作速度が落ちるので、
 
 //constants_dicetodoapp
@@ -101,19 +102,45 @@ export const rollDice_ = (
   })
   if (res.todo) {
     setIsDiceRolling(true);
-    setTimeout(() => {
+    setTimeout(async () => {
       setIsDiceRolling(false);
       const { todo, probs } = res;
       setRprobs(probs);
       setRunningTodo_withProc(todo, true, false);
+
+      const startTime = timerState.timeAtStarted === null ? Date.now() : timerState.timeAtStarted;
+
       setTimerState({
         ...timerState,
-        timeAtStarted: timerState.timeAtStarted === null ?
-          Date.now() :
-          timerState.timeAtStarted,
+        timeAtStarted: startTime,
         elapsedTimeUntilLastPaused: timerState.elapsedTimeUntilLastPaused,
         remainTime: todo ? todo.runTime : 0,
       })
+
+      // WebPush通知のスケジュール
+      if (userSettings.webPushEnabled && todo) {
+        try {
+          const webPushService = new WebPushService();
+          const endTime = startTime + (todo.runTime * 1000);
+          const todoTitle = getTitlesReadByVoice(todo, todos).join(" > ");
+
+          await webPushService.scheduleNotification(
+            endTime,
+            'ポモドーロ終了！',
+            `「${todoTitle}」のタイマーが終了しました`,
+            '/icon.png',
+            { todoId: todo.id }
+          );
+          console.log(`WebPush notification scheduled for ${new Date(endTime).toISOString()}`);
+        } catch (error: any) {
+          console.error('Failed to schedule WebPush notification:', error);
+          // ユーザーに通知
+          if (error.message) {
+            alert(error.message);
+          }
+        }
+      }
+
       if (userSettings.needSpeechNotifyOnStart) {
         if (todo) {
           const speechText = getTitlesReadByVoice(todo, todos).join(",");
@@ -136,8 +163,17 @@ export function done_(
   setTimerState: (timerState: TimerState) => void,
   updateTodos: (updates: { id: string, property: Partial<TodoRawValues> }[]) => Promise<void>,
   setRecords: (records: TodoRecord[]) => void,
+  userSettings?: UserSettings,
 ) {
   const runTime_sec = Math.floor(elapsedTime / 1000)
+
+  // WebPush通知のスケジュールをキャンセル
+  if (userSettings?.webPushEnabled) {
+    const webPushService = new WebPushService();
+    webPushService.cancelScheduledNotification().catch(error => {
+      console.error('Failed to cancel WebPush notification:', error);
+    });
+  }
 
   setRunningTodo_withProc(undefined, true, false);
   setTimerState({ elapsedTimeUntilLastPaused: 0, timeAtStarted: null, remainTime: 0 })
