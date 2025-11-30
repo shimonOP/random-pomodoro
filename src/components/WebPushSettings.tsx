@@ -62,8 +62,10 @@ export const WebPushSettings: React.FC<WebPushSettingsProps> = ({
     } catch (err: any) {
       console.error('WebPush toggle failed:', err);
       setError(err.message || 'プッシュ通知の設定に失敗しました');
-      // エラー時は状態を戻す
-      onEnabledChange(enabled);
+      // エラー時は状態を戻すだけでなく、ローカルストレージもクリアし、設定を無効化する
+      localStorage.removeItem('webpush_endpoint');
+      setIsSubscribed(false);
+      onEnabledChange(false);
     } finally {
       setIsLoading(false);
     }
