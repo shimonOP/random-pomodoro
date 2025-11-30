@@ -3,7 +3,7 @@ import { Card_PaddingX, Card_PaddingY, Drawer_Width, Mobile_BreakPoint, Tablet_B
 import { UniqueInTabsExecuter } from "./types/uniqueInTabsExecuter"
 import { Todo, TodoRawValues, getAncestors, getTitlesReadByVoice, isInInterval } from "./datas/Todo";
 import { getRecordsToday, newRecord } from "./datas/TodoRecord";
-import { extractTime } from "./util";
+import { extractTime, isMobileDevice } from "./util";
 import { TodoRecord } from "./datas/TodoRecord";
 import { selectTodoAtRandom } from "./selectTodo";
 import Notifier from "./types/Notifier";
@@ -60,8 +60,8 @@ export const calcAppContentLayout = (windowSize: { width: number, height: number
   const isMobileLayout = windowSize.width <= Mobile_BreakPoint
   const drawerWidth = isDrawerOpen ? Drawer_Width : 0;
   const appWidth = windowSize.width - drawerWidth;
-  const todoPaneWidth = isPCLayout ? 0.4 * appWidth : 
-                        0.85 * appWidth
+  const todoPaneWidth = isPCLayout ? 0.4 * appWidth :
+    0.85 * appWidth
   const timerPaneWidth = isPCLayout ? 3 / 4 * todoPaneWidth : todoPaneWidth;
   const todoPanePadding_X = isMobileLayout ? 0 : Card_PaddingX;
   const todoPanePadding_Y = isMobileLayout ? 0 : Card_PaddingY;
@@ -118,7 +118,7 @@ export const rollDice_ = (
       })
 
       // WebPush通知のスケジュール
-      if (userSettings.webPushEnabled && todo) {
+      if (userSettings.webPushEnabled && todo && isMobileDevice()) {
         try {
           const webPushService = new WebPushService();
           const endTime = startTime + (todo.runTime * 1000);
@@ -168,7 +168,7 @@ export function done_(
   const runTime_sec = Math.floor(elapsedTime / 1000)
 
   // WebPush通知のスケジュールをキャンセル
-  if (userSettings?.webPushEnabled) {
+  if (userSettings?.webPushEnabled && isMobileDevice()) {
     const webPushService = new WebPushService();
     webPushService.cancelScheduledNotification().catch(error => {
       console.error('Failed to cancel WebPush notification:', error);
