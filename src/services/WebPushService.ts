@@ -43,7 +43,7 @@ export class WebPushService {
     try {
       console.log('Fetching VAPID key from:', `${this.serverUrl}/vapid-public-key`);
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+      const timeoutId = setTimeout(() => controller.abort(), 20000); // 20 second timeout
 
       try {
         const response = await fetch(`${this.serverUrl}/vapid-public-key`, {
@@ -60,8 +60,8 @@ export class WebPushService {
       } catch (error: any) {
         clearTimeout(timeoutId);
         if (error.name === 'AbortError') {
-          console.error('VAPID key fetch timed out after 5s. Is the server running and accessible?');
-          throw new Error('VAPID key fetch timed out after 5s. Is the server running and accessible?');
+          console.error('VAPID key fetch timed out after 20s. Is the server running and accessible?');
+          throw new Error('VAPID key fetch timed out after 20s. Is the server running and accessible?');
         }
         // For other network errors or JSON parsing errors
         console.error('Failed to fetch VAPID public key due to network or parsing error:', error);
