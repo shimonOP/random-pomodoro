@@ -1,7 +1,7 @@
 import { Add, Download, Remove, Start, Edit } from "@mui/icons-material"
 import { Link, Tooltip, Card, Stack, Typography, Slider, Box, Button, SxProps, Theme, useMediaQuery, IconButton, TextField, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material"
 import { Card_PaddingX, Card_PaddingY, GreenColorCode, IntervalInTimer_Height, Mobile_BreakPoint, Tablet_BreakPoint, TimerTitle_FontSize, TodayTotalTimeR_FontSize, TodayTotalTime_FontSize, timerRuntimeSliderMarks } from "../types/constants"
-import { extractTime, probsToString, timeToString } from "../util"
+import { extractTime, isMobileDevice, probsToString, timeToString } from "../util"
 import { todaysTotal, uniqueExecuter_notify, uniqueExecuter_autoDoTimer } from "../AppCore_"
 import { Todo, isInInterval } from "../datas/Todo"
 import { TodoRecord, getRecordsToday } from "../datas/TodoRecord"
@@ -204,20 +204,25 @@ export function TimerPane(props: {
         onExpire={(elapsedTime: number) => {
           const now = Date.now()
           if (runningTodo !== undefined) {
-            if (now - lastNotifyTime > 20 * 1000) {
-              // ブラウザ通知は最初の1回だけ
-              lastNotifyTime = now
-              if (!hasNotifiedBrowser) {
-                hasNotifiedBrowser = true
-                uniqueExecuter_notify.run(() => {
-                  Notifier.instance.notifyEndWithBrowser(runningTodo.displayTitle, userSettings.language, userSettings.notifyVolume);
-                })
-              }
-              // 2回目以降は音声通知のみ（20秒間隔）
-              if (userSettings.needSpeechNotifyOnEnd) {
-                uniqueExecuter_notify.run(() => {
-                  Notifier.instance.notifyEnd(runningTodo.displayTitle, userSettings.language, userSettings.notifyVolume);
-                })
+            // WebPushが有効かつモバイルの場合は、ブラウザ通知と音声通知を行わない
+            const isWebPushActive = userSettings.webPushEnabled && isMobileDevice();
+
+            if (!isWebPushActive) {
+              if (now - lastNotifyTime > 20 * 1000) {
+                // ブラウザ通知は最初の1回だけ
+                lastNotifyTime = now
+                if (!hasNotifiedBrowser) {
+                  hasNotifiedBrowser = true
+                  uniqueExecuter_notify.run(() => {
+                    Notifier.instance.notifyEndWithBrowser(runningTodo.displayTitle, userSettings.language, userSettings.notifyVolume);
+                  })
+                }
+                // 2回目以降は音声通知のみ（20秒間隔）
+                if (userSettings.needSpeechNotifyOnEnd) {
+                  uniqueExecuter_notify.run(() => {
+                    Notifier.instance.notifyEnd(runningTodo.displayTitle, userSettings.language, userSettings.notifyVolume);
+                  })
+                }
               }
             }
             if (userSettings.doAutoTimer && (doingAutoTimerStatus === "stable") && false) {//まだ不具合多数
