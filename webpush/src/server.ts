@@ -6,10 +6,14 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = Number(process.env.PORT || 3001);
 
 // Middleware
-app.use(cors());
+app.use(cors(
+  {
+    origin: "https://random-pomodoro.org",
+  }
+));
 app.use(express.json());
 
 // VAPID keys configuration
@@ -437,7 +441,7 @@ const CHECK_INTERVAL = 10000;
 setInterval(checkScheduledNotifications, CHECK_INTERVAL);
 
 // Start server
-app.listen(PORT, () => {
+app.listen(3001, "127.0.0.1", () => {
   console.log(`Web Push server running on port ${PORT}`);
   console.log(`VAPID public key: ${vapidKeys.publicKey}`);
   console.log(`Checking scheduled notifications every ${CHECK_INTERVAL / 1000} seconds`);
