@@ -38,6 +38,7 @@ export function TimerPane(props: {
   setSliderIntervalUnit: (value: "Min" | "Day") => void,
   tags: string[],
   settingsButton: JSX.Element,
+  statsButton: JSX.Element,
   intervalString: string,
   rProbs: number[],
   timerIntervalSliderMarks: { value: number, label: string }[],
@@ -59,6 +60,7 @@ export function TimerPane(props: {
     setSliderIntervalUnit,
     tags,
     settingsButton,
+    statsButton,
     intervalString,
     rProbs,
     timerIntervalSliderMarks,
@@ -505,6 +507,7 @@ export function TimerPane(props: {
           }
           <Stack marginTop={3} direction={"row"} >
             {settingsButton}
+            {statsButton}
             {
               runningTodo &&
               <Button style={{ color: "grey", paddingBottom: 3 }} onClick={() => {//paddingBottom: 3 is for settingicon 

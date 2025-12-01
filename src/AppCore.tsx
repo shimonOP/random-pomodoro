@@ -72,6 +72,11 @@ export const AppCore = () => {
     const [windowSize, setWindowSize] = useState(getWindowDimensions());
     const { shortCutKeysAndHelps } = useShortCutKeys(tll)
     const [mainAppPaneMobile, setMainAppPaneMobile] = useState<"timer" | "tree" | "todo" | "stats">("timer") //timer, tree, todo, stats
+    const [statsDialogOpen, setStatsDialogOpen] = useState(false);
+
+    const handleStatsDialogClose = () => {
+        setStatsDialogOpen(false);
+    }
     const isPCLayout = useIsPCLayout();
     const isMobileLayout = useIsMobileLayout();
     const drawerOpen = drawerOpen_notMobile && !isMobileLayout;
@@ -164,6 +169,30 @@ export const AppCore = () => {
             !runningTodo ? Document_Title :
                 document.title
     }, [runningTodo])
+
+    // Service Workerからのメッセージを受け取るリスナーを追加
+    useEffect(() => {
+        const handleMessage = (event: MessageEvent) => {
+            if (event.data && event.data.type === 'CHECK_TODO_ID') {
+                if (event.ports && event.ports[0]) {
+                    event.ports[0].postMessage({
+                        todoId: runningTodo ? runningTodo.id : null
+                    });
+                }
+            }
+        };
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.addEventListener('message', handleMessage);
+        }
+
+        return () => {
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.removeEventListener('message', handleMessage);
+            }
+        };
+    }, [runningTodo]);
+
     useEffect(() => {
         if (willExpandTreeLateId) {
             expandTreeView(willExpandTreeLateId, true, true);
@@ -420,6 +449,35 @@ export const AppCore = () => {
             <Settings></Settings>
         </Button>
     )
+
+    const renderStatsDialog = (
+        <Dialog
+            open={statsDialogOpen}
+            onClose={handleStatsDialogClose}
+            maxWidth="md"
+            fullWidth
+        >
+            <DialogContent>
+                <StatsPane />
+            </DialogContent>
+        </Dialog>
+    );
+
+    const statsButton = (
+        <Button
+            onClick={() => {
+                if (isMobileLayout) {
+                    setMainAppPaneMobile("stats");
+                } else {
+                    setStatsDialogOpen(true);
+                }
+            }}
+            style={{ color: "grey" }}
+        >
+            <BarChart />
+        </Button>
+    );
+
     const timerIntervalSliderMarks = sliderIntervalUnit === "Min" ? timerIntervalSliderMarks_min : timerIntervalSliderMarks_day
     const timerPane = (
         <TimerPane
@@ -439,6 +497,7 @@ export const AppCore = () => {
             sliderIntervalMax={sliderIntervalMax}
             tags={tags}
             settingsButton={settingsButton}
+            statsButton={statsButton}
             intervalString={intervalString}
             isDiceRolling={isDiceRolling}
             onTitleClicked={() => {
@@ -595,13 +654,6 @@ export const AppCore = () => {
             {tll.t("Archive")}
         </Button>
     )
-    const statsButton = (
-        <Button color='inherit' onClick={() => {
-            setMainAppPaneMobile("stats");
-        }} startIcon={<BarChart></BarChart>}>
-            Statistics
-        </Button>
-    )
     const sideBarContent = (
         <Drawer
             sx={{
@@ -719,7 +771,6 @@ export const AppCore = () => {
                 <BottomNavigationAction value={"todo"} label="Todo" icon={<Create />} />
                 <BottomNavigationAction value={"timer"} label="Timer" icon={<Casino />} />
                 <BottomNavigationAction value={"tree"} label="Tree" icon={<FormatListBulleted />} />
-                <BottomNavigationAction value={"stats"} label="Stats" icon={<BarChart />} />
             </BottomNavigation>
         </Paper>
     )
@@ -747,6 +798,7 @@ export const AppCore = () => {
             {searchTodoDialog}
             {timerSettingDialog}
             {renderFileImportModal()}
+            {renderStatsDialog}
             {/* --------------------------------------------@invisible components -------------------------------------*/}
             {keyboardShortCutHelp}
         </Box >

@@ -1,6 +1,6 @@
 import React, { useContext, useMemo, useState } from 'react';
 import { Box, Card, CardContent, FormControl, MenuItem, Paper, Select, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material';
-import { BarChart } from '@mui/x-charts/BarChart';
+
 import { TLLContext } from '../App';
 import { extractTime } from '../util';
 import { useDiceTodoStates } from '../contexts/DiceTodoContext';
@@ -162,8 +162,8 @@ const StatsPane = () => {
                         {selectedYear !== 'all' && selectedMonth !== 'all'
                             ? `${selectedYear}${tll.t("Year")} ${selectedMonth}${tll.t("Month")}`
                             : selectedYear !== 'all'
-                            ? `${selectedYear}${tll.t("Year")}`
-                            : tll.t("Total")}
+                                ? `${selectedYear}${tll.t("Year")}`
+                                : tll.t("Total")}
                     </Typography>
                     <Stack direction="row" spacing={4}>
                         <Box>
@@ -182,27 +182,6 @@ const StatsPane = () => {
             {selectedYear === 'all' && selectedMonth === 'all' && monthlyStats.length > 0 && (
                 <Box>
                     <Typography variant="h6" gutterBottom>Monthly Summary</Typography>
-                    <Card>
-                        <CardContent sx={{ width: '100%' }}>
-                            <Box sx={{ width: '100%', height: 300 }}>
-                                <BarChart
-                                    xAxis={[{
-                                        scaleType: 'band',
-                                        data: monthlyStats.map(stat => `${stat.year}/${stat.month}`),
-                                        label: tll.t("Year") + '/' + tll.t("Month")
-                                    }]}
-                                    series={[
-                                        {
-                                            data: monthlyStats.map(stat => stat.totalHours),
-                                            label: tll.t("Hour"),
-                                            color: '#1976d2'
-                                        }
-                                    ]}
-                                    height={300}
-                                />
-                            </Box>
-                        </CardContent>
-                    </Card>
                     <TableContainer component={Paper} sx={{ mt: 2 }}>
                         <Table size="small">
                             <TableHead>
