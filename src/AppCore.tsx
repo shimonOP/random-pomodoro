@@ -469,7 +469,7 @@ export const AppCore = () => {
         return (
             <Dialog onClose={handleFileImportDialogClose} open={fileImportDialogOpen}>
                 <DialogContent dividers>
-                    <Stack direction="column" spacing={2} sx={{ width: 400, height: 500 }}>
+                    <Stack direction="column" spacing={2} sx={{ width: '100%', maxWidth: 400, minHeight: 200 }}>
 
                         <Button variant="contained" component="label">
                             ファイルを選択
