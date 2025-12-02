@@ -24,8 +24,11 @@ type TaskStats = {
 const StatsPane = () => {
     const { records } = useDiceTodoStates();
     const tll = useContext(TLLContext);
-    const [selectedYear, setSelectedYear] = useState<number | 'all'>('all');
-    const [selectedMonth, setSelectedMonth] = useState<number | 'all'>('all');
+
+    // デフォルトで今月を表示
+    const now = new Date();
+    const [selectedYear, setSelectedYear] = useState<number | 'all'>(now.getFullYear());
+    const [selectedMonth, setSelectedMonth] = useState<number | 'all'>(now.getMonth() + 1);
 
     // 月ごとの統計を計算
     const monthlyStats = useMemo(() => {
