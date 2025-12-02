@@ -24,11 +24,38 @@ export const shortCutKeyToFunc = new Map<ShortCutKey, () => Promise<any>>()
 export const useShortCutKeys = (tll: TLL) => {
     const [shortCutKey, setShortCutKey] = useState<ShortCutKey | undefined>(undefined);
 
-    useHotkeys(addBrotherSCK, () => { pSetCommand(addBrotherSCK) });
-    useHotkeys(addChildSCK, () => { pSetCommand(addChildSCK) });
-    useHotkeys(changeFCompleteSCK, () => { pSetCommand(changeFCompleteSCK) });
-    useHotkeys(showKeyBoardShortCutKeyHelpSCK, () => { pSetCommand(showKeyBoardShortCutKeyHelpSCK) });
-    useHotkeys(showSearchTodoDialogSCK, () => { pSetCommand(showSearchTodoDialogSCK) });
+    // Monaco Editorやテキスト入力要素内でショートカットキーが発動しないようにチェック
+    const shouldExecuteShortcut = (event: KeyboardEvent): boolean => {
+        const target = event.target as HTMLElement;
+
+        // Monaco Editor内かチェック
+        if (target.closest('.monaco-editor')) {
+            return false;
+        }
+
+        // input, textarea, contenteditable要素内かチェック
+        if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
+            return false;
+        }
+
+        return true;
+    };
+
+    useHotkeys(addBrotherSCK, (event) => {
+        if (shouldExecuteShortcut(event)) pSetCommand(addBrotherSCK);
+    });
+    useHotkeys(addChildSCK, (event) => {
+        if (shouldExecuteShortcut(event)) pSetCommand(addChildSCK);
+    });
+    useHotkeys(changeFCompleteSCK, (event) => {
+        if (shouldExecuteShortcut(event)) pSetCommand(changeFCompleteSCK);
+    });
+    useHotkeys(showKeyBoardShortCutKeyHelpSCK, (event) => {
+        if (shouldExecuteShortcut(event)) pSetCommand(showKeyBoardShortCutKeyHelpSCK);
+    });
+    useHotkeys(showSearchTodoDialogSCK, (event) => {
+        if (shouldExecuteShortcut(event)) pSetCommand(showSearchTodoDialogSCK);
+    });
 
     useEffect(() => {
         disableKeyBoardShortCut(shortCutKeys);
