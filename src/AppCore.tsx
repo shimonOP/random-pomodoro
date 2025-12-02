@@ -22,7 +22,7 @@ import { AppHeadBar } from './components/AppHeadBar';
 import { TodoTreeView } from './components/TodoTreeView';
 import { TimerState } from './datas/TimerState';
 import { todoWeightCalculator_view, useDiceTodoStates } from './contexts/DiceTodoContext';
-import { useIsMobileLayout, useIsPCLayout, useIsTabletLayout } from './hooks/useLayout';
+import { useIsMobileLayout, useIsPCLayout } from './hooks/useLayout';
 import { lang2TranslateLanguage } from './types/Languages';
 import { WebPushService } from './services/WebPushService';
 
