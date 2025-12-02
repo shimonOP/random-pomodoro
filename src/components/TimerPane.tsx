@@ -327,7 +327,9 @@ export function TimerPane(props: {
   return (
     <Card key="dt-timer" variant="elevation" elevation={0} sx={{
       margin: "0px !important",
-      paddingX: timerPadding_X, paddingTop: timerPadding_Y, paddingBottom: timerPadding_Y,
+      paddingX: timerPadding_X,
+      paddingTop: isMobileLayout ? 10 : timerPadding_Y,
+      paddingBottom: timerPadding_Y,
       height: isMobileLayout ? "100vh" : "auto",
       borderWidth: isMobileLayout ? 0 : 0.5,
       borderColor: "#BBB",

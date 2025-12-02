@@ -636,6 +636,7 @@ export const AppCore = () => {
         setFocusedTodo={setFocusedTodo}
         collapseTreeView={collapseTreeView}
         onItemClicked={() => { setMainAppPaneMobile("todo") }}
+        setTodoParameter={setTodoParameter}
     />
     const importButton = (
         <IconButton

@@ -4,8 +4,11 @@ import Box from '@mui/material/Box';
 import { TreeItem, treeItemClasses } from '@mui/x-tree-view/TreeItem';
 import type { TreeItemProps } from '@mui/x-tree-view/TreeItem';
 import Typography from '@mui/material/Typography';
-import { Button, useMediaQuery } from '@mui/material';
+import { Button, useMediaQuery, IconButton } from '@mui/material';
 import { useIsMobileLayout } from '../hooks/useLayout';
+import { Todo } from '../datas/Todo';
+import LockIcon from '@mui/icons-material/Lock';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
 
 declare module 'react' {
     interface CSSProperties {
@@ -22,6 +25,8 @@ type StyledTreeItemProps = TreeItemProps & {
     labelText: string;
     onClickedLabel: () => void
     makeTextLined: boolean;
+    todo?: Todo;
+    onCompleteToggle?: (todo: Todo) => void;
 };
 
 const StyledTreeItemRootDesktop = styled(TreeItem)(({ theme }) => ({
@@ -92,6 +97,8 @@ export default function StyledTreeItem(props: StyledTreeItemProps) {
         labelText,
         makeTextLined,
         onClickedLabel,
+        todo,
+        onCompleteToggle,
         ...other
     } = props;
 
@@ -145,6 +152,21 @@ export default function StyledTreeItem(props: StyledTreeItemProps) {
                     <Typography variant="caption" color="inherit">
                         {labelInfo}
                     </Typography>
+                    {/* 鍵アイコン（モバイルのみ） */}
+                    {isMobile && todo && onCompleteToggle && (
+                        <IconButton
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onCompleteToggle(todo);
+                            }}
+                            sx={{
+                                padding: '4px',
+                                marginRight: '-8px',
+                            }}
+                        >
+                            {todo.isCompleted ? <LockIcon fontSize="small" /> : <LockOpenIcon fontSize="small" />}
+                        </IconButton>
+                    )}
                 </Box>
             }
             style={{

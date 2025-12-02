@@ -27,6 +27,7 @@ export function TodoTreeView(props: {
   setFocusedTodo: (todo: Todo | undefined) => void,
   collapseTreeView: (id: string) => void,
   onItemClicked?: ()=>void,
+  setTodoParameter?: (id: string, params: any) => void,
 }) {
   const {
     todos,
@@ -38,6 +39,7 @@ export function TodoTreeView(props: {
     setFocusedTodo,
     collapseTreeView,
     onItemClicked,
+    setTodoParameter,
   } = props;
   const isMobileLayout = useIsMobileLayout();
 
@@ -75,7 +77,20 @@ export function TodoTreeView(props: {
             }}
             onClick={() => {
               onItemClicked && onItemClicked();
-            }} className={'treeItem-' + todo.id} key={todo.id} itemId={todo.id} labelText={label} style={{ color: labelColor }} makeTextLined={todo.isCompleted} >
+            }}
+            className={'treeItem-' + todo.id}
+            key={todo.id}
+            itemId={todo.id}
+            labelText={label}
+            style={{ color: labelColor }}
+            makeTextLined={todo.isCompleted}
+            todo={todo}
+            onCompleteToggle={(t: Todo) => {
+              if (setTodoParameter) {
+                setTodoParameter(t.id, { isCompleted: !t.isCompleted });
+              }
+            }}
+          >
             {constructRecursionTree(children, type, userSettings)}
           </StyledTreeItem>
         );
