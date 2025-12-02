@@ -696,7 +696,7 @@ export const AppCore = () => {
             justifyContent={"end"}
             sx={{
                 position: isMobileLayout ? 'sticky' : 'static',
-                bottom: isMobileLayout ? 0 : 'auto',
+                bottom: isMobileLayout ? '56px' : 'auto',
                 backgroundColor: isMobileLayout ? 'rgba(255, 255, 255, 0.95)' : 'transparent',
                 backdropFilter: isMobileLayout ? 'blur(8px)' : 'none',
                 borderTop: isMobileLayout ? '1px solid rgba(0, 0, 0, 0.08)' : 'none',

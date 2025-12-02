@@ -160,8 +160,8 @@ export default function StyledTreeItem(props: StyledTreeItemProps) {
                                 onCompleteToggle(todo);
                             }}
                             sx={{
-                                padding: '4px',
-                                marginRight: '-8px',
+                                padding: '2px',
+                                marginRight: '8px',
                             }}
                         >
                             {todo.isCompleted ? <LockIcon fontSize="small" /> : <LockOpenIcon fontSize="small" />}
