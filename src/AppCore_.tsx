@@ -117,30 +117,6 @@ export const rollDice_ = (
         remainTime: todo ? todo.runTime : 0,
       })
 
-      // WebPush通知のスケジュール
-      if (userSettings.webPushEnabled && todo && isMobileDevice()) {
-        try {
-          const webPushService = new WebPushService();
-          const endTime = startTime + (todo.runTime * 1000);
-          const todoTitle = getTitlesReadByVoice(todo, todos).join(" > ");
-
-          await webPushService.scheduleNotification(
-            endTime,
-            'ポモドーロ終了！',
-            `「${todoTitle}」のタイマーが終了しました`,
-            '/icon.png',
-            { todoId: todo.id }
-          );
-          console.log(`WebPush notification scheduled for ${new Date(endTime).toISOString()}`);
-        } catch (error: any) {
-          console.error('Failed to schedule WebPush notification:', error);
-          // ユーザーに通知
-          if (error.message) {
-            alert(error.message);
-          }
-        }
-      }
-
       if (userSettings.needSpeechNotifyOnStart) {
         if (todo) {
           const speechText = getTitlesReadByVoice(todo, todos).join(",");

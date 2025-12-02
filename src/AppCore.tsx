@@ -2,8 +2,8 @@
 /* eslint-disable eqeqeq */
 import React, { useContext, useEffect, useState } from 'react';
 import { BottomNavigation, BottomNavigationAction, Box, Button, Card, Dialog, DialogContent, Drawer, IconButton, Paper, Stack, Typography } from '@mui/material';
-import { getAncestors, getParent, getPrev, getTodosArray, Todo, getLevel, getTodoOptions, countTodos } from './datas/Todo';
-import { getWindowDimensions, withoutDuplicate, intervalToString, downloadString, getYYYYMMDD } from './util';
+import { getAncestors, getParent, getPrev, getTodosArray, Todo, getLevel, getTodoOptions, countTodos, getTitlesReadByVoice } from './datas/Todo';
+import { getWindowDimensions, withoutDuplicate, intervalToString, downloadString, getYYYYMMDD, isMobileDevice } from './util';
 import { Archive, BarChart, Casino, ChevronLeft, ChevronRight, Create, Delete, Favorite, FileDownload, FileUpload, FormatListBulleted, Restore, Settings } from '@mui/icons-material';
 import TodoPane from './components/TodoPane';
 import { Document_Title, Font_Size, Card_PaddingX, Card_PaddingY, timerIntervalSliderMarks_day, timerIntervalSliderMarks_min, Tablet_BreakPoint, Mobile_BreakPoint, Drawer_Width, AboveAppContentArea_MinHeight } from './types/constants';
@@ -24,6 +24,7 @@ import { TimerState } from './datas/TimerState';
 import { todoWeightCalculator_view, useDiceTodoStates } from './contexts/DiceTodoContext';
 import { useIsMobileLayout, useIsPCLayout, useIsTabletLayout } from './hooks/useLayout';
 import { lang2TranslateLanguage } from './types/Languages';
+import { WebPushService } from './services/WebPushService';
 
 export const AppCore = () => {
     //@@usestate
@@ -137,7 +138,7 @@ export const AppCore = () => {
     useEffect(function updateTLLLang() {
         if (!userSettings) return
         tll.lang = lang2TranslateLanguage(userSettings.language);
-    }, [userSettings])
+    }, [userSettings, tll])
     //useHotKeysで直接実行するとtodosなどが空なので苦肉の策
     useEffect(function setShortCutKey() {
         shortCutKeyToFunc.set(addChildSCK, async () => {
@@ -193,6 +194,39 @@ export const AppCore = () => {
         };
     }, [runningTodo]);
 
+    // runningTodoのrunTimeが変更されたときにWebPush通知を再スケジュール
+    useEffect(() => {
+        // タイマーが実行中で、WebPushが有効で、モバイルの場合のみ
+        if (runningTodo && timerState && timerState.timeAtStarted !== null && userSettings?.webPushEnabled && isMobileDevice()) {
+            (async () => {
+                try {
+                    const webPushService = new WebPushService();
+
+                    // 既存のスケジュールをキャンセル
+                    await webPushService.cancelScheduledNotification();
+
+                    // 新しい終了時間を計算
+                    const elapsedTime = (Date.now() - timerState.timeAtStarted!) + timerState.elapsedTimeUntilLastPaused;
+                    const remainingTime = Math.max(0, (runningTodo.runTime * 1000) - elapsedTime);
+                    const endTime = Date.now() + remainingTime;
+
+                    // 新しいスケジュールを作成
+                    const todoTitle = getTitlesReadByVoice(runningTodo, todos).join(" > ");
+                    await webPushService.scheduleNotification(
+                        endTime,
+                        'ポモドーロ終了！',
+                        `「${todoTitle}」のタイマーが終了しました`,
+                        '/icon.png',
+                        { todoId: runningTodo.id }
+                    );
+                    console.log(`WebPush notification rescheduled for ${new Date(endTime).toISOString()}`);
+                } catch (error) {
+                    console.error('Failed to reschedule WebPush notification:', error);
+                }
+            })();
+        }
+    }, [runningTodo,runningTodo?.runTime]);
+
     useEffect(() => {
         if (willExpandTreeLateId) {
             expandTreeView(willExpandTreeLateId, true, true);
@@ -215,7 +249,7 @@ export const AppCore = () => {
     if (!userSettings || !userInfo) return <></>
     const tags: string[] = withoutDuplicate(getTodosArray(todos).flatMap(todo => todo.tags))
     //--------------------------@@processes-------------------------------------
-    const calcWeight_view = (todo: Todo) => todoWeightCalculator_view.calcWeight(todo, todos, records, userSettings, new Date())
+    const calcWeight_view = (todo: Todo) => todoWeightCalculator_view.calcWeight(todo, todos, records, userSettings!, new Date())
     /*forceExpand:if:
         false:すでに開いてるときは閉じる。
         true:常に開く。
@@ -278,6 +312,7 @@ export const AppCore = () => {
         focusOnTitleLate();
     }
     const rollDice = (parent?: Todo) => {
+        if (!userSettings) return;
         rollDice_(
             isDiceRolling,
             todos, records, userSettings, timerState,
@@ -553,7 +588,7 @@ export const AppCore = () => {
         todos={todos}
         expandedTodos={expandedTodos}
         expandTreeView={expandTreeView}
-        userSettings={userSettings}
+        userSettings={userSettings!}
         calcWeight_view={calcWeight_view}
         focusedTodoID={focusedTodoID}
         setFocusedTodo={setFocusedTodo}
