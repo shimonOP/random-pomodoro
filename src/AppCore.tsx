@@ -194,7 +194,36 @@ export const AppCore = () => {
         };
     }, [runningTodo]);
 
-    // runningTodoのrunTimeが変更されたときにWebPush通知を再スケジュール
+    // WebPush通知の管理: runningTodoが変更されたときと、定期的に終了時間をチェック
+    const [scheduledEndTime, setScheduledEndTime] = useState<number | null>(null);
+
+    // WebPush通知をスケジュールする共通処理
+    const scheduleWebPushNotification = async (endTime: number, isReschedule: boolean = false) => {
+        try {
+            const webPushService = new WebPushService();
+
+            // 既存のスケジュールをキャンセル
+            await webPushService.cancelScheduledNotification();
+
+            if (!runningTodo) return;
+
+            // 新しいスケジュールを作成
+            const todoTitle = getTitlesReadByVoice(runningTodo, todos).join(" > ");
+            await webPushService.scheduleNotification(
+                endTime,
+                'ポモドーロ終了！',
+                `「${todoTitle}」のタイマーが終了しました`,
+                '/icon.png',
+                { todoId: runningTodo.id }
+            );
+            setScheduledEndTime(endTime);
+            console.log(`WebPush notification ${isReschedule ? 'rescheduled' : 'scheduled'} for ${new Date(endTime).toISOString()}`);
+        } catch (error) {
+            console.error('Failed to schedule WebPush notification:', error);
+        }
+    };
+
+    // runningTodoが変更されたときにWebPush通知をスケジュール
     useEffect(() => {
         if (!runningTodo) {
             // WebPush通知のスケジュールをキャンセル
@@ -204,38 +233,41 @@ export const AppCore = () => {
                     console.error('Failed to cancel WebPush notification:', error);
                 });
             }
+            setScheduledEndTime(null);
             return;
         }
         // タイマーが実行中で、WebPushが有効で、モバイルの場合のみ
         if (runningTodo && timerState && timerState.timeAtStarted !== null && userSettings?.webPushEnabled && isMobileDevice()) {
-            (async () => {
-                try {
-                    const webPushService = new WebPushService();
+            // 新しい終了時間を計算
+            const elapsedTime = (Date.now() - timerState.timeAtStarted!) + timerState.elapsedTimeUntilLastPaused;
+            const remainingTime = Math.max(0, (runningTodo.runTime * 1000) - elapsedTime);
+            const endTime = Date.now() + remainingTime;
 
-                    // 既存のスケジュールをキャンセル
-                    await webPushService.cancelScheduledNotification();
-
-                    // 新しい終了時間を計算
-                    const elapsedTime = (Date.now() - timerState.timeAtStarted!) + timerState.elapsedTimeUntilLastPaused;
-                    const remainingTime = Math.max(0, (runningTodo.runTime * 1000) - elapsedTime);
-                    const endTime = Date.now() + remainingTime;
-
-                    // 新しいスケジュールを作成
-                    const todoTitle = getTitlesReadByVoice(runningTodo, todos).join(" > ");
-                    await webPushService.scheduleNotification(
-                        endTime,
-                        'ポモドーロ終了！',
-                        `「${todoTitle}」のタイマーが終了しました`,
-                        '/icon.png',
-                        { todoId: runningTodo.id }
-                    );
-                    console.log(`WebPush notification rescheduled for ${new Date(endTime).toISOString()}`);
-                } catch (error) {
-                    console.error('Failed to reschedule WebPush notification:', error);
-                }
-            })();
+            scheduleWebPushNotification(endTime, false);
         }
-    }, [runningTodo, runningTodo?.runTime]);
+    }, [runningTodo]);
+
+    // 定期的にタイマー終了時間をチェックして、ずれていたら再スケジュール
+    useEffect(() => {
+        if (!runningTodo || !timerState || timerState.timeAtStarted === null || !userSettings?.webPushEnabled || !isMobileDevice()) {
+            return;
+        }
+
+        // 2秒ごとにチェック
+        const checkInterval = setInterval(() => {
+            const elapsedTime = (Date.now() - timerState.timeAtStarted!) + timerState.elapsedTimeUntilLastPaused;
+            const remainingTime = Math.max(0, (runningTodo.runTime * 1000) - elapsedTime);
+            const currentEndTime = Date.now() + remainingTime;
+
+            // スケジュール済みの終了時間と現在の終了時間を比較（5秒以上のずれがあれば再スケジュール）
+            if (scheduledEndTime && Math.abs(currentEndTime - scheduledEndTime) > 5000) {
+                console.log(`Timer end time drifted by ${Math.abs(currentEndTime - scheduledEndTime) / 1000}s, rescheduling...`);
+                scheduleWebPushNotification(currentEndTime, true);
+            }
+        }, 2000); // 2秒ごとにチェック
+
+        return () => clearInterval(checkInterval);
+    }, [runningTodo, timerState, scheduledEndTime, userSettings?.webPushEnabled, todos]);
 
     useEffect(() => {
         if (willExpandTreeLateId) {
