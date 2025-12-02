@@ -196,6 +196,16 @@ export const AppCore = () => {
 
     // runningTodoのrunTimeが変更されたときにWebPush通知を再スケジュール
     useEffect(() => {
+        if (!runningTodo) {
+            // WebPush通知のスケジュールをキャンセル
+            if (userSettings?.webPushEnabled && isMobileDevice()) {
+                const webPushService = new WebPushService();
+                webPushService.cancelScheduledNotification().catch(error => {
+                    console.error('Failed to cancel WebPush notification:', error);
+                });
+            }
+            return;
+        }
         // タイマーが実行中で、WebPushが有効で、モバイルの場合のみ
         if (runningTodo && timerState && timerState.timeAtStarted !== null && userSettings?.webPushEnabled && isMobileDevice()) {
             (async () => {
@@ -225,7 +235,7 @@ export const AppCore = () => {
                 }
             })();
         }
-    }, [runningTodo,runningTodo?.runTime]);
+    }, [runningTodo, runningTodo?.runTime]);
 
     useEffect(() => {
         if (willExpandTreeLateId) {

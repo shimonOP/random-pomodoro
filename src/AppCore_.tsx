@@ -143,14 +143,6 @@ export function done_(
 ) {
   const runTime_sec = Math.floor(elapsedTime / 1000)
 
-  // WebPush通知のスケジュールをキャンセル
-  if (userSettings?.webPushEnabled && isMobileDevice()) {
-    const webPushService = new WebPushService();
-    webPushService.cancelScheduledNotification().catch(error => {
-      console.error('Failed to cancel WebPush notification:', error);
-    });
-  }
-
   setRunningTodo_withProc(undefined, true, false);
   setTimerState({ elapsedTimeUntilLastPaused: 0, timeAtStarted: null, remainTime: 0 })
   if (runningTodo) {
