@@ -306,9 +306,9 @@ export class TLL {
                     case "DeleteAll":
                         return "全てのToDoを完全に削除する"
                     case "EditIntervalOnTimerPane":
-                        return "休止間隔を変更できるスライダーがタイマーの下に表示される"
+                        return "休止間隔を変更できるUIがタイマーの下に表示される"
                     case "EditRunTimeOnTimerPane":
-                        return "実行時間を変更できるスライダーがタイマーの下に表示される"
+                        return "実行時間を変更できるUIがタイマーの下に表示される"
                     case "OffTime":
                         return "休止時間"
                     case "NumOfTodosFuture":

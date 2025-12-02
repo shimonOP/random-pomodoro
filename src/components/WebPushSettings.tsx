@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { WebPushService } from '../services/WebPushService';
 import { TLLContext } from '../App';
-import { WEBPUSH_SERVER_URL } from '../config/webpush';
 
 interface WebPushSettingsProps {
   enabled: boolean;
@@ -143,13 +142,10 @@ export const WebPushSettings: React.FC<WebPushSettingsProps> = ({
           ステータス: {isSubscribed ? '登録済み' : '未登録'}
         </p>
         <p style={{ margin: '4px 0' }}>
-          サーバーURL: {WEBPUSH_SERVER_URL}
-        </p>
-        <p style={{ margin: '4px 0' }}>
           タイマー終了時にこのデバイスに通知が送信されます
         </p>
         <p style={{ margin: '4px 0', color: '#999', fontSize: '11px' }}>
-          ※ 各デバイスは独立して通知を受け取ります
+          ※ プッシュ通知はモバイルデバイスでのみ利用可能です
         </p>
       </div>
     </div>
