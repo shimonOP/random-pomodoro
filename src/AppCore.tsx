@@ -3,7 +3,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { BottomNavigation, BottomNavigationAction, Box, Button, Card, Dialog, DialogContent, Drawer, IconButton, Paper, Stack, Typography } from '@mui/material';
 import { getAncestors, getParent, getPrev, getTodosArray, Todo, getLevel, getTodoOptions, countTodos, getTitlesReadByVoice } from './datas/Todo';
-import { getWindowDimensions, withoutDuplicate, intervalToString, downloadString, getYYYYMMDD, isMobileDevice } from './util';
+import { getWindowDimensions, withoutDuplicate, intervalToString, downloadString, getYYYYMMDD, isMobileDevice, isWebPushEnabled } from './util';
 import { Archive, BarChart, Casino, ChevronLeft, ChevronRight, Create, Delete, Favorite, FileDownload, FileUpload, FormatListBulleted, Restore, Settings } from '@mui/icons-material';
 import TodoPane from './components/TodoPane';
 import { Document_Title, Font_Size, Card_PaddingX, Card_PaddingY, timerIntervalSliderMarks_day, timerIntervalSliderMarks_min, Tablet_BreakPoint, Mobile_BreakPoint, Drawer_Width, AboveAppContentArea_MinHeight } from './types/constants';
@@ -226,7 +226,7 @@ export const AppCore = () => {
     useEffect(() => {
         if (!runningTodo) {
             // WebPush通知のスケジュールをキャンセル
-            if (userSettings?.webPushEnabled && isMobileDevice()) {
+            if (isWebPushEnabled()) {
                 const webPushService = new WebPushService();
                 webPushService.cancelScheduledNotification().catch(error => {
                     console.error('Failed to cancel WebPush notification:', error);
@@ -237,7 +237,7 @@ export const AppCore = () => {
         const endTime = calcEndTime(timerState);
         if(endTime === null) return;
         // タイマーが実行中で、WebPushが有効で、モバイルの場合のみ
-        if (runningTodo && timerState && timerState.timeAtStarted !== null && userSettings?.webPushEnabled && isMobileDevice()) {
+        if (runningTodo && timerState && timerState.timeAtStarted !== null && isWebPushEnabled()) {
             webpushExecuter.executeLater(() => {
                 const endTime = calcEndTime(timerState);
                 if(endTime === null) return;

@@ -1,7 +1,7 @@
 import { Add, Download, Remove, Start, Edit } from "@mui/icons-material"
 import { Link, Tooltip, Card, Stack, Typography, Slider, Box, Button, SxProps, Theme, TextField, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material"
 import { Card_PaddingX, Card_PaddingY, GreenColorCode, IntervalInTimer_Height, TimerTitle_FontSize, TodayTotalTimeR_FontSize, TodayTotalTime_FontSize, timerRuntimeSliderMarks } from "../types/constants"
-import { extractTime, isMobileDevice, probsToString, timeToString } from "../util"
+import { extractTime, isMobileDevice, probsToString, timeToString, isWebPushEnabled } from "../util"
 import { todaysTotal, uniqueExecuter_notify, uniqueExecuter_autoDoTimer } from "../AppCore_"
 import { Todo, isInInterval } from "../datas/Todo"
 import { getRecordsToday } from "../datas/TodoRecord"
@@ -204,7 +204,7 @@ export function TimerPane(props: {
           const now = Date.now()
           if (runningTodo !== undefined) {
             // WebPushが有効かつモバイルの場合は、ブラウザ通知と音声通知を行わない
-            const isWebPushActive = userSettings.webPushEnabled && isMobileDevice();
+            const isWebPushActive = isWebPushEnabled();
 
             if (!isWebPushActive) {
               if (now - lastNotifyTime > 20 * 1000) {

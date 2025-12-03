@@ -140,10 +140,7 @@ export function TimerSettingsDialog(
 
             <SectionTitle>{"WebPush通知"}</SectionTitle>
 
-            <WebPushSettings
-              enabled={userSettings.webPushEnabled}
-              onEnabledChange={(enabled) => setUserSettings({ ...userSettings, webPushEnabled: enabled })}
-            />
+            <WebPushSettings />
           </Paper>
 
           {/* 一般設定セクション */}

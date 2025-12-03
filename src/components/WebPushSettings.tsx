@@ -2,26 +2,19 @@ import React, { useState, useEffect, useContext } from 'react';
 import { WebPushService } from '../services/WebPushService';
 import { TLLContext } from '../App';
 
-interface WebPushSettingsProps {
-  enabled: boolean;
-  onEnabledChange: (enabled: boolean) => void;
-}
-
-export const WebPushSettings: React.FC<WebPushSettingsProps> = ({
-  enabled,
-  onEnabledChange,
-}) => {
+export const WebPushSettings: React.FC = () => {
   const tll = useContext(TLLContext);
+  const [isGranted, setIsGranted] = useState(false);
   const [isSubscribed, setIsSubscribed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [service] = useState(() => new WebPushService());
 
   useEffect(() => {
-    checkSubscriptionStatus();
+    checkStatus();
   }, []);
 
-  const checkSubscriptionStatus = async () => {
+  const checkStatus = async () => {
     try {
       const supported = await service.isServiceWorkerSupported();
       if (!supported) {
@@ -29,14 +22,13 @@ export const WebPushSettings: React.FC<WebPushSettingsProps> = ({
         return;
       }
 
+      // Notification.permissionをチェック
+      const granted = typeof Notification !== 'undefined' && Notification.permission === 'granted';
+      setIsGranted(granted);
+
+      // サブスクリプション状態をチェック
       const status = await service.getSubscriptionStatus();
       setIsSubscribed(status);
-
-      // 親コンポーネントの状態と同期（オプション）
-      if (status !== enabled) {
-        // ここで自動的に同期するか、ユーザーに任せるかは要件次第だが、
-        // 今回は表示だけ更新し、onEnabledChangeは呼ばない（無限ループ防止）
-      }
     } catch (err) {
       console.error('Failed to check subscription status:', err);
     }
@@ -47,24 +39,24 @@ export const WebPushSettings: React.FC<WebPushSettingsProps> = ({
     setError(null);
 
     try {
-      if (!enabled) {
-        // 有効化
+      if (!isGranted) {
+        // 有効化 - 許可をリクエストしてサブスクライブ
         await service.subscribe();
+        setIsGranted(true);
         setIsSubscribed(true);
-        onEnabledChange(true);
       } else {
-        // 無効化
+        // 無効化 - サブスクリプションを解除
         await service.unsubscribe();
+        setIsGranted(false);
         setIsSubscribed(false);
-        onEnabledChange(false);
       }
     } catch (err: any) {
       console.error('WebPush toggle failed:', err);
       setError(err.message || 'プッシュ通知の設定に失敗しました');
       // エラー時は状態を戻すだけでなく、ローカルストレージもクリアし、設定を無効化する
       localStorage.removeItem('webpush_endpoint');
+      setIsGranted(false);
       setIsSubscribed(false);
-      onEnabledChange(false);
     } finally {
       setIsLoading(false);
     }
@@ -96,7 +88,7 @@ export const WebPushSettings: React.FC<WebPushSettingsProps> = ({
         <label style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
           <input
             type="checkbox"
-            checked={enabled}
+            checked={isGranted}
             onChange={handleToggle}
             disabled={isLoading}
             style={{ marginRight: '8px' }}
@@ -105,7 +97,7 @@ export const WebPushSettings: React.FC<WebPushSettingsProps> = ({
         </label>
       </div>
 
-      {enabled && isSubscribed && (
+      {isGranted && isSubscribed && (
         <div style={{ marginBottom: '12px' }}>
           <button
             onClick={handleTest}
