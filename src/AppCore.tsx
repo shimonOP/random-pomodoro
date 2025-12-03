@@ -27,7 +27,7 @@ import { lang2TranslateLanguage } from './types/Languages';
 import { WebPushService } from './services/WebPushService';
 import { IntervalExecuter } from './types/IntervalExecuter';
 
-const webpushExecuter = new IntervalExecuter(5);
+const webpushExecuter = new IntervalExecuter(2);
 
 export const AppCore = () => {
     //@@usestate
