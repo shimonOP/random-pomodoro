@@ -20,7 +20,7 @@ cursor: pointer;
 `;
   const { isRolling } = props;
   return (
-    <StyledCasinoIcon fontSize='large'></StyledCasinoIcon>
+    <StyledCasinoIcon sx={{fontSize: "36px"}}></StyledCasinoIcon>
   );
 }
 export default RollDiceIcon;

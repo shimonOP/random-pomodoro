@@ -26,7 +26,7 @@ export const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open
   open?: boolean;
 }>(({ theme, open }) => ({
   flexGrow: 1,
-  padding: theme.spacing(3),
+  paddingRight: theme.spacing(1),
   transition: theme.transitions.create('margin', {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -36,7 +36,7 @@ export const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open
     padding: 0,
   },
   [theme.breakpoints.up(Mobile_BreakPoint + 1)]: {
-    marginTop: '48px', // Toolbar height for dense variant (only on non-mobile)
+    marginTop: '56px', // Toolbar height for dense variant (only on non-mobile)
   },
   ...(open && {
     transition: theme.transitions.create('margin', {

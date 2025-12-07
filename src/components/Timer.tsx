@@ -94,6 +94,7 @@ export default function Timer(props: TimerProps) {
     const doneButton_core =
         <Button
             variant='outlined'
+            size='large'
             disableElevation
             disableRipple
             disabled={!timerEnable}
