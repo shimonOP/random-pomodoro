@@ -125,8 +125,10 @@ export type transDescriptions =
     "ResetAllData" |
     "AreYouSureToResetAllData" |
     "Memo" |
-    "Close"
-    ;//@@Keys
+    "Close" |
+    "NotifyRepeatCount" |
+    "NotifyInterval";
+;//@@Keys
 type transSentenses = transDescriptions | transKeyBoardShortCutHelps
 export class TLL {
     public lang: TranslationLanguages = defaultLang;
@@ -364,6 +366,10 @@ export class TLL {
                         return "メモ"
                     case "Close":
                         return "閉じる"
+                    case "NotifyRepeatCount":
+                        return "音声通知の繰り返し回数"
+                    case "NotifyInterval":
+                        return "音声通知の繰り返し間隔"
                     //@@japanese
                 }
             // eslint-disable-next-line no-fallthrough
@@ -597,6 +603,10 @@ export class TLL {
                         return "Memo"
                     case "Close":
                         return "Close"
+                    case "NotifyRepeatCount":
+                        return "Speech notification repeat count"
+                    case "NotifyInterval":
+                        return "Speech notification repeat interval"
                     //@@english
                 }
         }

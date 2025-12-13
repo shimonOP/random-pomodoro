@@ -18,6 +18,8 @@ export type UserSettings = {
     customWeightCode: string,
     useCustomWeight: boolean,
     diceRollDuration: number, // サイコロが回る秒数（ミリ秒単位）
+    notifyRepeatCount: number, // 終了音声通知の繰り返し回数。-1で無限、0で1回のみ（繰り返さない）
+    notifyInterval: number, // 終了音声通知の繰り返し間隔（秒）
 }
 export type SubscriptionPlan = "free" | "standard" | "pro" | "business" | "education"
 export const createUserSettings = (data?: any) => {
@@ -38,6 +40,8 @@ export const createUserSettings = (data?: any) => {
         customWeightCode: "",
         useCustomWeight: false,
         diceRollDuration: 500, // ms デフォルト1秒
+        notifyRepeatCount: -1,
+        notifyInterval: 30,
     }
     if (data) {
         Object.assign(userSettings, data);

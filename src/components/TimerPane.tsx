@@ -18,6 +18,7 @@ import { useIsMobileLayout } from "../hooks/useLayout"
 
 let lastNotifyTime: number = 0
 let hasNotifiedBrowser: boolean = false // ブラウザ通知を1回だけ表示するためのフラグ
+let notifyCount: number = 0
 let doingAutoTimerStatus: "stable" | "doingAutoTimer" = "stable" // doAutoTimerを一回しか発生しないようにするためのもの。
 
 export function TimerPane(props: {
@@ -93,6 +94,7 @@ export function TimerPane(props: {
   useEffect(() => {
     doingAutoTimerStatus = "stable"
     hasNotifiedBrowser = false // 新しいTODOが開始されたらフラグをリセット
+    notifyCount = 0
   }, [runningTodo])
   const renderTitle = () => {
     let title: string;
@@ -207,20 +209,24 @@ export function TimerPane(props: {
             const isWebPushActive = isWebPushEnabled();
 
             if (!isWebPushActive) {
-              if (now - lastNotifyTime > 20 * 1000) {
-                // ブラウザ通知は最初の1回だけ
-                lastNotifyTime = now
-                if (!hasNotifiedBrowser) {
-                  hasNotifiedBrowser = true
-                  uniqueExecuter_notify.run(() => {
-                    Notifier.instance.notifyEndWithBrowser(runningTodo.displayTitle, userSettings.language, userSettings.notifyVolume);
-                  })
-                }
-                // 2回目以降は音声通知のみ（20秒間隔）
-                if (userSettings.needSpeechNotifyOnEnd) {
-                  uniqueExecuter_notify.run(() => {
-                    Notifier.instance.notifyEnd(runningTodo.displayTitle, userSettings.language, userSettings.notifyVolume);
-                  })
+              if (now - lastNotifyTime > userSettings.notifyInterval * 1000) {
+                const maxRepeats = userSettings.notifyRepeatCount;
+                if (maxRepeats === -1 || notifyCount <= maxRepeats) {
+                  // ブラウザ通知は最初の1回だけ
+                  lastNotifyTime = now
+                  if (!hasNotifiedBrowser) {
+                    hasNotifiedBrowser = true
+                    uniqueExecuter_notify.run(() => {
+                      Notifier.instance.notifyEndWithBrowser(runningTodo.displayTitle, userSettings.language, userSettings.notifyVolume);
+                    })
+                  }
+                  // 2回目以降は音声通知のみ（設定された間隔）
+                  if (userSettings.needSpeechNotifyOnEnd) {
+                    uniqueExecuter_notify.run(() => {
+                      Notifier.instance.notifyEnd(runningTodo.displayTitle, userSettings.language, userSettings.notifyVolume);
+                    })
+                  }
+                  notifyCount++;
                 }
               }
             }

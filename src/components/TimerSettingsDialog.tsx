@@ -136,6 +136,53 @@ export function TimerSettingsDialog(
               }
             />
 
+            <SettingItem
+              icon={<Notifications />}
+              label={tll.t("NotifyRepeatCount") + " (-1: ∞)"}
+              control={
+                <TextField
+                  type="number"
+                  variant="outlined"
+                  size="small"
+                  value={userSettings.notifyRepeatCount}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value);
+                    if (!isNaN(val)) {
+                      setUserSettings({ ...userSettings, notifyRepeatCount: val });
+                    }
+                  }}
+                  inputProps={{ min: -1 }}
+                  sx={{ width: 100 }}
+                />
+              }
+            />
+
+            <SettingItem
+              icon={<Notifications />}
+              label={tll.t("NotifyInterval") + " (sec)"}
+              control={
+                <TextField
+                  type="number"
+                  variant="outlined"
+                  size="small"
+                  value={userSettings.notifyInterval}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value);
+                    if (!isNaN(val)) {
+                      setUserSettings({ ...userSettings, notifyInterval: val });
+                    }
+                  }}
+                  onBlur={() => {
+                    if (userSettings.notifyInterval < 5) {
+                      setUserSettings({ ...userSettings, notifyInterval: 5 });
+                    }
+                  }}
+                  inputProps={{ min: 5 }}
+                  sx={{ width: 100 }}
+                />
+              }
+            />
+
             <Divider sx={{ my: 2 }} />
 
             <SectionTitle>{"WebPush通知"}</SectionTitle>
