@@ -138,6 +138,17 @@ export function TimerSettingsDialog(
 
             <SettingItem
               icon={<Notifications />}
+              label={tll.t("NotifyByBrowserOnEnd")}
+              control={
+                <Switch
+                  checked={userSettings.notifyByBrowserOnEnd}
+                  onChange={(e) => setUserSettings({ ...userSettings, notifyByBrowserOnEnd: e.target.checked })}
+                />
+              }
+            />
+
+            <SettingItem
+              icon={<Notifications />}
               label={tll.t("NotifyRepeatCount") + " (-1: ∞)"}
               control={
                 <TextField

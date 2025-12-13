@@ -216,9 +216,11 @@ export function TimerPane(props: {
                   lastNotifyTime = now
                   if (!hasNotifiedBrowser) {
                     hasNotifiedBrowser = true
-                    uniqueExecuter_notify.run(() => {
-                      Notifier.instance.notifyEndWithBrowser(runningTodo.displayTitle, userSettings.language, userSettings.notifyVolume);
-                    })
+                    if (userSettings.notifyByBrowserOnEnd) {
+                      uniqueExecuter_notify.run(() => {
+                        Notifier.instance.notifyEndWithBrowser(runningTodo.displayTitle, userSettings.language, userSettings.notifyVolume);
+                      })
+                    }
                   }
                   // 2回目以降は音声通知のみ（設定された間隔）
                   if (userSettings.needSpeechNotifyOnEnd) {

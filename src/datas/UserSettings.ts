@@ -20,6 +20,7 @@ export type UserSettings = {
     diceRollDuration: number, // サイコロが回る秒数（ミリ秒単位）
     notifyRepeatCount: number, // 終了音声通知の繰り返し回数。-1で無限、0で1回のみ（繰り返さない）
     notifyInterval: number, // 終了音声通知の繰り返し間隔（秒）
+    notifyByBrowserOnEnd: boolean, // 終了時にブラウザ通知を行うか
 }
 export type SubscriptionPlan = "free" | "standard" | "pro" | "business" | "education"
 export const createUserSettings = (data?: any) => {
@@ -42,6 +43,7 @@ export const createUserSettings = (data?: any) => {
         diceRollDuration: 500, // ms デフォルト1秒
         notifyRepeatCount: -1,
         notifyInterval: 30,
+        notifyByBrowserOnEnd: true,
     }
     if (data) {
         Object.assign(userSettings, data);

@@ -127,7 +127,8 @@ export type transDescriptions =
     "Memo" |
     "Close" |
     "NotifyRepeatCount" |
-    "NotifyInterval";
+    "NotifyInterval" |
+    "NotifyByBrowserOnEnd";
 ;//@@Keys
 type transSentenses = transDescriptions | transKeyBoardShortCutHelps
 export class TLL {
@@ -370,6 +371,8 @@ export class TLL {
                         return "音声通知の繰り返し回数"
                     case "NotifyInterval":
                         return "音声通知の繰り返し間隔"
+                    case "NotifyByBrowserOnEnd":
+                        return "終了時にブラウザで通知"
                     //@@japanese
                 }
             // eslint-disable-next-line no-fallthrough
@@ -607,6 +610,8 @@ export class TLL {
                         return "Speech notification repeat count"
                     case "NotifyInterval":
                         return "Speech notification repeat interval"
+                    case "NotifyByBrowserOnEnd":
+                        return "Notify by browser on end"
                     //@@english
                 }
         }
