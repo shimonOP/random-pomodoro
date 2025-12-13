@@ -69,7 +69,7 @@ const TodoPane = (props: TodoPaneProps) => {
         appendTodoFutureClicked,
         pickFromSubClicked,
     } = props
-    const {todos, userSettings, records, focusedTodo, setTodoParameter} = useDiceTodoStates();
+    const { todos, userSettings, records, focusedTodo, setTodoParameter } = useDiceTodoStates();
     if (focusedTodo === undefined || userSettings === undefined) return (<></>);
     const tags = focusedTodo.tags
     const runTime = focusedTodo.runTime
@@ -664,8 +664,8 @@ const TodoPane = (props: TodoPaneProps) => {
                                     todo_id={focusedTodo.id}
                                     text={focusedTodo.memo}
                                     onChanged={
-                                        (newText: string) => {
-                                            setTodoParameter(focusedTodo.id, { memo: newText })
+                                        (todoId: string, newText: string) => {
+                                            setTodoParameter(todoId, { memo: newText })
                                         }
                                     }
                                 />
@@ -678,8 +678,8 @@ const TodoPane = (props: TodoPaneProps) => {
                         todo_id={focusedTodo.id}
                         text={focusedTodo.memo}
                         onChanged={
-                            (newText: string) => {
-                                setTodoParameter(focusedTodo.id, { memo: newText })
+                            (todoId: string, newText: string) => {
+                                setTodoParameter(todoId, { memo: newText })
                             }
                         }
                     />

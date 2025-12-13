@@ -1,6 +1,6 @@
 /* eslint-disable react/react-in-jsx-scope -- Unaware of jsxImportSource */
 /** @jsxImportSource @emotion/react */
-import { useContext, useEffect, useState, useRef } from "react";
+import { useContext, useEffect, useState, useRef, useCallback } from "react";
 import { Box, IconButton, css } from '@mui/material';
 import CopyAllIcon from '@mui/icons-material/CopyAll';
 import { TLLContext } from "../App";
@@ -11,18 +11,18 @@ type MemoTextAreaProps = {
     disabled: boolean
     todo_id: string
     text: string
-    onChanged: (newText: string) => void
+    onChanged: (todoId: string, newText: string) => void
 }
 const MemoTextArea = (props: MemoTextAreaProps) => {
     const { disabled, todo_id: id, text, onChanged } = props;
     const [monacoValue, setMonacoValue] = useState(text);
     const tll = useContext(TLLContext);
-    // 最新のmonacoValueを保持するref（cleanup時に使用）
+    
+    // 最新の値を保持するref
     const monacoValueRef = useRef(monacoValue);
-    // onChangedの最新版を保持するref
-    const onChangedRef = useRef(onChanged);
-    // 初期テキストを保持するref（変更があったかの判定用）
+    const idRef = useRef(id);
     const initialTextRef = useRef(text);
+    const onChangedRef = useRef(onChanged);
 
     // refを常に最新に保つ
     useEffect(() => {
@@ -45,28 +45,36 @@ const MemoTextArea = (props: MemoTextAreaProps) => {
         setonbefore();
     }, [])
 
-    // IDが変わった時のみ外部のtextで初期化する
+    // IDが変わった時：まず古いIDの内容を保存してから、新しいIDの内容で初期化
     useEffect(() => {
+        if (idRef.current !== id) {
+            // 古いIDに対して変更があれば保存
+            if (monacoValueRef.current !== initialTextRef.current) {
+                onChangedRef.current(idRef.current, monacoValueRef.current);
+            }
+            // 新しいIDで初期化
+            idRef.current = id;
+        }
         setMonacoValue(text);
         initialTextRef.current = text;
-    }, [id])
+    }, [id, text])
 
     // コンポーネントがアンマウントされる時に変更があれば保存
     useEffect(() => {
         return () => {
             if (monacoValueRef.current !== initialTextRef.current) {
-                onChangedRef.current(monacoValueRef.current);
+                onChangedRef.current(idRef.current, monacoValueRef.current);
             }
         };
-    }, [id]);
+    }, []);
 
     // onBlur時に変更があれば保存
-    const handleBlur = () => {
-        if (monacoValue !== initialTextRef.current) {
-            onChanged(monacoValue);
-            initialTextRef.current = monacoValue;
+    const handleBlur = useCallback(() => {
+        if (monacoValueRef.current !== initialTextRef.current) {
+            onChangedRef.current(idRef.current, monacoValueRef.current);
+            initialTextRef.current = monacoValueRef.current;
         }
-    };
+    }, []);
 
     return (
         <Box position={"relative"} /*relativeにしないとボタンがはみ出す */ >
