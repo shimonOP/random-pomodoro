@@ -120,34 +120,6 @@ export function TimerSettingsDialog(
             />
 
             <SettingItem
-              icon={<VolumeUp />}
-              label={tll.t("Volume")}
-              control={
-                <Slider
-                  sx={{ width: 150, ml: 2 }}
-                  value={userSettings.notifyVolume}
-                  min={0}
-                  max={1}
-                  step={0.1}
-                  valueLabelDisplay="auto"
-                  valueLabelFormat={(value) => `${Math.round(value * 100)}%`}
-                  onChange={(e, newValue) => setUserSettings({ ...userSettings, notifyVolume: newValue as number })}
-                />
-              }
-            />
-
-            <SettingItem
-              icon={<Notifications />}
-              label={tll.t("NotifyByBrowserOnEnd")}
-              control={
-                <Switch
-                  checked={userSettings.notifyByBrowserOnEnd}
-                  onChange={(e) => setUserSettings({ ...userSettings, notifyByBrowserOnEnd: e.target.checked })}
-                />
-              }
-            />
-
-            <SettingItem
               icon={<Notifications />}
               label={tll.t("NotifyRepeatCount") + " (-1: ∞)"}
               control={
@@ -190,6 +162,34 @@ export function TimerSettingsDialog(
                   }}
                   inputProps={{ min: 5 }}
                   sx={{ width: 100 }}
+                />
+              }
+            />
+
+            <SettingItem
+              icon={<VolumeUp />}
+              label={tll.t("Volume")}
+              control={
+                <Slider
+                  sx={{ width: 150, ml: 2 }}
+                  value={userSettings.notifyVolume}
+                  min={0}
+                  max={1}
+                  step={0.1}
+                  valueLabelDisplay="auto"
+                  valueLabelFormat={(value) => `${Math.round(value * 100)}%`}
+                  onChange={(e, newValue) => setUserSettings({ ...userSettings, notifyVolume: newValue as number })}
+                />
+              }
+            />
+
+            <SettingItem
+              icon={<Notifications />}
+              label={tll.t("NotifyByBrowserOnEnd")}
+              control={
+                <Switch
+                  checked={userSettings.notifyByBrowserOnEnd}
+                  onChange={(e) => setUserSettings({ ...userSettings, notifyByBrowserOnEnd: e.target.checked })}
                 />
               }
             />
