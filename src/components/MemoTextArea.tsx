@@ -4,8 +4,7 @@ import { useContext, useEffect, useState, useRef } from "react";
 import { Box, IconButton, css } from '@mui/material';
 import CopyAllIcon from '@mui/icons-material/CopyAll';
 import { TLLContext } from "../App";
-import { Editor, useMonaco } from "@monaco-editor/react";
-import { set } from "lodash";
+import { Editor } from "@monaco-editor/react";
 import toast from "react-hot-toast";
 
 type MemoTextAreaProps = {
@@ -13,13 +12,26 @@ type MemoTextAreaProps = {
     todo_id: string
     text: string
     onChanged: (newText: string) => void
-    debounceMs?: number
 }
 const MemoTextArea = (props: MemoTextAreaProps) => {
-    const { disabled, todo_id: id, text, onChanged, debounceMs = 300 } = props;
-    let [monacoValue, setMonacoValue] = useState("")
+    const { disabled, todo_id: id, text, onChanged } = props;
+    const [monacoValue, setMonacoValue] = useState(text);
     const tll = useContext(TLLContext);
-    const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+    // 最新のmonacoValueを保持するref（cleanup時に使用）
+    const monacoValueRef = useRef(monacoValue);
+    // onChangedの最新版を保持するref
+    const onChangedRef = useRef(onChanged);
+    // 初期テキストを保持するref（変更があったかの判定用）
+    const initialTextRef = useRef(text);
+
+    // refを常に最新に保つ
+    useEffect(() => {
+        monacoValueRef.current = monacoValue;
+    }, [monacoValue]);
+
+    useEffect(() => {
+        onChangedRef.current = onChanged;
+    }, [onChanged]);
 
     useEffect(() => {
         //画面遷移しようとする前に確認ダイアログを出す.
@@ -32,18 +44,30 @@ const MemoTextArea = (props: MemoTextAreaProps) => {
         }
         setonbefore();
     }, [])
-    useEffect(() => {
-        setMonacoValue(text)
-    }, [id, text])
 
+    // IDが変わった時のみ外部のtextで初期化する
+    useEffect(() => {
+        setMonacoValue(text);
+        initialTextRef.current = text;
+    }, [id])
+
+    // コンポーネントがアンマウントされる時に変更があれば保存
     useEffect(() => {
         return () => {
-            // クリーンアップ: コンポーネントがアンマウントされる時にタイマーをクリア
-            if (debounceTimerRef.current) {
-                clearTimeout(debounceTimerRef.current);
+            if (monacoValueRef.current !== initialTextRef.current) {
+                onChangedRef.current(monacoValueRef.current);
             }
         };
-    }, []);
+    }, [id]);
+
+    // onBlur時に変更があれば保存
+    const handleBlur = () => {
+        if (monacoValue !== initialTextRef.current) {
+            onChanged(monacoValue);
+            initialTextRef.current = monacoValue;
+        }
+    };
+
     return (
         <Box position={"relative"} /*relativeにしないとボタンがはみ出す */ >
             <IconButton css={
@@ -60,20 +84,14 @@ const MemoTextArea = (props: MemoTextAreaProps) => {
                     border: 1px solid #d9d9d9;
                     border-radius: 5px;
                     `}
-                onChange={(monacoValue) => {
-                    if (monacoValue !== undefined) {
-                        setMonacoValue(monacoValue);
-
-                        // 既存のタイマーをクリア
-                        if (debounceTimerRef.current) {
-                            clearTimeout(debounceTimerRef.current);
-                        }
-
-                        // 新しいタイマーを設定
-                        debounceTimerRef.current = setTimeout(() => {
-                            onChanged(monacoValue);
-                        }, debounceMs);
+                onChange={(value) => {
+                    if (value !== undefined) {
+                        setMonacoValue(value);
                     }
+                }}
+                onMount={(editor) => {
+                    // エディタがマウントされた時にblurイベントを設定
+                    editor.onDidBlurEditorWidget(handleBlur);
                 }}
                 options={{
                     tabSize: 2,
